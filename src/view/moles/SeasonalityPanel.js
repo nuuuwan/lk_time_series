@@ -35,12 +35,14 @@ function SeasonalityPanel({ mainSeries }) {
       <ScatterChart
         height={220}
         series={series}
-        xAxis={[{
-          min: -0.5,
-          max: count - 0.5,
-          tickInterval: labels.map((_, i) => i),
-          valueFormatter: (v) => labels[Math.round(v)] ?? "",
-        }]}
+        xAxis={[
+          {
+            min: -0.5,
+            max: count - 0.5,
+            tickInterval: labels.map((_, i) => i),
+            valueFormatter: (v) => labels[Math.round(v)] ?? "",
+          },
+        ]}
         yAxis={[{ label: "% vs mean" }]}
         margin={{ left: 52, right: 16, top: 12, bottom: 36 }}
         slotProps={{ legend: { hidden: true } }}
