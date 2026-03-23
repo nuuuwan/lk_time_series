@@ -137,6 +137,14 @@
   font-size: 0.8rem;
 }
 
+.dataset-list-dates {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  color: var(--muted-ink);
+  font-size: 0.75rem;
+}
+
 .dataset-list-item.active {
   border-color: var(--accent);
   background: #f0f0f0;

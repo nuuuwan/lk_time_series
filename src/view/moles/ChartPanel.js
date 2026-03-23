@@ -34,7 +34,11 @@ function ChartPanel({
     if (!node) return;
     const label = selectedMeta?.sub_category || "chart";
     const filename = `${label.replace(/[^a-z0-9]/gi, "_")}.png`;
-    toPng(node, { backgroundColor: "#ffffff", pixelRatio: 2, skipFonts: true }).then((dataUrl) => {
+    toPng(node, {
+      backgroundColor: "#ffffff",
+      pixelRatio: 2,
+      skipFonts: true,
+    }).then((dataUrl) => {
       const link = document.createElement("a");
       link.download = filename;
       link.href = dataUrl;

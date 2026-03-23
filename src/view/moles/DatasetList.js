@@ -1,4 +1,5 @@
 import React from "react";
+import { formatDate } from "../../nonview/core/timeSeriesUtils";
 
 function DatasetList({ datasets, selectedKey, onSelectDataset }) {
   return (
@@ -18,6 +19,14 @@ function DatasetList({ datasets, selectedKey, onSelectDataset }) {
             <span>{meta.category}</span>
             <span>
               {meta.source_id} • {meta.frequency_name}
+            </span>
+            <span className="dataset-list-dates">
+              <span title="Latest value date">
+                Latest: {formatDate(meta.summary_statistics?.max_t)}
+              </span>
+              <span title="Time updated">
+                Updated: {formatDate(meta.last_updated_time_str)}
+              </span>
             </span>
           </button>
         ))}
