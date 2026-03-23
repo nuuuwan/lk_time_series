@@ -1,10 +1,10 @@
 :root {
-  --ink: #10231f;
-  --muted-ink: #36514b;
-  --soft-line: #d0ddd9;
-  --card: rgba(255, 255, 255, 0.86);
-  --bg-a: #f7f8ef;
-  --bg-b: #e7f2ef;
+  --ink: #111111;
+  --muted-ink: #666666;
+  --soft-line: #e4e4e4;
+  --card: #ffffff;
+  --bg-a: #f5f5f5;
+  --bg-b: #efefef;
   --accent: #0f766e;
   --accent-2: #b45309;
 }
@@ -17,18 +17,7 @@
   min-height: 100vh;
   padding: 1.1rem;
   color: var(--ink);
-  background:
-    radial-gradient(
-      circle at 12% 22%,
-      rgba(225, 243, 231, 0.9),
-      transparent 42%
-    ),
-    radial-gradient(
-      circle at 90% 0%,
-      rgba(255, 233, 207, 0.7),
-      transparent 36%
-    ),
-    linear-gradient(165deg, var(--bg-a), var(--bg-b));
+  background: var(--bg-a);
 }
 
 .top-nav {
@@ -78,7 +67,7 @@
   border: 1px solid var(--soft-line);
   border-radius: 12px;
   padding: 0.95rem;
-  box-shadow: 0 9px 22px rgba(22, 31, 29, 0.08);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .panel h2 {
@@ -102,7 +91,7 @@
 .text-input,
 .select-input {
   width: 100%;
-  border: 1px solid #9db4ae;
+  border: 1px solid #d4d4d4;
   border-radius: 10px;
   padding: 0.54rem 0.62rem;
   background: #fff;
@@ -130,8 +119,8 @@
 
 .dataset-list-item {
   text-align: left;
-  border: 1px solid #c2d3cf;
-  background: #f9fffd;
+  border: 1px solid #e4e4e4;
+  background: #fafafa;
   border-radius: 10px;
   padding: 0.56rem;
   display: grid;
@@ -150,7 +139,7 @@
 
 .dataset-list-item.active {
   border-color: var(--accent);
-  background: #ecf8f6;
+  background: #f0f0f0;
 }
 
 .panel-note {
@@ -183,6 +172,11 @@
   margin-top: 0.45rem;
 }
 
+/* Pull Quicksand into MUI chart SVG text */
+.chart-wrap svg text {
+  font-family: "Quicksand", system-ui, sans-serif !important;
+}
+
 .stat-grid {
   margin-top: 0.65rem;
   display: grid;
@@ -191,7 +185,7 @@
 }
 
 .stat-chip {
-  border: 1px solid #d4e4e0;
+  border: 1px solid #e4e4e4;
   border-radius: 10px;
   padding: 0.5rem;
   background: #fff;
@@ -233,7 +227,7 @@
 }
 
 .empty-state {
-  border: 1px dashed #abc2bc;
+  border: 1px dashed #d4d4d4;
   border-radius: 10px;
   padding: 1rem;
   color: var(--muted-ink);
@@ -257,19 +251,23 @@
   background: #fff;
   padding: 0.3rem;
   cursor: pointer;
-  opacity: 0.55;
+  opacity: 0.5;
+  filter: grayscale(1);
   transition:
     opacity 0.15s,
-    border-color 0.15s;
+    border-color 0.15s,
+    filter 0.15s;
 }
 
 .source-logo-btn:hover {
-  opacity: 1;
+  opacity: 0.85;
+  filter: grayscale(0.2);
 }
 
 .source-logo-btn.active {
   border-color: var(--accent);
   opacity: 1;
+  filter: grayscale(0);
 }
 
 .source-logo-img {
@@ -300,7 +298,7 @@
 .source-clear-btn {
   border: none;
   background: none;
-  color: var(--accent);
+  color: var(--muted-ink);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
@@ -310,7 +308,7 @@
 .reset-btn {
   border: 1px solid var(--soft-line);
   background: none;
-  color: var(--accent);
+  color: var(--muted-ink);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
@@ -321,6 +319,7 @@
 }
 .reset-btn:hover {
   background: var(--soft-line);
+  color: var(--ink);
 }
 
 .details-header {
@@ -381,7 +380,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
-  background: linear-gradient(135deg, #f0f8f6, #e8f4f1);
+  background: #f7f7f7;
   border: 1px solid var(--soft-line);
   border-radius: 10px;
   padding: 0.55rem 0.7rem;
@@ -413,7 +412,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
-  border: 1px solid #d4e4e0;
+  border: 1px solid #e4e4e4;
   border-radius: 8px;
   padding: 0.45rem 0.55rem;
   background: #fff;
@@ -451,8 +450,8 @@
 
 .link-btn-secondary {
   background: none;
-  color: var(--accent);
-  border: 1.5px solid var(--accent);
+  color: var(--muted-ink);
+  border: 1.5px solid #d4d4d4;
 }
 
 .link-btn-secondary:hover {
@@ -509,7 +508,7 @@
   }
 
   .mobile-tabs button {
-    border: 1px solid #9fb3af;
+    border: 1px solid #e4e4e4;
     border-radius: 10px;
     background: #fff;
     padding: 0.45rem;
@@ -520,7 +519,7 @@
   .mobile-tabs button.active {
     border-color: var(--accent);
     color: var(--accent);
-    background: #eff8f7;
+    background: #f0f0f0;
   }
 
   .dataset-list {
