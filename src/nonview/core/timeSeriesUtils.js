@@ -153,6 +153,42 @@ export const applyTimeWindow = (series, years) => {
   );
 };
 
+export const applyMovingAverage = (series, windowDays) => {
+  if (
+    !windowDays ||
+    windowDays === "none" ||
+    !Array.isArray(series) ||
+    series.length === 0
+  ) {
+    return series;
+  }
+
+  const windowMs = Number(windowDays) * 24 * 60 * 60 * 1000;
+
+  return series.map((point, i) => {
+    if (!Number.isFinite(point.timeMs)) {
+      return point;
+    }
+
+    const windowStart = point.timeMs - windowMs;
+    let sum = 0;
+    let count = 0;
+
+    for (let j = i; j >= 0; j--) {
+      const p = series[j];
+      if (!Number.isFinite(p.timeMs) || p.timeMs < windowStart) {
+        break;
+      }
+      if (p.value !== null && Number.isFinite(p.value)) {
+        sum += p.value;
+        count++;
+      }
+    }
+
+    return count > 0 ? { ...point, value: sum / count } : point;
+  });
+};
+
 export const normalizeSeries = (series) => {
   if (!Array.isArray(series) || series.length === 0) {
     return [];

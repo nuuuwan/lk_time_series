@@ -3,6 +3,15 @@ import { BarChart, LineChart } from "@mui/x-charts";
 import StatChip from "../atoms/StatChip";
 import { formatDate, formatNumber } from "../../nonview/core/timeSeriesUtils";
 
+const MOVING_WINDOW_OPTIONS = [
+  { value: "none", label: "No smoothing" },
+  { value: "7", label: "Week" },
+  { value: "30", label: "Month" },
+  { value: "91", label: "Quarter" },
+  { value: "365", label: "Year" },
+  { value: "3650", label: "Decade" },
+];
+
 function ChartPanel({
   selectedMeta,
   mainSeries,
@@ -12,6 +21,8 @@ function ChartPanel({
   onChartTypeChange,
   timeWindow,
   onTimeWindowChange,
+  movingWindow,
+  onMovingWindowChange,
   normalize,
   onNormalizeChange,
 }) {
@@ -127,6 +138,18 @@ function ChartPanel({
             <option value="10">10Y</option>
             <option value="5">5Y</option>
             <option value="1">1Y</option>
+          </select>
+
+          <select
+            className="select-input compact"
+            value={movingWindow}
+            onChange={(event) => onMovingWindowChange(event.target.value)}
+          >
+            {MOVING_WINDOW_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
           </select>
 
           <label className="toggle-label">

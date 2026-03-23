@@ -4,6 +4,7 @@ import {
   fetchSummaryMetadata,
 } from "../../nonview/core/datasetApi";
 import {
+  applyMovingAverage,
   applyTimeWindow,
   getDeterministicInsightLines,
   normalizeSeries,
@@ -34,6 +35,7 @@ function HomePage() {
 
   const [chartType, setChartType] = useState("line");
   const [timeWindow, setTimeWindow] = useState("all");
+  const [movingWindow, setMovingWindow] = useState("none");
   const [normalize, setNormalize] = useState(false);
   const [mobileTab, setMobileTab] = useState("search");
 
@@ -193,8 +195,9 @@ function HomePage() {
     const sourceData = mainDataset?.cleaned_data || mainDataset?.raw_data;
     const parsed = parseSeriesFromRawData(sourceData);
     const windowed = applyTimeWindow(parsed, timeWindow);
-    return normalize ? normalizeSeries(windowed) : windowed;
-  }, [selectedMeta, mainDataset, timeWindow, normalize]);
+    const smoothed = applyMovingAverage(windowed, movingWindow);
+    return normalize ? normalizeSeries(smoothed) : smoothed;
+  }, [selectedMeta, mainDataset, timeWindow, movingWindow, normalize]);
 
   const compareSeries = useMemo(() => {
     if (!compareEnabled || !compareMeta || !compareDataset) {
@@ -204,8 +207,16 @@ function HomePage() {
     const sourceData = compareDataset?.cleaned_data || compareDataset?.raw_data;
     const parsed = parseSeriesFromRawData(sourceData);
     const windowed = applyTimeWindow(parsed, timeWindow);
-    return normalize ? normalizeSeries(windowed) : windowed;
-  }, [compareEnabled, compareMeta, compareDataset, timeWindow, normalize]);
+    const smoothed = applyMovingAverage(windowed, movingWindow);
+    return normalize ? normalizeSeries(smoothed) : smoothed;
+  }, [
+    compareEnabled,
+    compareMeta,
+    compareDataset,
+    timeWindow,
+    movingWindow,
+    normalize,
+  ]);
 
   const insights = useMemo(
     () => getDeterministicInsightLines(mainSeries),
@@ -317,6 +328,8 @@ function HomePage() {
             onChartTypeChange={setChartType}
             timeWindow={timeWindow}
             onTimeWindowChange={setTimeWindow}
+            movingWindow={movingWindow}
+            onMovingWindowChange={setMovingWindow}
             normalize={normalize}
             onNormalizeChange={setNormalize}
           />
