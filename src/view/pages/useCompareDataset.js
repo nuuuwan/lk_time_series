@@ -1,8 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchDataset } from "../../nonview/core/datasetApi";
-import { applyMovingAverage, applyTimeWindow, parseSeriesFromRawData } from "../../nonview/core/timeSeriesUtils";
+import {
+  applyMovingAverage,
+  applyTimeWindow,
+  parseSeriesFromRawData,
+} from "../../nonview/core/timeSeriesUtils";
 
-export default function useCompareDataset(filteredMetadata, selectedMeta, compareEnabled, timeWindow, movingWindow) {
+export default function useCompareDataset(
+  filteredMetadata,
+  selectedMeta,
+  compareEnabled,
+  timeWindow,
+  movingWindow,
+) {
   const [compareKey, setCompareKey] = useState("");
   const [compareDataset, setCompareDataset] = useState(null);
 
@@ -12,7 +22,9 @@ export default function useCompareDataset(filteredMetadata, selectedMeta, compar
   );
 
   const compareMeta = useMemo(
-    () => compareCandidates.find((item) => item.key === compareKey) || compareCandidates[0],
+    () =>
+      compareCandidates.find((item) => item.key === compareKey) ||
+      compareCandidates[0],
     [compareCandidates, compareKey],
   );
 

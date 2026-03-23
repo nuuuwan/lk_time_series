@@ -47,11 +47,18 @@ function ChartControls({
         onChange={(e) => onMovingWindowChange(e.target.value)}
       >
         {MOVING_WINDOW_OPTIONS.map((opt) => (
-          <option key={opt.value} value={opt.value}>{opt.label}</option>
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
         ))}
       </select>
       {hasData && (
-        <button type="button" className="icon-btn" onClick={onDownload} title="Download chart as PNG">
+        <button
+          type="button"
+          className="icon-btn"
+          onClick={onDownload}
+          title="Download chart as PNG"
+        >
           ↓ PNG
         </button>
       )}

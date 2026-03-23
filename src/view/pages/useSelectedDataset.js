@@ -1,15 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchDataset } from "../../nonview/core/datasetApi";
-import { applyMovingAverage, applyTimeWindow, parseSeriesFromRawData } from "../../nonview/core/timeSeriesUtils";
+import {
+  applyMovingAverage,
+  applyTimeWindow,
+  parseSeriesFromRawData,
+} from "../../nonview/core/timeSeriesUtils";
 
-export default function useSelectedDataset(filteredMetadata, timeWindow, movingWindow) {
+export default function useSelectedDataset(
+  filteredMetadata,
+  timeWindow,
+  movingWindow,
+) {
   const [selectedKey, setSelectedKey] = useState("");
   const [mainDataset, setMainDataset] = useState(null);
   const [datasetError, setDatasetError] = useState("");
   const [datasetLoading, setDatasetLoading] = useState(false);
 
   const selectedMeta = useMemo(
-    () => filteredMetadata.find((item) => item.key === selectedKey) || filteredMetadata[0],
+    () =>
+      filteredMetadata.find((item) => item.key === selectedKey) ||
+      filteredMetadata[0],
     [filteredMetadata, selectedKey],
   );
 
@@ -44,5 +54,12 @@ export default function useSelectedDataset(filteredMetadata, timeWindow, movingW
     return applyMovingAverage(windowed, movingWindow);
   }, [selectedMeta, mainDataset, timeWindow, movingWindow]);
 
-  return { selectedKey, setSelectedKey, selectedMeta, mainSeries, datasetError, datasetLoading };
+  return {
+    selectedKey,
+    setSelectedKey,
+    selectedMeta,
+    mainSeries,
+    datasetError,
+    datasetLoading,
+  };
 }

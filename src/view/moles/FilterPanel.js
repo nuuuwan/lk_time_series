@@ -22,13 +22,19 @@ function FilterPanel({
       <div className="panel-head-row">
         <div>
           <h2>Discovery</h2>
-          <p className="panel-subtitle">Filter and search across the full catalog.</p>
+          <p className="panel-subtitle">
+            Filter and search across the full catalog.
+          </p>
         </div>
         {isFiltered && (
-          <button type="button" className="reset-btn" onClick={onReset}>Reset</button>
+          <button type="button" className="reset-btn" onClick={onReset}>
+            Reset
+          </button>
         )}
       </div>
-      <label className="field-label" htmlFor="search-input">Global Search</label>
+      <label className="field-label" htmlFor="search-input">
+        Global Search
+      </label>
       <input
         id="search-input"
         className="text-input"
@@ -46,7 +52,11 @@ function FilterPanel({
         renderItem={(source) => (
           <span className="source-check-item">
             {source.image && (
-              <img src={source.image} alt={source.label} className="source-check-img" />
+              <img
+                src={source.image}
+                alt={source.label}
+                className="source-check-img"
+              />
             )}
             <span>{source.label}</span>
           </span>
