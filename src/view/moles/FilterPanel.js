@@ -1,11 +1,11 @@
 import React from "react";
 
-function SourceLogo({ source, selected, onSelect }) {
+function SourceLogo({ source, checked, onToggle }) {
   return (
     <button
       type="button"
-      className={`source-logo-btn${selected ? " active" : ""}`}
-      onClick={() => onSelect(selected ? "all" : source.id)}
+      className={`source-logo-btn${checked ? " active" : ""}`}
+      onClick={() => onToggle(source.id)}
       title={source.label}
     >
       {source.image ? (
@@ -21,6 +21,49 @@ function SourceLogo({ source, selected, onSelect }) {
   );
 }
 
+function MultiCheckList({ items, selected, onChange }) {
+  // selected: null = all pass, [] = none pass, [...ids] = only these pass
+  function toggle(item) {
+    if (selected === null) {
+      onChange(items.filter((x) => x !== item));
+    } else if (selected.includes(item)) {
+      onChange(selected.filter((x) => x !== item));
+    } else {
+      onChange([...selected, item]);
+    }
+  }
+
+  const isChecked = (item) => selected === null || selected.includes(item);
+
+  return (
+    <div className="multi-check-list">
+      <div className="multi-check-actions">
+        <button type="button" className="mca-btn" onClick={() => onChange(null)}>
+          All
+        </button>
+        <button type="button" className="mca-btn" onClick={() => onChange([])}>
+          None
+        </button>
+      </div>
+      <div className="multi-check-items">
+        {items.map((item) => (
+          <label
+            key={item}
+            className={`multi-check-item${isChecked(item) ? " checked" : ""}`}
+          >
+            <input
+              type="checkbox"
+              checked={isChecked(item)}
+              onChange={() => toggle(item)}
+            />
+            <span>{item}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FilterPanel({
   filters,
   onFilterChange,
@@ -33,9 +76,21 @@ function FilterPanel({
 }) {
   const isFiltered =
     searchQuery ||
-    filters.source !== "all" ||
-    filters.category !== "all" ||
-    filters.frequency !== "all";
+    filters.sources !== null ||
+    filters.categories !== null ||
+    filters.frequencies !== null;
+
+  function toggleSource(id) {
+    const curr = filters.sources;
+    if (curr === null) {
+      // All currently included; deselect this one → all except this
+      onFilterChange("sources", options.sources.map((s) => s.id).filter((s) => s !== id));
+    } else if (curr.includes(id)) {
+      onFilterChange("sources", curr.filter((s) => s !== id));
+    } else {
+      onFilterChange("sources", [...curr, id]);
+    }
+  }
 
   return (
     <section className="panel filter-panel">
@@ -64,63 +119,55 @@ function FilterPanel({
         placeholder="Search source, category, sub-category, frequency"
       />
 
-      <label className="field-label">Source</label>
+      <div className="filter-section-header">
+        <label className="field-label">Source</label>
+        <div className="multi-check-actions">
+          <button
+            type="button"
+            className="mca-btn"
+            onClick={() => onFilterChange("sources", null)}
+          >
+            All
+          </button>
+          <button
+            type="button"
+            className="mca-btn"
+            onClick={() => onFilterChange("sources", [])}
+          >
+            None
+          </button>
+        </div>
+      </div>
       <div className="source-logo-row">
         {options.sources.map((source) => (
           <SourceLogo
             key={source.id}
             source={source}
-            selected={filters.source === source.id}
-            onSelect={(id) => onFilterChange("source", id)}
+            checked={
+              filters.sources === null || filters.sources.includes(source.id)
+            }
+            onToggle={toggleSource}
           />
         ))}
       </div>
-      {filters.source !== "all" && (
-        <p className="source-selected-label">
-          {options.sources.find((s) => s.id === filters.source)?.label}
-          <button
-            type="button"
-            className="source-clear-btn"
-            onClick={() => onFilterChange("source", "all")}
-          >
-            ✕ Clear
-          </button>
-        </p>
-      )}
 
-      <label className="field-label" htmlFor="category-filter">
-        Category
-      </label>
-      <select
-        id="category-filter"
-        className="select-input"
-        value={filters.category}
-        onChange={(event) => onFilterChange("category", event.target.value)}
-      >
-        <option value="all">All categories</option>
-        {options.categories.map((value) => (
-          <option key={value} value={value}>
-            {value}
-          </option>
-        ))}
-      </select>
+      <div className="filter-section-header">
+        <label className="field-label">Category</label>
+      </div>
+      <MultiCheckList
+        items={options.categories}
+        selected={filters.categories}
+        onChange={(val) => onFilterChange("categories", val)}
+      />
 
-      <label className="field-label" htmlFor="frequency-filter">
-        Frequency
-      </label>
-      <select
-        id="frequency-filter"
-        className="select-input"
-        value={filters.frequency}
-        onChange={(event) => onFilterChange("frequency", event.target.value)}
-      >
-        <option value="all">All frequencies</option>
-        {options.frequencies.map((value) => (
-          <option key={value} value={value}>
-            {value}
-          </option>
-        ))}
-      </select>
+      <div className="filter-section-header">
+        <label className="field-label">Frequency</label>
+      </div>
+      <MultiCheckList
+        items={options.frequencies}
+        selected={filters.frequencies}
+        onChange={(val) => onFilterChange("frequencies", val)}
+      />
 
       <div className="result-meta">
         <span>{resultCount.toLocaleString()} matched</span>
@@ -131,3 +178,4 @@ function FilterPanel({
 }
 
 export default FilterPanel;
+

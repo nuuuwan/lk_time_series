@@ -24,9 +24,9 @@ function HomePage() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
-    source: "all",
-    category: "all",
-    frequency: "all",
+    sources: null,
+    categories: null,
+    frequencies: null,
   });
 
   const [selectedKey, setSelectedKey] = useState("");
@@ -87,16 +87,13 @@ function HomePage() {
     const q = searchQuery.trim().toLowerCase();
 
     return metadata.filter((item) => {
-      if (filters.source !== "all" && item.source_id !== filters.source) {
+      if (filters.sources !== null && !filters.sources.includes(item.source_id)) {
         return false;
       }
-      if (filters.category !== "all" && item.category !== filters.category) {
+      if (filters.categories !== null && !filters.categories.includes(item.category)) {
         return false;
       }
-      if (
-        filters.frequency !== "all" &&
-        item.frequency_name !== filters.frequency
-      ) {
+      if (filters.frequencies !== null && !filters.frequencies.includes(item.frequency_name)) {
         return false;
       }
 
@@ -232,7 +229,7 @@ function HomePage() {
 
   const onResetFilters = () => {
     setSearchQuery("");
-    setFilters({ source: "all", category: "all", frequency: "all" });
+    setFilters({ sources: null, categories: null, frequencies: null });
   };
 
   return (
