@@ -1,70 +1,71 @@
-# Getting Started with Create React App
+# Sri Lanka Time Series (lk_time_series)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Frontend for exploring 3500+ public Sri Lankan time-series datasets.
 
-## Available Scripts
+## Introduction: What
 
-In the project directory, you can run:
+Sri Lanka Time Series is a React frontend designed to make national and local time-series data easy to discover, understand, and use.
 
-### `npm start`
+The app is built around three core user actions:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. Visualize datasets quickly with clear charts and trends.
+2. Search and filter across thousands of datasets.
+3. AI-analyze datasets to generate insights, summaries, anomalies, and contextual explanations.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+This project focuses on usability, speed, and trust so users can move from "I found data" to "I understand the story" in a few clicks.
 
-### `npm test`
+## Core Design Principles
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Data First, Interface Second
+ Every screen should prioritize the signal in the data. Visual noise, decorative UI, and unnecessary interactions should be minimized.
 
-### `npm run build`
+2. Search Must Be Instant and Forgiving
+ With 3500+ datasets, search is a primary feature, not a helper feature. Users should find datasets with partial terms, synonyms, and domain keywords.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. Explainability Over Black-Box AI
+ AI outputs should be understandable and verifiable. Summaries, trend detection, and anomaly findings should point back to the underlying data.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. Progressive Depth
+ Start simple (headline chart + key facts), then allow deeper analysis (comparison, decomposition, forecasting, metadata, and source links).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+5. Trust Through Provenance
+ Each dataset view should clearly show source, update date, frequency, coverage, and caveats. Confidence comes from transparent metadata.
 
-### `npm run eject`
+## Layout
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The app layout should support a fast exploration workflow:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. Top Navigation
+ Global search input, dataset count, quick filters, and navigation to major sections.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+2. Left Panel (Discovery)
+ Faceted filters (domain, geography, frequency, time range, source, quality flags).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+3. Main Panel (Visualization)
+ Primary chart area with series toggles, zoom, time-window selection, and chart type controls.
 
-## Learn More
+4. Right Panel (AI Analysis)
+ AI-generated summary, trend notes, anomalies, seasonality hints, and natural-language Q&A for the selected dataset.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+5. Dataset Details Section
+ Metadata, source links, update history, schema notes, and download/API actions.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+6. Compare Mode
+ Side-by-side or overlaid charts for multiple series, with normalization options.
 
-### Code Splitting
+7. Mobile Layout
+ Stacked views with a bottom tab pattern: Search, Chart, AI, and Details.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Suggested Frontend Structure (Current Project)
 
-### Analyzing the Bundle Size
+Based on the existing project tree:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- `src/view/pages/`: Route-level pages (Home, Search, Dataset, Compare, AI Workspace).
+- `src/view/moles/`: Composite UI blocks (filter panels, chart cards, AI insight cards).
+- `src/view/atoms/`: Reusable small components (buttons, tags, inputs, chips, badges).
+- `src/nonview/core/`: Data logic, API clients, query builders, caching, and normalization.
+- `src/nonview/cons/` and `src/view/_cons/`: App constants (routes, labels, config, themes).
 
-### Making a Progressive Web App
+## Product Goal
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Build the best public interface for Sri Lankan time-series intelligence: searchable, visual, explainable, and AI-assisted.
