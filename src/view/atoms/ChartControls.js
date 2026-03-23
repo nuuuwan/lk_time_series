@@ -6,8 +6,6 @@ const MOVING_WINDOW_OPTIONS = [
 ];
 
 function ChartControls({
-  chartType,
-  onChartTypeChange,
   timeWindow,
   onTimeWindowChange,
   movingWindow,
@@ -17,15 +15,6 @@ function ChartControls({
 }) {
   return (
     <div className="chart-controls">
-      <select
-        className="select-input compact"
-        value={chartType}
-        onChange={(e) => onChartTypeChange(e.target.value)}
-      >
-        <option value="line">Line Chart</option>
-        <option value="area">Area Chart</option>
-        <option value="bar">Bar Chart</option>
-      </select>
       <select
         className="select-input compact"
         value={timeWindow}

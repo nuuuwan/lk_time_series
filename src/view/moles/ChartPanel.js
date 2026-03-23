@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { BarChart, LineChart, ChartsReferenceLine } from "@mui/x-charts";
+import { LineChart, ChartsReferenceLine } from "@mui/x-charts";
 import { toPng } from "html-to-image";
 import ChartControls from "../atoms/ChartControls";
 import { formatNumber } from "../../nonview/core/timeSeriesUtils";
@@ -9,8 +9,6 @@ function ChartPanel({
   selectedMeta,
   mainSeries,
   rawSeries,
-  chartType,
-  onChartTypeChange,
   timeWindow,
   onTimeWindowChange,
   movingWindow,
@@ -79,7 +77,6 @@ function ChartPanel({
     ? [...Array(xData.length - 1).fill(null), lastActualValue]
     : [];
 
-  const isArea = chartType === "area";
   const series = [
     ...(isSmoothed && rawData
       ? [
@@ -101,7 +98,6 @@ function ChartPanel({
       showMark: false,
       curve: "linear",
       color: isSmoothed ? "#e07b39" : "#0f766e",
-      ...(isArea && !isSmoothed ? { area: true } : {}),
     },
     ...(hasForecast
       ? [
@@ -181,8 +177,6 @@ function ChartPanel({
             : "Pick a dataset from the left panel."}
         </p>
         <ChartControls
-          chartType={chartType}
-          onChartTypeChange={onChartTypeChange}
           timeWindow={timeWindow}
           onTimeWindowChange={onTimeWindowChange}
           movingWindow={movingWindow}
@@ -196,30 +190,6 @@ function ChartPanel({
           <div className="empty-state">
             No chart points available for this dataset.
           </div>
-        ) : chartType === "bar" ? (
-          <BarChart
-            {...sharedProps}
-            xAxis={[{ data: fullXData, scaleType: "band", tickInterval }]}
-          >
-            {maxVal !== null && (
-              <ChartsReferenceLine
-                y={maxVal}
-                label={`Max: ${formatNumber(maxVal)} (${maxDate})`}
-                lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
-                labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
-                labelAlign="end"
-              />
-            )}
-            {minVal !== null && (
-              <ChartsReferenceLine
-                y={minVal}
-                label={`Min: ${formatNumber(minVal)} (${minDate})`}
-                lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
-                labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
-                labelAlign="end"
-              />
-            )}
-          </BarChart>
         ) : (
           <LineChart
             {...sharedProps}

@@ -11,7 +11,6 @@ function HomePage() {
     categories: null,
     frequencies: null,
   });
-  const [chartType, setChartType] = useState("line");
   const [timeWindow, setTimeWindow] = useState("all");
   const [movingWindow, setMovingWindow] = useState("none");
   const [mobileTab, setMobileTab] = useState("search");
@@ -59,8 +58,6 @@ function HomePage() {
       setSelectedKey={setSelectedKey}
       mainSeries={mainSeries}
       rawSeries={rawSeries}
-      chartType={chartType}
-      setChartType={setChartType}
       timeWindow={timeWindow}
       setTimeWindow={setTimeWindow}
       movingWindow={movingWindow}

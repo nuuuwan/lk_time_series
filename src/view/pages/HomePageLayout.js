@@ -32,8 +32,6 @@ export default function HomePageLayout({
   setSelectedKey,
   mainSeries,
   rawSeries,
-  chartType,
-  setChartType,
   timeWindow,
   setTimeWindow,
   movingWindow,
@@ -111,8 +109,6 @@ export default function HomePageLayout({
             selectedMeta={selectedMeta}
             mainSeries={mainSeries}
             rawSeries={rawSeries}
-            chartType={chartType}
-            onChartTypeChange={setChartType}
             timeWindow={timeWindow}
             onTimeWindowChange={setTimeWindow}
             movingWindow={movingWindow}
