@@ -7,6 +7,7 @@ import { formatNumber } from "../../nonview/core/timeSeriesUtils";
 function ChartPanel({
   selectedMeta,
   mainSeries,
+  rawSeries,
   chartType,
   onChartTypeChange,
   timeWindow,
@@ -39,16 +40,45 @@ function ChartPanel({
       : point.t || "Point " + (i + 1),
   );
   const mainData = mainSeries.map((p) => p.value);
+  const isSmoothed =
+    rawSeries &&
+    rawSeries.length > 0 &&
+    movingWindow &&
+    movingWindow !== "none";
+  const rawData = isSmoothed ? rawSeries.map((p) => p.value) : null;
+  const datasetName = selectedMeta?.sub_category || "Selected Series";
+  const WINDOW_LABELS = {
+    7: "7-day avg",
+    30: "30-day avg",
+    91: "91-day avg",
+    365: "1-year avg",
+    3650: "10-year avg",
+  };
+  const smoothLabel = WINDOW_LABELS[movingWindow] || `${movingWindow}-day avg`;
 
   const isArea = chartType === "area";
   const series = [
+    ...(isSmoothed && rawData
+      ? [
+          {
+            id: "raw",
+            data: rawData,
+            label: datasetName,
+            showMark: false,
+            curve: "linear",
+            color: "#0f766e",
+            valueFormatter: () => "",
+          },
+        ]
+      : []),
     {
+      id: "main",
       data: mainData,
-      label: selectedMeta?.sub_category || "Selected Series",
+      label: isSmoothed ? smoothLabel : datasetName,
       showMark: false,
       curve: "linear",
-      color: "#0f766e",
-      ...(isArea ? { area: true } : {}),
+      color: isSmoothed ? "#e07b39" : "#0f766e",
+      ...(isArea && !isSmoothed ? { area: true } : {}),
     },
   ];
 
@@ -75,12 +105,24 @@ function ChartPanel({
   const finiteMain = mainData.filter((v) => v !== null && Number.isFinite(v));
   const maxVal = finiteMain.length ? Math.max(...finiteMain) : null;
   const minVal = finiteMain.length ? Math.min(...finiteMain) : null;
+  const lineColor = isSmoothed ? "#e07b39" : "#0f766e";
+
+  const smoothSx = isSmoothed
+    ? {
+        "& .MuiLineElement-series-raw": {
+          strokeDasharray: "4 3",
+          strokeOpacity: 0.4,
+        },
+      }
+    : {};
 
   const sharedProps = {
-    height: 380,
+    height: 360,
     series,
-    margin: { left: dynamicLeft, right: 24, top: 20, bottom: 64 },
+    margin: { left: dynamicLeft, right: 24, top: 12, bottom: 64 },
     yAxis: [{ width: dynamicLeft }],
+    sx: smoothSx,
+    slotProps: { legend: { hidden: true } },
   };
 
   return (
@@ -116,8 +158,8 @@ function ChartPanel({
               <ChartsReferenceLine
                 y={maxVal}
                 label={`Max: ${formatNumber(maxVal)}`}
-                lineStyle={{ stroke: "#0f766e", strokeDasharray: "4 3" }}
-                labelStyle={{ fill: "#0f766e", fontSize: 11, fontWeight: 600 }}
+                lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
+                labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
                 labelAlign="end"
               />
             )}
@@ -125,8 +167,8 @@ function ChartPanel({
               <ChartsReferenceLine
                 y={minVal}
                 label={`Min: ${formatNumber(minVal)}`}
-                lineStyle={{ stroke: "#b45309", strokeDasharray: "4 3" }}
-                labelStyle={{ fill: "#b45309", fontSize: 11, fontWeight: 600 }}
+                lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
+                labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
                 labelAlign="end"
               />
             )}
@@ -140,8 +182,8 @@ function ChartPanel({
               <ChartsReferenceLine
                 y={maxVal}
                 label={`Max: ${formatNumber(maxVal)}`}
-                lineStyle={{ stroke: "#0f766e", strokeDasharray: "4 3" }}
-                labelStyle={{ fill: "#0f766e", fontSize: 11, fontWeight: 600 }}
+                lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
+                labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
                 labelAlign="end"
               />
             )}
@@ -149,12 +191,41 @@ function ChartPanel({
               <ChartsReferenceLine
                 y={minVal}
                 label={`Min: ${formatNumber(minVal)}`}
-                lineStyle={{ stroke: "#b45309", strokeDasharray: "4 3" }}
-                labelStyle={{ fill: "#b45309", fontSize: 11, fontWeight: 600 }}
+                lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
+                labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
                 labelAlign="end"
               />
             )}
           </LineChart>
+        )}
+      </div>
+      <div className="chart-legend">
+        {isSmoothed ? (
+          <>
+            <span className="chart-legend-item" style={{ opacity: 0.5 }}>
+              <svg width="36" height="10">
+                <line
+                  x1="0" y1="5" x2="36" y2="5"
+                  stroke="#0f766e" strokeWidth="2"
+                  style={{ strokeDasharray: "6 4" }}
+                />
+              </svg>
+              {datasetName}
+            </span>
+            <span className="chart-legend-item">
+              <svg width="36" height="10">
+                <line x1="0" y1="5" x2="36" y2="5" stroke="#e07b39" strokeWidth="2" />
+              </svg>
+              {smoothLabel}
+            </span>
+          </>
+        ) : (
+          <span className="chart-legend-item">
+            <svg width="36" height="10">
+              <line x1="0" y1="5" x2="36" y2="5" stroke="#0f766e" strokeWidth="2" />
+            </svg>
+            {datasetName}
+          </span>
         )}
       </div>
     </section>

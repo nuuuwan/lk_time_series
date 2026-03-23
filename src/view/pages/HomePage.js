@@ -26,6 +26,7 @@ function HomePage() {
   const {
     setSelectedKey,
     selectedMeta,
+    rawSeries,
     mainSeries,
     datasetError,
     datasetLoading,
@@ -57,6 +58,7 @@ function HomePage() {
       selectedMeta={selectedMeta}
       setSelectedKey={setSelectedKey}
       mainSeries={mainSeries}
+      rawSeries={rawSeries}
       chartType={chartType}
       setChartType={setChartType}
       timeWindow={timeWindow}

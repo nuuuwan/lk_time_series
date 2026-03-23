@@ -243,6 +243,21 @@
   font-family: "Quicksand", system-ui, sans-serif !important;
 }
 
+.chart-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.4rem 0.2rem 0;
+  font-size: 0.78rem;
+  color: var(--muted-ink);
+}
+
+.chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .stat-grid {
   margin-top: 0.65rem;
   display: grid;

@@ -46,6 +46,13 @@ export default function useSelectedDataset(
     load();
   }, [selectedMeta]);
 
+  const rawSeries = useMemo(() => {
+    if (!selectedMeta || !mainDataset) return [];
+    const sourceData = mainDataset?.cleaned_data || mainDataset?.raw_data;
+    const parsed = parseSeriesFromRawData(sourceData);
+    return applyTimeWindow(parsed, timeWindow);
+  }, [selectedMeta, mainDataset, timeWindow]);
+
   const mainSeries = useMemo(() => {
     if (!selectedMeta || !mainDataset) return [];
     const sourceData = mainDataset?.cleaned_data || mainDataset?.raw_data;
@@ -58,6 +65,7 @@ export default function useSelectedDataset(
     selectedKey,
     setSelectedKey,
     selectedMeta,
+    rawSeries,
     mainSeries,
     datasetError,
     datasetLoading,

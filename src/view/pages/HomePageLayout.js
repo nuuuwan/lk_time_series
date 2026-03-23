@@ -31,6 +31,7 @@ export default function HomePageLayout({
   selectedMeta,
   setSelectedKey,
   mainSeries,
+  rawSeries,
   chartType,
   setChartType,
   timeWindow,
@@ -109,6 +110,7 @@ export default function HomePageLayout({
           <ChartPanel
             selectedMeta={selectedMeta}
             mainSeries={mainSeries}
+            rawSeries={rawSeries}
             chartType={chartType}
             onChartTypeChange={setChartType}
             timeWindow={timeWindow}

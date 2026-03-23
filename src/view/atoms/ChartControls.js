@@ -1,10 +1,6 @@
 import React from "react";
 
 const MOVING_WINDOW_OPTIONS = [
-  { value: "none", label: "No smoothing" },
-  { value: "7", label: "Week" },
-  { value: "30", label: "Month" },
-  { value: "91", label: "Quarter" },
   { value: "365", label: "Year" },
   { value: "3650", label: "Decade" },
 ];
@@ -46,6 +42,7 @@ function ChartControls({
         value={movingWindow}
         onChange={(e) => onMovingWindowChange(e.target.value)}
       >
+        <option value="none">No rolling window</option>
         {MOVING_WINDOW_OPTIONS.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
