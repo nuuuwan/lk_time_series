@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getSeasonalityInsightLines } from "../../nonview/core/timeSeriesUtils";
 import useMetadata from "./useMetadata";
@@ -16,6 +16,9 @@ function toSlug(meta) {
 function HomePage() {
   const { datasetKey } = useParams();
   const navigate = useNavigate();
+  // True when no URL slug is present, or the slug has already been resolved to a key.
+  // Prevents the default-selection from overwriting the URL before resolution completes.
+  const slugResolved = useRef(!datasetKey);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
@@ -45,14 +48,22 @@ function HomePage() {
 
   // When metadata loads and a slug is in the URL, resolve it to a key
   useEffect(() => {
-    if (!datasetKey || metadata.length === 0) return;
-    const match = metadata.find((m) => toSlug(m) === datasetKey);
-    if (match) setSelectedKey(match.key);
-  }, [datasetKey, metadata]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (metadata.length === 0) return;
+    if (datasetKey) {
+      // Resolve slug from URL
+      const match = metadata.find((m) => toSlug(m) === datasetKey);
+      if (match) setSelectedKey(match.key);
+    } else {
+      // No slug: select first dataset by default
+      if (filteredMetadata.length > 0) setSelectedKey(filteredMetadata[0].key);
+    }
+    slugResolved.current = true;
+  }, [metadata]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // When the selected dataset changes, update the URL to its kebab-case name
   useEffect(() => {
     if (!selectedMeta?.sub_category) return;
+    if (!slugResolved.current) return; // wait until URL slug is resolved first
     const slug = toSlug(selectedMeta);
     if (datasetKey !== slug) {
       navigate(`/${slug}`, { replace: true });

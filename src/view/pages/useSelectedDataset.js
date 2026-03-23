@@ -17,17 +17,11 @@ export default function useSelectedDataset(
   const [datasetLoading, setDatasetLoading] = useState(false);
 
   const selectedMeta = useMemo(
-    () =>
-      filteredMetadata.find((item) => item.key === selectedKey) ||
-      filteredMetadata[0],
+    () => filteredMetadata.find((item) => item.key === selectedKey),
     [filteredMetadata, selectedKey],
   );
 
-  useEffect(() => {
-    if (selectedMeta && selectedMeta.key !== selectedKey) {
-      setSelectedKey(selectedMeta.key);
-    }
-  }, [selectedMeta, selectedKey]);
+  // No auto-sync effect — selectedKey is managed externally by the router.
 
   useEffect(() => {
     if (!selectedMeta) return;
