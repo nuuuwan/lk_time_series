@@ -4,7 +4,10 @@ import {
   buildDatasetRawUrl,
 } from "../../nonview/core/datasetApi";
 import { formatDate } from "../../nonview/core/timeSeriesUtils";
-import { getSourceLabel, getSourceImage } from "../../nonview/cons/DATA_SOURCE_IDX";
+import {
+  getSourceLabel,
+  getSourceImage,
+} from "../../nonview/cons/DATA_SOURCE_IDX";
 
 function DatasetDetails({ meta }) {
   if (!meta) {

@@ -59,6 +59,25 @@ function ChartPanel({
 
   const stat = selectedMeta?.summary_statistics || {};
 
+  // Compute left margin wide enough to fit the longest Y-axis label.
+  // Each character is ~8px wide; add 20px padding.
+  const allValues = [...mainData, ...(compareData || [])].filter(
+    (v) => v !== null && Number.isFinite(v),
+  );
+  const maxAbsValue = allValues.reduce(
+    (max, v) => Math.max(max, Math.abs(v)),
+    0,
+  );
+  const longestLabel = new Intl.NumberFormat().format(maxAbsValue);
+  const dynamicLeft = Math.max(64, longestLabel.length * 8 + 20);
+
+  const sharedChartProps = {
+    height: 380,
+    series,
+    margin: { left: dynamicLeft, right: 24, top: 20, bottom: 64 },
+    yAxis: [{ width: dynamicLeft }],
+  };
+
   return (
     <section className="panel chart-panel">
       <div className="panel-head-row">
@@ -111,27 +130,13 @@ function ChartPanel({
           </div>
         ) : chartType === "bar" ? (
           <BarChart
-            height={360}
-            xAxis={[
-              {
-                data: xData,
-                scaleType: "band",
-              },
-            ]}
-            series={series}
-            margin={{ left: 70, right: 20, top: 20, bottom: 60 }}
+            {...sharedChartProps}
+            xAxis={[{ data: xData, scaleType: "band" }]}
           />
         ) : (
           <LineChart
-            height={360}
-            xAxis={[
-              {
-                data: xData,
-                scaleType: "point",
-              },
-            ]}
-            series={series}
-            margin={{ left: 70, right: 20, top: 20, bottom: 60 }}
+            {...sharedChartProps}
+            xAxis={[{ data: xData, scaleType: "point" }]}
           />
         )}
       </div>

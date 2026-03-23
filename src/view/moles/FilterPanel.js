@@ -9,7 +9,11 @@ function SourceLogo({ source, selected, onSelect }) {
       title={source.label}
     >
       {source.image ? (
-        <img src={source.image} alt={source.label} className="source-logo-img" />
+        <img
+          src={source.image}
+          alt={source.label}
+          className="source-logo-img"
+        />
       ) : (
         <span className="source-logo-fallback">{source.id}</span>
       )}
