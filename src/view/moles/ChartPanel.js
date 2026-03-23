@@ -153,7 +153,7 @@ function ChartPanel({
             value={timeWindow}
             onChange={(event) => onTimeWindowChange(event.target.value)}
           >
-            <option value="all">All</option>
+            <option value="all">All data</option>
             <option value="25">25Y</option>
             <option value="10">10Y</option>
             <option value="5">5Y</option>
