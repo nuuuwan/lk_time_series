@@ -3,7 +3,7 @@ import { BarChart, LineChart, ChartsReferenceLine } from "@mui/x-charts";
 import { toPng } from "html-to-image";
 import StatChip from "../atoms/StatChip";
 import ChartControls from "../atoms/ChartControls";
-import { formatDate, formatNumber } from "../../nonview/core/timeSeriesUtils";
+import { formatNumber } from "../../nonview/core/timeSeriesUtils";
 
 function ChartPanel({
   selectedMeta,
@@ -53,7 +53,6 @@ function ChartPanel({
     },
   ];
 
-  const stat = selectedMeta?.summary_statistics || {};
   const n = xData.length;
   const shownTickIndices = (() => {
     if (n <= 7) return new Set(Array.from({ length: n }, (_, i) => i));
@@ -77,6 +76,9 @@ function ChartPanel({
   const finiteMain = mainData.filter((v) => v !== null && Number.isFinite(v));
   const maxVal = finiteMain.length ? Math.max(...finiteMain) : null;
   const minVal = finiteMain.length ? Math.min(...finiteMain) : null;
+  const actualN = finiteMain.length;
+  const actualMinDate = xData.length ? xData[0] : null;
+  const actualMaxDate = xData.length ? xData[xData.length - 1] : null;
 
   const sharedProps = {
     height: 380,
@@ -160,11 +162,11 @@ function ChartPanel({
         )}
       </div>
       <div className="stat-grid">
-        <StatChip label="Points" value={formatNumber(stat.n)} />
-        <StatChip label="Min Date" value={formatDate(stat.min_t)} />
-        <StatChip label="Max Date" value={formatDate(stat.max_t)} />
-        <StatChip label="Min Value" value={formatNumber(stat.min_value)} />
-        <StatChip label="Max Value" value={formatNumber(stat.max_value)} />
+        <StatChip label="Points" value={formatNumber(actualN)} />
+        <StatChip label="Min Date" value={actualMinDate} />
+        <StatChip label="Max Date" value={actualMaxDate} />
+        <StatChip label="Min Value" value={formatNumber(minVal)} />
+        <StatChip label="Max Value" value={formatNumber(maxVal)} />
       </div>
     </section>
   );

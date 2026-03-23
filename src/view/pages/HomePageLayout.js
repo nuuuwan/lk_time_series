@@ -123,7 +123,7 @@ export default function HomePageLayout({
             (mobileTab === "details" ? " mobile-show" : "")
           }
         >
-          <DatasetDetails meta={selectedMeta} />
+          <DatasetDetails meta={selectedMeta} mainSeries={mainSeries} />
         </div>
         <div
           className={

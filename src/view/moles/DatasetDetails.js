@@ -10,7 +10,7 @@ import {
 } from "../../nonview/cons/DATA_SOURCE_IDX";
 import MetaField from "../atoms/MetaField";
 
-function DatasetDetails({ meta }) {
+function DatasetDetails({ meta, mainSeries = [] }) {
   if (!meta) {
     return (
       <section className="panel dataset-details-panel">
@@ -18,7 +18,25 @@ function DatasetDetails({ meta }) {
       </section>
     );
   }
-  const stat = meta.summary_statistics || {};
+  const finiteValues = mainSeries
+    .map((p) => p.value)
+    .filter((v) => v !== null && Number.isFinite(v));
+  const xData = mainSeries.map((p, i) =>
+    Number.isFinite(p.timeMs)
+      ? new Date(p.timeMs).toISOString().slice(0, 10)
+      : p.t || String(i),
+  );
+  const stat = {
+    n: finiteValues.length || meta.summary_statistics?.n,
+    min_t: xData[0] || meta.summary_statistics?.min_t,
+    max_t: xData[xData.length - 1] || meta.summary_statistics?.max_t,
+    min_value: finiteValues.length
+      ? Math.min(...finiteValues)
+      : meta.summary_statistics?.min_value,
+    max_value: finiteValues.length
+      ? Math.max(...finiteValues)
+      : meta.summary_statistics?.max_value,
+  };
   return (
     <section className="panel dataset-details-panel">
       <div className="details-source-row">
