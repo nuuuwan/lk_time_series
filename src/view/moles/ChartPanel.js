@@ -24,8 +24,6 @@ function ChartPanel({
   onTimeWindowChange,
   movingWindow,
   onMovingWindowChange,
-  normalize,
-  onNormalizeChange,
 }) {
   const chartWrapRef = useRef(null);
 
@@ -51,9 +49,7 @@ function ChartPanel({
     }
     return point.t || `Point ${index + 1}`;
   });
-  const mainData = mainSeries.map((point) =>
-    normalize ? point.normalizedValue : point.value,
-  );
+  const mainData = mainSeries.map((point) => point.value);
 
   const compareData = compareSeries
     ? mainSeries.map((point) => {
@@ -63,7 +59,7 @@ function ChartPanel({
         if (!match) {
           return null;
         }
-        return normalize ? match.normalizedValue : match.value;
+        return match.value;
       })
     : null;
 
@@ -170,15 +166,6 @@ function ChartPanel({
               </option>
             ))}
           </select>
-
-          <label className="toggle-label">
-            <input
-              type="checkbox"
-              checked={normalize}
-              onChange={(event) => onNormalizeChange(event.target.checked)}
-            />
-            Normalize
-          </label>
 
           {mainSeries.length > 0 && (
             <button

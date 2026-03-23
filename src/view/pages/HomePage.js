@@ -7,7 +7,6 @@ import {
   applyMovingAverage,
   applyTimeWindow,
   getDeterministicInsightLines,
-  normalizeSeries,
   parseSeriesFromRawData,
 } from "../../nonview/core/timeSeriesUtils";
 import DATA_SOURCE_IDX from "../../nonview/cons/DATA_SOURCE_IDX";
@@ -36,7 +35,6 @@ function HomePage() {
   const [chartType, setChartType] = useState("line");
   const [timeWindow, setTimeWindow] = useState("all");
   const [movingWindow, setMovingWindow] = useState("none");
-  const [normalize, setNormalize] = useState(false);
   const [mobileTab, setMobileTab] = useState("search");
 
   const [mainDataset, setMainDataset] = useState(null);
@@ -201,9 +199,8 @@ function HomePage() {
     const sourceData = mainDataset?.cleaned_data || mainDataset?.raw_data;
     const parsed = parseSeriesFromRawData(sourceData);
     const windowed = applyTimeWindow(parsed, timeWindow);
-    const smoothed = applyMovingAverage(windowed, movingWindow);
-    return normalize ? normalizeSeries(smoothed) : smoothed;
-  }, [selectedMeta, mainDataset, timeWindow, movingWindow, normalize]);
+    return applyMovingAverage(windowed, movingWindow);
+  }, [selectedMeta, mainDataset, timeWindow, movingWindow]);
 
   const compareSeries = useMemo(() => {
     if (!compareEnabled || !compareMeta || !compareDataset) {
@@ -213,16 +210,8 @@ function HomePage() {
     const sourceData = compareDataset?.cleaned_data || compareDataset?.raw_data;
     const parsed = parseSeriesFromRawData(sourceData);
     const windowed = applyTimeWindow(parsed, timeWindow);
-    const smoothed = applyMovingAverage(windowed, movingWindow);
-    return normalize ? normalizeSeries(smoothed) : smoothed;
-  }, [
-    compareEnabled,
-    compareMeta,
-    compareDataset,
-    timeWindow,
-    movingWindow,
-    normalize,
-  ]);
+    return applyMovingAverage(windowed, movingWindow);
+  }, [compareEnabled, compareMeta, compareDataset, timeWindow, movingWindow]);
 
   const insights = useMemo(
     () => getDeterministicInsightLines(mainSeries),
@@ -342,8 +331,6 @@ function HomePage() {
             onTimeWindowChange={setTimeWindow}
             movingWindow={movingWindow}
             onMovingWindowChange={setMovingWindow}
-            normalize={normalize}
-            onNormalizeChange={setNormalize}
           />
         </div>
 
