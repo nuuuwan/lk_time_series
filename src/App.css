@@ -333,6 +333,22 @@
   padding: 0;
 }
 
+.reset-btn {
+  border: 1px solid var(--soft-line);
+  background: none;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  align-self: flex-start;
+}
+.reset-btn:hover {
+  background: var(--soft-line);
+}
+
 .details-header {
   display: flex;
   align-items: center;

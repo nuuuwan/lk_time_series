@@ -230,6 +230,11 @@ function HomePage() {
     }));
   };
 
+  const onResetFilters = () => {
+    setSearchQuery("");
+    setFilters({ source: "all", category: "all", frequency: "all" });
+  };
+
   return (
     <main className="app-shell">
       <header className="top-nav">
@@ -302,6 +307,7 @@ function HomePage() {
           <FilterPanel
             filters={filters}
             onFilterChange={onFilterChange}
+            onReset={onResetFilters}
             options={options}
             resultCount={filteredMetadata.length}
             datasetCount={metadata.length}

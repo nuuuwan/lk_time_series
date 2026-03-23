@@ -24,18 +24,34 @@ function SourceLogo({ source, selected, onSelect }) {
 function FilterPanel({
   filters,
   onFilterChange,
+  onReset,
   options,
   resultCount,
   datasetCount,
   searchQuery,
   onSearchQueryChange,
 }) {
+  const isFiltered =
+    searchQuery ||
+    filters.source !== "all" ||
+    filters.category !== "all" ||
+    filters.frequency !== "all";
+
   return (
     <section className="panel filter-panel">
-      <h2>Discovery</h2>
-      <p className="panel-subtitle">
-        Filter and search across the full catalog.
-      </p>
+      <div className="panel-head-row">
+        <div>
+          <h2>Discovery</h2>
+          <p className="panel-subtitle">
+            Filter and search across the full catalog.
+          </p>
+        </div>
+        {isFiltered && (
+          <button type="button" className="reset-btn" onClick={onReset}>
+            Reset
+          </button>
+        )}
+      </div>
 
       <label className="field-label" htmlFor="search-input">
         Global Search
