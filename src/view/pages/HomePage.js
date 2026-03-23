@@ -1,357 +1,50 @@
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  fetchDataset,
-  fetchSummaryMetadata,
-} from "../../nonview/core/datasetApi";
-import {
-  applyMovingAverage,
-  applyTimeWindow,
-  getDeterministicInsightLines,
-  parseSeriesFromRawData,
-} from "../../nonview/core/timeSeriesUtils";
-import DATA_SOURCE_IDX from "../../nonview/cons/DATA_SOURCE_IDX";
-import FilterPanel from "../moles/FilterPanel";
-import DatasetList from "../moles/DatasetList";
-import ChartPanel from "../moles/ChartPanel";
-import AIPanel from "../moles/AIPanel";
-import DatasetDetails from "../moles/DatasetDetails";
+import React, { useState } from "react";
+import { getDeterministicInsightLines } from "../../nonview/core/timeSeriesUtils";
+import useMetadata from "./useMetadata";
+import useSelectedDataset from "./useSelectedDataset";
+import useCompareDataset from "./useCompareDataset";
+import HomePageLayout from "./HomePageLayout";
 
 function HomePage() {
-  const [metadata, setMetadata] = useState([]);
-  const [metadataLoading, setMetadataLoading] = useState(true);
-  const [metadataError, setMetadataError] = useState("");
-
   const [searchQuery, setSearchQuery] = useState("");
-  const [filters, setFilters] = useState({
-    sources: null,
-    categories: null,
-    frequencies: null,
-  });
-
-  const [selectedKey, setSelectedKey] = useState("");
+  const [filters, setFilters] = useState({ sources: null, categories: null, frequencies: null });
   const [compareEnabled, setCompareEnabled] = useState(false);
-  const [compareKey, setCompareKey] = useState("");
-
   const [chartType, setChartType] = useState("line");
   const [timeWindow, setTimeWindow] = useState("all");
   const [movingWindow, setMovingWindow] = useState("none");
   const [mobileTab, setMobileTab] = useState("search");
 
-  const [mainDataset, setMainDataset] = useState(null);
-  const [compareDataset, setCompareDataset] = useState(null);
-  const [datasetError, setDatasetError] = useState("");
-  const [datasetLoading, setDatasetLoading] = useState(false);
+  const { metadata, metadataLoading, metadataError, options, filteredMetadata } =
+    useMetadata(searchQuery, filters);
+  const { setSelectedKey, selectedMeta, mainSeries, datasetError, datasetLoading } =
+    useSelectedDataset(filteredMetadata, timeWindow, movingWindow);
+  const { compareCandidates, compareMeta, setCompareKey, compareSeries } =
+    useCompareDataset(filteredMetadata, selectedMeta, compareEnabled, timeWindow, movingWindow);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setMetadataLoading(true);
-        const list = await fetchSummaryMetadata();
-        setMetadata(list);
-        setSelectedKey(list[0]?.key || "");
-      } catch (error) {
-        setMetadataError(error.message);
-      } finally {
-        setMetadataLoading(false);
-      }
-    };
-
-    load();
-  }, []);
-
-  const options = useMemo(() => {
-    const categories = [
-      ...new Set(metadata.map((item) => item.category).filter(Boolean)),
-    ].sort();
-
-    const sources = [
-      ...new Set(metadata.map((item) => item.source_id).filter(Boolean)),
-    ]
-      .sort()
-      .map((sourceId) => ({
-        id: sourceId,
-        label: DATA_SOURCE_IDX[sourceId]?.label || sourceId,
-        image: DATA_SOURCE_IDX[sourceId]?.image || null,
-      }));
-
-    const frequencies = [
-      ...new Set(metadata.map((item) => item.frequency_name).filter(Boolean)),
-    ].sort();
-
-    return { categories, sources, frequencies };
-  }, [metadata]);
-
-  const filteredMetadata = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-
-    return metadata.filter((item) => {
-      if (
-        filters.sources !== null &&
-        !filters.sources.includes(item.source_id)
-      ) {
-        return false;
-      }
-      if (
-        filters.categories !== null &&
-        !filters.categories.includes(item.category)
-      ) {
-        return false;
-      }
-      if (
-        filters.frequencies !== null &&
-        !filters.frequencies.includes(item.frequency_name)
-      ) {
-        return false;
-      }
-
-      if (!q) {
-        return true;
-      }
-
-      const haystack = [
-        item.source_id,
-        item.category,
-        item.sub_category,
-        item.frequency_name,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-      return haystack.includes(q);
-    });
-  }, [metadata, searchQuery, filters]);
-
-  const selectedMeta = useMemo(
-    () =>
-      filteredMetadata.find((item) => item.key === selectedKey) ||
-      filteredMetadata[0],
-    [filteredMetadata, selectedKey],
-  );
-
-  useEffect(() => {
-    if (selectedMeta && selectedMeta.key !== selectedKey) {
-      setSelectedKey(selectedMeta.key);
-    }
-  }, [selectedMeta, selectedKey]);
-
-  const compareCandidates = useMemo(
-    () => filteredMetadata.filter((item) => item.key !== selectedMeta?.key),
-    [filteredMetadata, selectedMeta],
-  );
-
-  const compareMeta = useMemo(
-    () =>
-      compareCandidates.find((item) => item.key === compareKey) ||
-      compareCandidates[0],
-    [compareCandidates, compareKey],
-  );
-
-  useEffect(() => {
-    if (!compareEnabled) {
-      setCompareDataset(null);
-      return;
-    }
-
-    if (!compareMeta) {
-      setCompareDataset(null);
-      return;
-    }
-
-    const loadCompare = async () => {
-      try {
-        const payload = await fetchDataset(compareMeta);
-        setCompareDataset(payload);
-      } catch (error) {
-        setDatasetError(error.message);
-      }
-    };
-
-    loadCompare();
-  }, [compareEnabled, compareMeta]);
-
-  useEffect(() => {
-    if (!selectedMeta) {
-      return;
-    }
-
-    const loadDataset = async () => {
-      try {
-        setDatasetError("");
-        setDatasetLoading(true);
-        const payload = await fetchDataset(selectedMeta);
-        setMainDataset(payload);
-      } catch (error) {
-        setDatasetError(error.message);
-      } finally {
-        setDatasetLoading(false);
-      }
-    };
-
-    loadDataset();
-  }, [selectedMeta]);
-
-  const mainSeries = useMemo(() => {
-    if (!selectedMeta || !mainDataset) {
-      return [];
-    }
-
-    const sourceData = mainDataset?.cleaned_data || mainDataset?.raw_data;
-    const parsed = parseSeriesFromRawData(sourceData);
-    const windowed = applyTimeWindow(parsed, timeWindow);
-    return applyMovingAverage(windowed, movingWindow);
-  }, [selectedMeta, mainDataset, timeWindow, movingWindow]);
-
-  const compareSeries = useMemo(() => {
-    if (!compareEnabled || !compareMeta || !compareDataset) {
-      return null;
-    }
-
-    const sourceData = compareDataset?.cleaned_data || compareDataset?.raw_data;
-    const parsed = parseSeriesFromRawData(sourceData);
-    const windowed = applyTimeWindow(parsed, timeWindow);
-    return applyMovingAverage(windowed, movingWindow);
-  }, [compareEnabled, compareMeta, compareDataset, timeWindow, movingWindow]);
-
-  const insights = useMemo(
-    () => getDeterministicInsightLines(mainSeries),
-    [mainSeries],
-  );
-
-  const onFilterChange = (field, value) => {
-    setFilters((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
+  const insights = getDeterministicInsightLines(mainSeries);
+  const onFilterChange = (field, value) => setFilters((prev) => ({ ...prev, [field]: value }));
   const onResetFilters = () => {
     setSearchQuery("");
     setFilters({ sources: null, categories: null, frequencies: null });
   };
 
   return (
-    <main className="app-shell">
-      <header className="top-nav">
-        <div>
-          <h1>Sri Lanka Time Series</h1>
-          <p>Search, visualize, and compare 3500+ public datasets.</p>
-        </div>
-
-        <div className="top-nav-right">
-          <label className="toggle-label">
-            <input
-              type="checkbox"
-              checked={compareEnabled}
-              onChange={(event) => setCompareEnabled(event.target.checked)}
-            />
-            Compare mode
-          </label>
-
-          {compareEnabled && (
-            <select
-              className="select-input"
-              value={compareMeta?.key || ""}
-              onChange={(event) => setCompareKey(event.target.value)}
-            >
-              {compareCandidates.map((item) => (
-                <option key={item.key} value={item.key}>
-                  {item.sub_category} ({item.frequency_name})
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-      </header>
-
-      <nav className="mobile-tabs" aria-label="Mobile panel tabs">
-        {[
-          ["search", "Search"],
-          ["chart", "Chart"],
-          ["ai", "AI"],
-          ["details", "Details"],
-        ].map(([value, label]) => (
-          <button
-            key={value}
-            type="button"
-            className={mobileTab === value ? "active" : ""}
-            onClick={() => setMobileTab(value)}
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
-
-      {metadataLoading ? (
-        <div className="global-message">Loading metadata catalog...</div>
-      ) : null}
-      {metadataError ? (
-        <div className="global-message error">{metadataError}</div>
-      ) : null}
-      {datasetError ? (
-        <div className="global-message error">{datasetError}</div>
-      ) : null}
-      {datasetLoading ? (
-        <div className="global-message">Loading dataset time-series...</div>
-      ) : null}
-
-      <div className="layout-grid">
-        <div
-          className={`layout-cell search-cell ${mobileTab === "search" ? "mobile-show" : ""}`}
-        >
-          <FilterPanel
-            filters={filters}
-            onFilterChange={onFilterChange}
-            onReset={onResetFilters}
-            options={options}
-            resultCount={filteredMetadata.length}
-            datasetCount={metadata.length}
-            searchQuery={searchQuery}
-            onSearchQueryChange={setSearchQuery}
-          />
-
-          <DatasetList
-            datasets={filteredMetadata}
-            selectedKey={selectedMeta?.key || ""}
-            onSelectDataset={setSelectedKey}
-          />
-        </div>
-
-        <div
-          className={`layout-cell chart-cell ${mobileTab === "chart" ? "mobile-show" : ""}`}
-        >
-          <ChartPanel
-            selectedMeta={selectedMeta}
-            mainSeries={mainSeries}
-            compareSeries={compareEnabled ? compareSeries : null}
-            compareMeta={compareEnabled ? compareMeta : null}
-            chartType={chartType}
-            onChartTypeChange={setChartType}
-            timeWindow={timeWindow}
-            onTimeWindowChange={setTimeWindow}
-            movingWindow={movingWindow}
-            onMovingWindowChange={setMovingWindow}
-          />
-        </div>
-
-        <div
-          className={`layout-cell details-cell ${mobileTab === "details" ? "mobile-show" : ""}`}
-        >
-          <DatasetDetails meta={selectedMeta} />
-        </div>
-
-        <div
-          className={`layout-cell ai-cell ${mobileTab === "ai" ? "mobile-show" : ""}`}
-        >
-          <AIPanel insightLines={insights} />
-        </div>
-      </div>
-
-      <footer className="footer-note">
-        Metadata source: lanka_data_timeseries summary.json | Dataset URLs
-        generated from source_id, sub_category, and frequency_name.
-      </footer>
-    </main>
+    <HomePageLayout
+      mobileTab={mobileTab} setMobileTab={setMobileTab}
+      compareEnabled={compareEnabled} setCompareEnabled={setCompareEnabled}
+      compareMeta={compareMeta} compareCandidates={compareCandidates} setCompareKey={setCompareKey}
+      metadataLoading={metadataLoading} metadataError={metadataError}
+      datasetError={datasetError} datasetLoading={datasetLoading}
+      filters={filters} onFilterChange={onFilterChange} onResetFilters={onResetFilters}
+      options={options} filteredMetadata={filteredMetadata} metadata={metadata}
+      searchQuery={searchQuery} setSearchQuery={setSearchQuery}
+      selectedMeta={selectedMeta} setSelectedKey={setSelectedKey}
+      mainSeries={mainSeries} compareSeries={compareSeries}
+      chartType={chartType} setChartType={setChartType}
+      timeWindow={timeWindow} setTimeWindow={setTimeWindow}
+      movingWindow={movingWindow} setMovingWindow={setMovingWindow}
+      insights={insights}
+    />
   );
 }
 

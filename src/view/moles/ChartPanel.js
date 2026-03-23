@@ -2,16 +2,8 @@ import React, { useRef } from "react";
 import { BarChart, LineChart } from "@mui/x-charts";
 import { toPng } from "html-to-image";
 import StatChip from "../atoms/StatChip";
+import ChartControls from "../atoms/ChartControls";
 import { formatDate, formatNumber } from "../../nonview/core/timeSeriesUtils";
-
-const MOVING_WINDOW_OPTIONS = [
-  { value: "none", label: "No smoothing" },
-  { value: "7", label: "Week" },
-  { value: "30", label: "Month" },
-  { value: "91", label: "Quarter" },
-  { value: "365", label: "Year" },
-  { value: "3650", label: "Decade" },
-];
 
 function ChartPanel({
   selectedMeta,
@@ -31,7 +23,7 @@ function ChartPanel({
     const node = chartWrapRef.current;
     if (!node) return;
     const label = selectedMeta?.sub_category || "chart";
-    const filename = `${label.replace(/[^a-z0-9]/gi, "_")}.png`;
+    const filename = label.replace(/[^a-z0-9]/gi, "_") + ".png";
     toPng(node, {
       backgroundColor: "#ffffff",
       pixelRatio: 2,
@@ -43,28 +35,21 @@ function ChartPanel({
       link.click();
     });
   }
-  const xData = mainSeries.map((point, index) => {
-    if (Number.isFinite(point.timeMs)) {
-      return new Date(point.timeMs).toISOString().slice(0, 10);
-    }
-    return point.t || `Point ${index + 1}`;
-  });
-  const mainData = mainSeries.map((point) => point.value);
 
+  const xData = mainSeries.map((point, i) =>
+    Number.isFinite(point.timeMs)
+      ? new Date(point.timeMs).toISOString().slice(0, 10)
+      : point.t || "Point " + (i + 1),
+  );
+  const mainData = mainSeries.map((p) => p.value);
   const compareData = compareSeries
-    ? mainSeries.map((point) => {
-        const match = compareSeries.find(
-          (candidate) => candidate.t === point.t,
-        );
-        if (!match) {
-          return null;
-        }
-        return match.value;
+    ? mainSeries.map((p) => {
+        const m = compareSeries.find((c) => c.t === p.t);
+        return m ? m.value : null;
       })
     : null;
 
   const isArea = chartType === "area";
-
   const series = [
     {
       data: mainData,
@@ -75,7 +60,6 @@ function ChartPanel({
       ...(isArea ? { area: true } : {}),
     },
   ];
-
   if (compareData && compareMeta) {
     series.push({
       data: compareData,
@@ -88,26 +72,16 @@ function ChartPanel({
   }
 
   const stat = selectedMeta?.summary_statistics || {};
-
-  // Build a Set of indices to show as ticks: always include first and last,
-  // then fill up to MAX_X_TICKS - 2 equally-spaced indices between them.
-  const MAX_X_TICKS = 7;
   const n = xData.length;
   const shownTickIndices = (() => {
-    if (n <= MAX_X_TICKS) {
-      return new Set(Array.from({ length: n }, (_, i) => i));
-    }
-    const inner = MAX_X_TICKS - 2; // slots between first and last
+    if (n <= 7) return new Set(Array.from({ length: n }, (_, i) => i));
+    const inner = 5;
     const indices = new Set([0, n - 1]);
-    for (let i = 1; i <= inner; i++) {
+    for (let i = 1; i <= inner; i++)
       indices.add(Math.round((i * (n - 1)) / (inner + 1)));
-    }
     return indices;
   })();
-  const tickInterval = (_value, index) => shownTickIndices.has(index);
-
-  // Compute left margin wide enough to fit the longest Y-axis label.
-  // Each character is ~8px wide; add 20px padding.
+  const tickInterval = (_v, index) => shownTickIndices.has(index);
   const allValues = [...mainData, ...(compareData || [])].filter(
     (v) => v !== null && Number.isFinite(v),
   );
@@ -115,10 +89,11 @@ function ChartPanel({
     (max, v) => Math.max(max, Math.abs(v)),
     0,
   );
-  const longestLabel = new Intl.NumberFormat().format(maxAbsValue);
-  const dynamicLeft = Math.max(64, longestLabel.length * 8 + 20);
-
-  const sharedChartProps = {
+  const dynamicLeft = Math.max(
+    64,
+    new Intl.NumberFormat().format(maxAbsValue).length * 8 + 20,
+  );
+  const sharedProps = {
     height: 380,
     series,
     margin: { left: dynamicLeft, right: 24, top: 20, bottom: 64 },
@@ -136,55 +111,17 @@ function ChartPanel({
               : "Pick a dataset from the left panel."}
           </p>
         </div>
-
-        <div className="chart-controls">
-          <select
-            className="select-input compact"
-            value={chartType}
-            onChange={(event) => onChartTypeChange(event.target.value)}
-          >
-            <option value="line">Line Chart</option>
-            <option value="area">Area Chart</option>
-            <option value="bar">Bar Chart</option>
-          </select>
-
-          <select
-            className="select-input compact"
-            value={timeWindow}
-            onChange={(event) => onTimeWindowChange(event.target.value)}
-          >
-            <option value="all">All data</option>
-            <option value="25">25Y</option>
-            <option value="10">10Y</option>
-            <option value="5">5Y</option>
-            <option value="1">1Y</option>
-          </select>
-
-          <select
-            className="select-input compact"
-            value={movingWindow}
-            onChange={(event) => onMovingWindowChange(event.target.value)}
-          >
-            {MOVING_WINDOW_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-
-          {mainSeries.length > 0 && (
-            <button
-              type="button"
-              className="icon-btn"
-              onClick={downloadChart}
-              title="Download chart as PNG"
-            >
-              ↓ PNG
-            </button>
-          )}
-        </div>
+        <ChartControls
+          chartType={chartType}
+          onChartTypeChange={onChartTypeChange}
+          timeWindow={timeWindow}
+          onTimeWindowChange={onTimeWindowChange}
+          movingWindow={movingWindow}
+          onMovingWindowChange={onMovingWindowChange}
+          onDownload={downloadChart}
+          hasData={mainSeries.length > 0}
+        />
       </div>
-
       <div className="chart-wrap" ref={chartWrapRef}>
         {mainSeries.length === 0 ? (
           <div className="empty-state">
@@ -192,17 +129,16 @@ function ChartPanel({
           </div>
         ) : chartType === "bar" ? (
           <BarChart
-            {...sharedChartProps}
+            {...sharedProps}
             xAxis={[{ data: xData, scaleType: "band", tickInterval }]}
           />
         ) : (
           <LineChart
-            {...sharedChartProps}
+            {...sharedProps}
             xAxis={[{ data: xData, scaleType: "point", tickInterval }]}
           />
         )}
       </div>
-
       <div className="stat-grid">
         <StatChip label="Points" value={formatNumber(stat.n)} />
         <StatChip label="Min Date" value={formatDate(stat.min_t)} />
