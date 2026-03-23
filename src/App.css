@@ -318,6 +318,19 @@
   margin: 0;
 }
 
+.multi-check-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.1rem 0.25rem;
+}
+
+.multi-check-count {
+  font-size: 0.72rem;
+  color: var(--muted-ink);
+  font-weight: 500;
+}
+
 .multi-check-actions {
   display: flex;
   gap: 0.25rem;
@@ -336,13 +349,18 @@
   transition: all 0.1s;
 }
 
-.mca-btn:hover {
+.mca-btn:hover:not(:disabled) {
   background: var(--soft-line);
   color: var(--ink);
 }
 
+.mca-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
 .multi-check-list {
-  margin-top: 0.3rem;
+  margin-top: 0.2rem;
 }
 
 .multi-check-items {
@@ -385,6 +403,28 @@
   height: 13px;
   cursor: pointer;
   flex-shrink: 0;
+}
+
+/* Source items inside the checklist */
+.source-check-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.source-check-img {
+  height: 18px;
+  width: auto;
+  max-width: 52px;
+  object-fit: contain;
+  opacity: 0.7;
+  filter: grayscale(1);
+  flex-shrink: 0;
+}
+
+.multi-check-item.checked .source-check-img {
+  opacity: 1;
+  filter: grayscale(0);
 }
 
 .reset-btn {

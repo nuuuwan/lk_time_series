@@ -87,13 +87,22 @@ function HomePage() {
     const q = searchQuery.trim().toLowerCase();
 
     return metadata.filter((item) => {
-      if (filters.sources !== null && !filters.sources.includes(item.source_id)) {
+      if (
+        filters.sources !== null &&
+        !filters.sources.includes(item.source_id)
+      ) {
         return false;
       }
-      if (filters.categories !== null && !filters.categories.includes(item.category)) {
+      if (
+        filters.categories !== null &&
+        !filters.categories.includes(item.category)
+      ) {
         return false;
       }
-      if (filters.frequencies !== null && !filters.frequencies.includes(item.frequency_name)) {
+      if (
+        filters.frequencies !== null &&
+        !filters.frequencies.includes(item.frequency_name)
+      ) {
         return false;
       }
 

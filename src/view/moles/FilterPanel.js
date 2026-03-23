@@ -1,35 +1,20 @@
 import React from "react";
 
-function SourceLogo({ source, checked, onToggle }) {
-  return (
-    <button
-      type="button"
-      className={`source-logo-btn${checked ? " active" : ""}`}
-      onClick={() => onToggle(source.id)}
-      title={source.label}
-    >
-      {source.image ? (
-        <img
-          src={source.image}
-          alt={source.label}
-          className="source-logo-img"
-        />
-      ) : (
-        <span className="source-logo-fallback">{source.id}</span>
-      )}
-    </button>
-  );
-}
+function MultiCheckList({ items, selected, onChange, renderItem }) {
+  // selected: null = all pass, [...ids] = only these pass
+  const total = items.length;
+  const checkedCount = selected === null ? total : selected.length;
+  const allSelected = selected === null || checkedCount === total;
+  const noneSelected = checkedCount === 0;
 
-function MultiCheckList({ items, selected, onChange }) {
-  // selected: null = all pass, [] = none pass, [...ids] = only these pass
   function toggle(item) {
     if (selected === null) {
       onChange(items.filter((x) => x !== item));
     } else if (selected.includes(item)) {
       onChange(selected.filter((x) => x !== item));
     } else {
-      onChange([...selected, item]);
+      const next = [...selected, item];
+      onChange(next.length === total ? null : next);
     }
   }
 
@@ -37,26 +22,41 @@ function MultiCheckList({ items, selected, onChange }) {
 
   return (
     <div className="multi-check-list">
-      <div className="multi-check-actions">
-        <button type="button" className="mca-btn" onClick={() => onChange(null)}>
-          All
-        </button>
-        <button type="button" className="mca-btn" onClick={() => onChange([])}>
-          None
-        </button>
+      <div className="multi-check-header">
+        <span className="multi-check-count">
+          {checkedCount} of {total}
+        </span>
+        <div className="multi-check-actions">
+          <button
+            type="button"
+            className="mca-btn"
+            disabled={allSelected}
+            onClick={() => onChange(null)}
+          >
+            All
+          </button>
+          <button
+            type="button"
+            className="mca-btn"
+            disabled={noneSelected}
+            onClick={() => onChange([])}
+          >
+            None
+          </button>
+        </div>
       </div>
       <div className="multi-check-items">
         {items.map((item) => (
           <label
-            key={item}
-            className={`multi-check-item${isChecked(item) ? " checked" : ""}`}
+            key={typeof item === "object" ? item.id : item}
+            className={`multi-check-item${isChecked(typeof item === "object" ? item.id : item) ? " checked" : ""}`}
           >
             <input
               type="checkbox"
-              checked={isChecked(item)}
-              onChange={() => toggle(item)}
+              checked={isChecked(typeof item === "object" ? item.id : item)}
+              onChange={() => toggle(typeof item === "object" ? item.id : item)}
             />
-            <span>{item}</span>
+            {renderItem ? renderItem(item) : <span>{item}</span>}
           </label>
         ))}
       </div>
@@ -79,18 +79,6 @@ function FilterPanel({
     filters.sources !== null ||
     filters.categories !== null ||
     filters.frequencies !== null;
-
-  function toggleSource(id) {
-    const curr = filters.sources;
-    if (curr === null) {
-      // All currently included; deselect this one → all except this
-      onFilterChange("sources", options.sources.map((s) => s.id).filter((s) => s !== id));
-    } else if (curr.includes(id)) {
-      onFilterChange("sources", curr.filter((s) => s !== id));
-    } else {
-      onFilterChange("sources", [...curr, id]);
-    }
-  }
 
   return (
     <section className="panel filter-panel">
@@ -121,35 +109,24 @@ function FilterPanel({
 
       <div className="filter-section-header">
         <label className="field-label">Source</label>
-        <div className="multi-check-actions">
-          <button
-            type="button"
-            className="mca-btn"
-            onClick={() => onFilterChange("sources", null)}
-          >
-            All
-          </button>
-          <button
-            type="button"
-            className="mca-btn"
-            onClick={() => onFilterChange("sources", [])}
-          >
-            None
-          </button>
-        </div>
       </div>
-      <div className="source-logo-row">
-        {options.sources.map((source) => (
-          <SourceLogo
-            key={source.id}
-            source={source}
-            checked={
-              filters.sources === null || filters.sources.includes(source.id)
-            }
-            onToggle={toggleSource}
-          />
-        ))}
-      </div>
+      <MultiCheckList
+        items={options.sources}
+        selected={filters.sources}
+        onChange={(val) => onFilterChange("sources", val)}
+        renderItem={(source) => (
+          <span className="source-check-item">
+            {source.image && (
+              <img
+                src={source.image}
+                alt={source.label}
+                className="source-check-img"
+              />
+            )}
+            <span>{source.label}</span>
+          </span>
+        )}
+      />
 
       <div className="filter-section-header">
         <label className="field-label">Category</label>
