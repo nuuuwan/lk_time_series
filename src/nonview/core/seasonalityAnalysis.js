@@ -75,3 +75,55 @@ export function getSeasonalityInsightLines(series) {
     `Trough: ${troughLabel} — ${troughPct.toFixed(1)}% below mean.`,
   ];
 }
+
+export function getSeasonalityData(series) {
+  const pts = series.filter(
+    (p) => Number.isFinite(p.timeMs) && Number.isFinite(p.value),
+  );
+  if (pts.length < 16) return null;
+
+  const median = medianInterval(pts);
+  let count, labels, groupFn, periodLabel;
+
+  if (median < 50 * DAY_MS) {
+    count = 12;
+    labels = MONTH_NAMES;
+    periodLabel = "Monthly";
+    groupFn = (p) => new Date(p.timeMs).getUTCMonth();
+  } else if (median < 120 * DAY_MS) {
+    count = 4;
+    labels = ["Q1", "Q2", "Q3", "Q4"];
+    periodLabel = "Quarterly";
+    groupFn = (p) => Math.floor(new Date(p.timeMs).getUTCMonth() / 3);
+  } else {
+    return null;
+  }
+
+  const means = bucketMeans(pts, groupFn, count);
+  if (!means) return null;
+
+  const overallMean = means.reduce((s, v) => s + v, 0) / means.length;
+  if (overallMean === 0) return null;
+
+  const pctDeviations = means.map(
+    (v) => ((v - overallMean) / Math.abs(overallMean)) * 100,
+  );
+  const amplitude =
+    (Math.max(...pctDeviations) - Math.min(...pctDeviations)) / 2;
+
+  if (amplitude < 2.5) return null;
+
+  const maxPct = Math.max(...pctDeviations);
+  const minPct = Math.min(...pctDeviations);
+
+  return {
+    periodLabel,
+    labels,
+    pctDeviations,
+    amplitude,
+    peakLabel: labels[pctDeviations.indexOf(maxPct)],
+    troughLabel: labels[pctDeviations.indexOf(minPct)],
+    peakPct: maxPct,
+    troughPct: minPct,
+  };
+}

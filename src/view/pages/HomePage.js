@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getSeasonalityInsightLines } from "../../nonview/core/timeSeriesUtils";
 import useMetadata from "./useMetadata";
 import useSelectedDataset from "./useSelectedDataset";
 import HomePageLayout from "./HomePageLayout";
@@ -71,7 +70,6 @@ function HomePage() {
     if (mobileTab === "search") setMobileTab("chart");
   }, [selectedMeta?.key]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const seasonalityLines = getSeasonalityInsightLines(mainSeries);
   const onFilterChange = (field, value) =>
     setFilters((prev) => ({ ...prev, [field]: value }));
   const onResetFilters = () => {
@@ -103,7 +101,6 @@ function HomePage() {
       setTimeWindow={setTimeWindow}
       movingWindow={movingWindow}
       setMovingWindow={setMovingWindow}
-      seasonalityLines={seasonalityLines}
     />
   );
 }

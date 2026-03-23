@@ -9,4 +9,7 @@ export {
   formatDate,
   getDeterministicInsightLines,
 } from "./formatUtils";
-export { getSeasonalityInsightLines } from "./seasonalityAnalysis";
+export {
+  getSeasonalityInsightLines,
+  getSeasonalityData,
+} from "./seasonalityAnalysis";

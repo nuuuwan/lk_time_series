@@ -2,7 +2,7 @@ import React from "react";
 import FilterPanel from "../moles/FilterPanel";
 import DatasetList from "../moles/DatasetList";
 import ChartPanel from "../moles/ChartPanel";
-import AIPanel from "../moles/AIPanel";
+import SeasonalityPanel from "../moles/SeasonalityPanel";
 import DatasetDetails from "../moles/DatasetDetails";
 import { DATETIME_STR } from "../../nonview/cons/VERSION";
 
@@ -36,7 +36,6 @@ export default function HomePageLayout({
   setTimeWindow,
   movingWindow,
   setMovingWindow,
-  seasonalityLines,
 }) {
   return (
     <main className="app-shell">
@@ -128,7 +127,7 @@ export default function HomePageLayout({
             "layout-cell ai-cell" + (mobileTab === "ai" ? " mobile-show" : "")
           }
         >
-          <AIPanel seasonalityLines={seasonalityLines} />
+          <SeasonalityPanel mainSeries={mainSeries} />
         </div>
       </div>
       <footer className="footer-note">
