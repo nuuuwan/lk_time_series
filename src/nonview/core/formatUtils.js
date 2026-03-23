@@ -6,12 +6,11 @@ export const formatNumber = (value) => {
 export const formatDate = (isoDate) => {
   if (!isoDate) return "N/A";
   const date = new Date(isoDate);
-  if (!Number.isFinite(date.getTime())) return isoDate;
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  if (!Number.isFinite(date.getTime())) return String(isoDate);
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(date.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 };
 
 export const getDeterministicInsightLines = (series) => {
