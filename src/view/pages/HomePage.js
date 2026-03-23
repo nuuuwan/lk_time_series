@@ -5,6 +5,13 @@ import useMetadata from "./useMetadata";
 import useSelectedDataset from "./useSelectedDataset";
 import HomePageLayout from "./HomePageLayout";
 
+function toSlug(name) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function HomePage() {
   const { datasetKey } = useParams();
   const navigate = useNavigate();
@@ -35,23 +42,21 @@ function HomePage() {
     datasetLoading,
   } = useSelectedDataset(filteredMetadata, timeWindow, movingWindow);
 
-  // On mount / URL change: push URL key into selection state
+  // When metadata loads and a slug is in the URL, resolve it to a key
   useEffect(() => {
-    if (datasetKey) {
-      setSelectedKey(decodeURIComponent(datasetKey));
-    }
-  }, [datasetKey]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!datasetKey || metadata.length === 0) return;
+    const match = metadata.find((m) => toSlug(m.sub_category) === datasetKey);
+    if (match) setSelectedKey(match.key);
+  }, [datasetKey, metadata]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // When the selected dataset changes, update the URL
+  // When the selected dataset changes, update the URL to its kebab-case name
   useEffect(() => {
-    if (selectedMeta?.key) {
-      const encoded = encodeURIComponent(selectedMeta.key);
-      const target = `/${encoded}`;
-      if (decodeURIComponent(datasetKey || "") !== selectedMeta.key) {
-        navigate(target, { replace: true });
-      }
-      if (mobileTab === "search") setMobileTab("chart");
+    if (!selectedMeta?.sub_category) return;
+    const slug = toSlug(selectedMeta.sub_category);
+    if (datasetKey !== slug) {
+      navigate(`/${slug}`, { replace: true });
     }
+    if (mobileTab === "search") setMobileTab("chart");
   }, [selectedMeta?.key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const seasonalityLines = getSeasonalityInsightLines(mainSeries);
