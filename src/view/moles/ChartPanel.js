@@ -59,6 +59,23 @@ function ChartPanel({
 
   const stat = selectedMeta?.summary_statistics || {};
 
+  // Build a Set of indices to show as ticks: always include first and last,
+  // then fill up to MAX_X_TICKS - 2 equally-spaced indices between them.
+  const MAX_X_TICKS = 7;
+  const n = xData.length;
+  const shownTickIndices = (() => {
+    if (n <= MAX_X_TICKS) {
+      return new Set(Array.from({ length: n }, (_, i) => i));
+    }
+    const inner = MAX_X_TICKS - 2; // slots between first and last
+    const indices = new Set([0, n - 1]);
+    for (let i = 1; i <= inner; i++) {
+      indices.add(Math.round((i * (n - 1)) / (inner + 1)));
+    }
+    return indices;
+  })();
+  const tickInterval = (_value, index) => shownTickIndices.has(index);
+
   // Compute left margin wide enough to fit the longest Y-axis label.
   // Each character is ~8px wide; add 20px padding.
   const allValues = [...mainData, ...(compareData || [])].filter(
@@ -131,12 +148,12 @@ function ChartPanel({
         ) : chartType === "bar" ? (
           <BarChart
             {...sharedChartProps}
-            xAxis={[{ data: xData, scaleType: "band" }]}
+            xAxis={[{ data: xData, scaleType: "band", tickInterval }]}
           />
         ) : (
           <LineChart
             {...sharedChartProps}
-            xAxis={[{ data: xData, scaleType: "point" }]}
+            xAxis={[{ data: xData, scaleType: "point", tickInterval }]}
           />
         )}
       </div>
