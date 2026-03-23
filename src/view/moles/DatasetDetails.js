@@ -3,11 +3,20 @@ import {
   buildDatasetGithubUrl,
   buildDatasetRawUrl,
 } from "../../nonview/core/datasetApi";
-import { formatDate } from "../../nonview/core/timeSeriesUtils";
+import { formatDate, formatNumber } from "../../nonview/core/timeSeriesUtils";
 import {
   getSourceLabel,
   getSourceImage,
 } from "../../nonview/cons/DATA_SOURCE_IDX";
+
+function MetaField({ label, value }) {
+  return (
+    <div className="detail-field">
+      <span className="detail-label">{label}</span>
+      <strong className="detail-value">{value}</strong>
+    </div>
+  );
+}
 
 function DatasetDetails({ meta }) {
   if (!meta) {
@@ -19,9 +28,11 @@ function DatasetDetails({ meta }) {
     );
   }
 
+  const stat = meta.summary_statistics || {};
+
   return (
     <section className="panel dataset-details-panel">
-      <div className="details-header">
+      <div className="details-source-row">
         {getSourceImage(meta.source_id) && (
           <img
             src={getSourceImage(meta.source_id)}
@@ -29,44 +40,54 @@ function DatasetDetails({ meta }) {
             className="details-source-logo"
           />
         )}
-        <div>
-          <h2>Dataset Details</h2>
-          <p className="panel-subtitle">{getSourceLabel(meta.source_id)}</p>
-        </div>
+        <span className="details-source-name">{getSourceLabel(meta.source_id)}</span>
       </div>
-      <div className="details-grid">
-        <div>
-          <span className="detail-label">Category</span>
-          <strong>{meta.category}</strong>
+
+      <h2 className="details-title">{meta.sub_category}</h2>
+      <p className="details-category">{meta.category}</p>
+
+      <div className="details-stat-row">
+        <div className="details-stat">
+          <span className="details-stat-label">Data Points</span>
+          <strong className="details-stat-value">{formatNumber(stat.n)}</strong>
         </div>
-        <div>
-          <span className="detail-label">Sub-category</span>
-          <strong>{meta.sub_category}</strong>
+        <div className="details-stat">
+          <span className="details-stat-label">Date Range</span>
+          <strong className="details-stat-value">
+            {formatDate(stat.min_t)} – {formatDate(stat.max_t)}
+          </strong>
         </div>
-        <div>
-          <span className="detail-label">Frequency</span>
-          <strong>{meta.frequency_name}</strong>
-        </div>
-        <div>
-          <span className="detail-label">Unit</span>
-          <strong>{meta.unit || "N/A"}</strong>
-        </div>
-        <div>
-          <span className="detail-label">Scale</span>
-          <strong>{meta.scale || "N/A"}</strong>
-        </div>
-        <div>
-          <span className="detail-label">Last Updated</span>
-          <strong>{formatDate(meta.last_updated_time_str)}</strong>
+        <div className="details-stat">
+          <span className="details-stat-label">Value Range</span>
+          <strong className="details-stat-value">
+            {formatNumber(stat.min_value)} – {formatNumber(stat.max_value)}
+          </strong>
         </div>
       </div>
 
+      <div className="details-grid">
+        <MetaField label="Frequency" value={meta.frequency_name} />
+        <MetaField label="Unit" value={meta.unit || "N/A"} />
+        <MetaField label="Scale" value={meta.scale || "N/A"} />
+        <MetaField label="Last Updated" value={formatDate(meta.last_updated_time_str)} />
+      </div>
+
       <div className="link-row">
-        <a href={buildDatasetRawUrl(meta)} target="_blank" rel="noreferrer">
-          Open raw JSON
+        <a
+          className="link-btn"
+          href={buildDatasetRawUrl(meta)}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Raw JSON
         </a>
-        <a href={buildDatasetGithubUrl(meta)} target="_blank" rel="noreferrer">
-          Open GitHub file
+        <a
+          className="link-btn link-btn-secondary"
+          href={buildDatasetGithubUrl(meta)}
+          target="_blank"
+          rel="noreferrer"
+        >
+          GitHub
         </a>
       </div>
     </section>
@@ -74,3 +95,4 @@ function DatasetDetails({ meta }) {
 }
 
 export default DatasetDetails;
+

@@ -342,15 +342,15 @@ function HomePage() {
         </div>
 
         <div
-          className={`layout-cell ai-cell ${mobileTab === "ai" ? "mobile-show" : ""}`}
-        >
-          <AIPanel insightLines={insights} />
-        </div>
-
-        <div
           className={`layout-cell details-cell ${mobileTab === "details" ? "mobile-show" : ""}`}
         >
           <DatasetDetails meta={selectedMeta} />
+        </div>
+
+        <div
+          className={`layout-cell ai-cell ${mobileTab === "ai" ? "mobile-show" : ""}`}
+        >
+          <AIPanel insightLines={insights} />
         </div>
       </div>
 
