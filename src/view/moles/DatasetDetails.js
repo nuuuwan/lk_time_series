@@ -40,7 +40,9 @@ function DatasetDetails({ meta }) {
             className="details-source-logo"
           />
         )}
-        <span className="details-source-name">{getSourceLabel(meta.source_id)}</span>
+        <span className="details-source-name">
+          {getSourceLabel(meta.source_id)}
+        </span>
       </div>
 
       <h2 className="details-title">{meta.sub_category}</h2>
@@ -69,7 +71,10 @@ function DatasetDetails({ meta }) {
         <MetaField label="Frequency" value={meta.frequency_name} />
         <MetaField label="Unit" value={meta.unit || "N/A"} />
         <MetaField label="Scale" value={meta.scale || "N/A"} />
-        <MetaField label="Last Updated" value={formatDate(meta.last_updated_time_str)} />
+        <MetaField
+          label="Last Updated"
+          value={formatDate(meta.last_updated_time_str)}
+        />
       </div>
 
       <div className="link-row">
@@ -95,4 +100,3 @@ function DatasetDetails({ meta }) {
 }
 
 export default DatasetDetails;
-
