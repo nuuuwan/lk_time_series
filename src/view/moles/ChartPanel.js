@@ -63,6 +63,8 @@ function ChartPanel({
       })
     : null;
 
+  const isArea = chartType === "area";
+
   const series = [
     {
       data: mainData,
@@ -70,6 +72,7 @@ function ChartPanel({
       showMark: false,
       curve: "linear",
       color: "#0f766e",
+      ...(isArea ? { area: true } : {}),
     },
   ];
 
@@ -80,6 +83,7 @@ function ChartPanel({
       showMark: false,
       curve: "linear",
       color: "#b45309",
+      ...(isArea ? { area: true } : {}),
     });
   }
 
@@ -139,8 +143,9 @@ function ChartPanel({
             value={chartType}
             onChange={(event) => onChartTypeChange(event.target.value)}
           >
-            <option value="line">Line</option>
-            <option value="bar">Bar</option>
+            <option value="line">Line Chart</option>
+            <option value="area">Area Chart</option>
+            <option value="bar">Bar Chart</option>
           </select>
 
           <select
