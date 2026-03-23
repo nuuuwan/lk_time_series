@@ -4,6 +4,7 @@ import DatasetList from "../moles/DatasetList";
 import ChartPanel from "../moles/ChartPanel";
 import AIPanel from "../moles/AIPanel";
 import DatasetDetails from "../moles/DatasetDetails";
+import { DATETIME_STR } from "../../nonview/cons/VERSION";
 
 const MOBILE_TABS = [
   ["search", "Search"],
@@ -160,6 +161,7 @@ export default function HomePageLayout({
       <footer className="footer-note">
         Metadata source: lanka_data_timeseries summary.json | Dataset URLs
         generated from source_id, sub_category, and frequency_name.
+        <span className="footer-version">v{DATETIME_STR}</span>
       </footer>
     </main>
   );

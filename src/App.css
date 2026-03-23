@@ -611,6 +611,15 @@
   margin-top: 1rem;
   color: var(--muted-ink);
   font-size: 0.84rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.footer-version {
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 @media (max-width: 1240px) {
