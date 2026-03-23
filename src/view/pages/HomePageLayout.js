@@ -126,8 +126,7 @@ export default function HomePageLayout({
           </div>
           <div
             className={
-              "layout-cell ai-cell" +
-              (mobileTab === "ai" ? " mobile-show" : "")
+              "layout-cell ai-cell" + (mobileTab === "ai" ? " mobile-show" : "")
             }
           >
             <SeasonalityPanel mainSeries={mainSeries} />

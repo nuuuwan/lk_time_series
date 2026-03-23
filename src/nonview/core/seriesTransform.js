@@ -23,9 +23,14 @@ export const applyMovingAverage = (series, windowDays) => {
     return series;
   }
   const windowMs = Number(windowDays) * 24 * 60 * 60 * 1000;
+  const firstValidTimeMs = series.find((p) => Number.isFinite(p.timeMs))?.timeMs;
   return series.map((point, i) => {
     if (!Number.isFinite(point.timeMs)) return point;
     const windowStart = point.timeMs - windowMs;
+    // Require a full window's worth of data before drawing the smoothed line
+    if (firstValidTimeMs !== undefined && windowStart < firstValidTimeMs) {
+      return { ...point, value: null };
+    }
     let sum = 0;
     let count = 0;
     for (let j = i; j >= 0; j--) {
@@ -36,7 +41,7 @@ export const applyMovingAverage = (series, windowDays) => {
         count++;
       }
     }
-    return count > 0 ? { ...point, value: sum / count } : point;
+    return count > 0 ? { ...point, value: sum / count } : { ...point, value: null };
   });
 };
 
