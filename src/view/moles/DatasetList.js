@@ -26,10 +26,7 @@ function DatasetList({ datasets, selectedKey, onSelectDataset }) {
               </span>
               <span className="dataset-list-dates">
                 <span title="Latest value date">
-                  Latest: {formatDate(meta.summary_statistics?.max_t)}
-                </span>
-                <span title="Time updated">
-                  Updated: {formatDate(meta.last_updated_time_str)}
+                  {formatDate(meta.summary_statistics?.max_t)}
                 </span>
               </span>
             </button>
