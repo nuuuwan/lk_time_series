@@ -181,7 +181,8 @@ function HomePage() {
       return [];
     }
 
-    const parsed = parseSeriesFromRawData(mainDataset?.raw_data);
+    const sourceData = mainDataset?.cleaned_data || mainDataset?.raw_data;
+    const parsed = parseSeriesFromRawData(sourceData);
     const windowed = applyTimeWindow(parsed, timeWindow);
     return normalize ? normalizeSeries(windowed) : windowed;
   }, [selectedMeta, mainDataset, timeWindow, normalize]);
@@ -191,7 +192,8 @@ function HomePage() {
       return null;
     }
 
-    const parsed = parseSeriesFromRawData(compareDataset.raw_data);
+    const sourceData = compareDataset?.cleaned_data || compareDataset?.raw_data;
+    const parsed = parseSeriesFromRawData(sourceData);
     const windowed = applyTimeWindow(parsed, timeWindow);
     return normalize ? normalizeSeries(windowed) : windowed;
   }, [compareEnabled, compareMeta, compareDataset, timeWindow, normalize]);

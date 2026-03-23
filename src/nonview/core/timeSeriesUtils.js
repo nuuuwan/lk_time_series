@@ -12,8 +12,10 @@ const parseNumericValue = (rawValue) => {
     return null;
   }
 
-  const isBracketNegative = /^\(.+\)$/.test(trimmed);
-  const cleaned = trimmed
+  const unquoted = trimmed.replace(/^['"](.*)['"]$/, "$1");
+
+  const isBracketNegative = /^\(.+\)$/.test(unquoted);
+  const cleaned = unquoted
     .replace(/^\(/, "")
     .replace(/\)$/, "")
     .replace(/,/g, "")
@@ -33,7 +35,7 @@ const parseTimeToMs = (timeLabel) => {
     return NaN;
   }
 
-  const t = timeLabel.trim();
+  const t = timeLabel.trim().replace(/^['"](.*)['"]$/, "$1");
   if (!t) {
     return NaN;
   }
@@ -57,8 +59,38 @@ const parseTimeToMs = (timeLabel) => {
     ).getTime();
   }
 
+  const compactMonthlyMatch = t.match(/^(\d{4})(\d{2})$/);
+  if (compactMonthlyMatch) {
+    return new Date(
+      Date.UTC(
+        Number(compactMonthlyMatch[1]),
+        Number(compactMonthlyMatch[2]) - 1,
+        1,
+      ),
+    ).getTime();
+  }
+
+  const monthNameMatch = t.match(/^([A-Za-z]{3,9})[\s-]+(\d{4})$/);
+  if (monthNameMatch) {
+    const directDate = new Date(
+      `${monthNameMatch[1]} 1 ${monthNameMatch[2]}`,
+    ).getTime();
+    if (Number.isFinite(directDate)) {
+      return directDate;
+    }
+  }
+
   const directDate = new Date(t).getTime();
-  return Number.isFinite(directDate) ? directDate : NaN;
+  if (Number.isFinite(directDate)) {
+    return directDate;
+  }
+
+  const yearAnywhereMatch = t.match(/(19|20)\d{2}/);
+  if (yearAnywhereMatch) {
+    return new Date(Date.UTC(Number(yearAnywhereMatch[0]), 0, 1)).getTime();
+  }
+
+  return NaN;
 };
 
 export const parseSeriesFromRawData = (rawData) => {
