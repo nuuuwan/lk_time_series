@@ -7,11 +7,18 @@ import {
 
 function DatasetList({ datasets, selectedKey, onSelectDataset }) {
   const sorted = [...datasets]
-    .sort((a, b) =>
-      String(b.summary_statistics?.max_t || "").localeCompare(
-        String(a.summary_statistics?.max_t || ""),
-      ),
-    )
+    .sort((a, b) => {
+      // Normalise max_t: bare year → "YYYY-12-31" so it sorts correctly against ISO dates
+      const normalize = (t) => {
+        if (!t) return "";
+        const s = String(t);
+        if (/^\d{4}$/.test(s)) return s + "-12-31";
+        return s;
+      };
+      return normalize(b.summary_statistics?.max_t).localeCompare(
+        normalize(a.summary_statistics?.max_t),
+      );
+    })
     .slice(0, 200);
 
   return (

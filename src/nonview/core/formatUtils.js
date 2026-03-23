@@ -5,8 +5,19 @@ export const formatNumber = (value) => {
 
 export const formatDate = (isoDate) => {
   if (!isoDate) return "N/A";
+  // Bare year number (e.g. 2021): just return it as-is
+  if (
+    typeof isoDate === "number" &&
+    Number.isFinite(isoDate) &&
+    isoDate >= 1000 &&
+    isoDate <= 9999
+  ) {
+    return String(isoDate);
+  }
   const date = new Date(isoDate);
   if (!Number.isFinite(date.getTime())) return String(isoDate);
+  // If the value looks like a bare year string (e.g. "2021")
+  if (/^\d{4}$/.test(String(isoDate))) return String(isoDate);
   const y = date.getUTCFullYear();
   const m = String(date.getUTCMonth() + 1).padStart(2, "0");
   const d = String(date.getUTCDate()).padStart(2, "0");
