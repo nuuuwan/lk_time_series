@@ -64,9 +64,7 @@ function ChartPanel({
     return indices;
   })();
   const tickInterval = (_v, index) => shownTickIndices.has(index);
-  const allValues = mainData.filter(
-    (v) => v !== null && Number.isFinite(v),
-  );
+  const allValues = mainData.filter((v) => v !== null && Number.isFinite(v));
   const maxAbsValue = allValues.reduce(
     (max, v) => Math.max(max, Math.abs(v)),
     0,
