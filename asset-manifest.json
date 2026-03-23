@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/lk_time_series/static/css/main.2ba33dff.css",
-    "main.js": "/lk_time_series/static/js/main.e33b699e.js",
+    "main.js": "/lk_time_series/static/js/main.8ca902c4.js",
     "static/js/453.1e91fe2f.chunk.js": "/lk_time_series/static/js/453.1e91fe2f.chunk.js",
     "index.html": "/lk_time_series/index.html",
     "main.2ba33dff.css.map": "/lk_time_series/static/css/main.2ba33dff.css.map",
-    "main.e33b699e.js.map": "/lk_time_series/static/js/main.e33b699e.js.map",
+    "main.8ca902c4.js.map": "/lk_time_series/static/js/main.8ca902c4.js.map",
     "453.1e91fe2f.chunk.js.map": "/lk_time_series/static/js/453.1e91fe2f.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.2ba33dff.css",
-    "static/js/main.e33b699e.js"
+    "static/js/main.8ca902c4.js"
   ]
 }
