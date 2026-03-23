@@ -38,6 +38,7 @@ export default function HomePageLayout({
   movingWindow,
   setMovingWindow,
   insights,
+  seasonalityLines,
 }) {
   return (
     <main className="app-shell">
@@ -130,7 +131,10 @@ export default function HomePageLayout({
             "layout-cell ai-cell" + (mobileTab === "ai" ? " mobile-show" : "")
           }
         >
-          <AIPanel insightLines={insights} />
+          <AIPanel
+            insightLines={insights}
+            seasonalityLines={seasonalityLines}
+          />
         </div>
       </div>
       <footer className="footer-note">
