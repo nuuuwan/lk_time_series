@@ -5,7 +5,14 @@ function DatasetList({ datasets, selectedKey, onSelectDataset }) {
   return (
     <section className="panel dataset-list-panel">
       <div className="dataset-list" role="listbox" aria-label="Dataset results">
-        {datasets.slice(0, 200).map((meta) => (
+        {[...datasets]
+          .sort((a, b) =>
+            (b.last_updated_time_str || "").localeCompare(
+              a.last_updated_time_str || "",
+            ),
+          )
+          .slice(0, 200)
+          .map((meta) => (
           <button
             key={meta.key}
             type="button"
