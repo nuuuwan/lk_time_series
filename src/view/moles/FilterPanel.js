@@ -37,9 +37,9 @@ function FilterPanel({
         onChange={(event) => onFilterChange("source", event.target.value)}
       >
         <option value="all">All sources</option>
-        {options.sources.map((value) => (
-          <option key={value} value={value}>
-            {value}
+        {options.sources.map((source) => (
+          <option key={source.id} value={source.id}>
+            {source.label}
           </option>
         ))}
       </select>

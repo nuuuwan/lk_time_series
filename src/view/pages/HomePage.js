@@ -9,6 +9,7 @@ import {
   normalizeSeries,
   parseSeriesFromRawData,
 } from "../../nonview/core/timeSeriesUtils";
+import DATA_SOURCE_IDX from "../../nonview/cons/DATA_SOURCE_IDX";
 import FilterPanel from "../moles/FilterPanel";
 import DatasetList from "../moles/DatasetList";
 import ChartPanel from "../moles/ChartPanel";
@@ -62,9 +63,16 @@ function HomePage() {
     const categories = [
       ...new Set(metadata.map((item) => item.category).filter(Boolean)),
     ].sort();
+
     const sources = [
       ...new Set(metadata.map((item) => item.source_id).filter(Boolean)),
-    ].sort();
+    ]
+      .sort()
+      .map((sourceId) => ({
+        id: sourceId,
+        label: DATA_SOURCE_IDX[sourceId] || sourceId,
+      }));
+
     const frequencies = [
       ...new Set(metadata.map((item) => item.frequency_name).filter(Boolean)),
     ].sort();
