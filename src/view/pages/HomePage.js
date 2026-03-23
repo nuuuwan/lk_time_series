@@ -5,11 +5,12 @@ import useMetadata from "./useMetadata";
 import useSelectedDataset from "./useSelectedDataset";
 import HomePageLayout from "./HomePageLayout";
 
-function toSlug(name) {
-  return name
+function toSlug(meta) {
+  const name = meta.sub_category
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+  return `${meta.source_id}-${name}`;
 }
 
 function HomePage() {
@@ -45,14 +46,14 @@ function HomePage() {
   // When metadata loads and a slug is in the URL, resolve it to a key
   useEffect(() => {
     if (!datasetKey || metadata.length === 0) return;
-    const match = metadata.find((m) => toSlug(m.sub_category) === datasetKey);
+    const match = metadata.find((m) => toSlug(m) === datasetKey);
     if (match) setSelectedKey(match.key);
   }, [datasetKey, metadata]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // When the selected dataset changes, update the URL to its kebab-case name
   useEffect(() => {
     if (!selectedMeta?.sub_category) return;
-    const slug = toSlug(selectedMeta.sub_category);
+    const slug = toSlug(selectedMeta);
     if (datasetKey !== slug) {
       navigate(`/${slug}`, { replace: true });
     }
