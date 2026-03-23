@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import { BarChart, LineChart, ChartsReferenceLine } from "@mui/x-charts";
 import { toPng } from "html-to-image";
-import StatChip from "../atoms/StatChip";
 import ChartControls from "../atoms/ChartControls";
 import { formatNumber } from "../../nonview/core/timeSeriesUtils";
 
@@ -76,9 +75,6 @@ function ChartPanel({
   const finiteMain = mainData.filter((v) => v !== null && Number.isFinite(v));
   const maxVal = finiteMain.length ? Math.max(...finiteMain) : null;
   const minVal = finiteMain.length ? Math.min(...finiteMain) : null;
-  const actualN = finiteMain.length;
-  const actualMinDate = xData.length ? xData[0] : null;
-  const actualMaxDate = xData.length ? xData[xData.length - 1] : null;
 
   const sharedProps = {
     height: 380,
@@ -160,13 +156,6 @@ function ChartPanel({
             )}
           </LineChart>
         )}
-      </div>
-      <div className="stat-grid">
-        <StatChip label="Points" value={formatNumber(actualN)} />
-        <StatChip label="Min Date" value={actualMinDate} />
-        <StatChip label="Max Date" value={actualMaxDate} />
-        <StatChip label="Min Value" value={formatNumber(minVal)} />
-        <StatChip label="Max Value" value={formatNumber(maxVal)} />
       </div>
     </section>
   );
