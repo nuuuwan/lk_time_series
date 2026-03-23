@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: 'IBM Plex Sans', 'Source Sans 3', 'Trebuchet MS', sans-serif;
+  font-family: "IBM Plex Sans", "Source Sans 3", "Trebuchet MS", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -10,6 +10,6 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
