@@ -8,8 +8,6 @@ import { formatDate, formatNumber } from "../../nonview/core/timeSeriesUtils";
 function ChartPanel({
   selectedMeta,
   mainSeries,
-  compareSeries,
-  compareMeta,
   chartType,
   onChartTypeChange,
   timeWindow,
@@ -42,12 +40,6 @@ function ChartPanel({
       : point.t || "Point " + (i + 1),
   );
   const mainData = mainSeries.map((p) => p.value);
-  const compareData = compareSeries
-    ? mainSeries.map((p) => {
-        const m = compareSeries.find((c) => c.t === p.t);
-        return m ? m.value : null;
-      })
-    : null;
 
   const isArea = chartType === "area";
   const series = [
@@ -60,16 +52,6 @@ function ChartPanel({
       ...(isArea ? { area: true } : {}),
     },
   ];
-  if (compareData && compareMeta) {
-    series.push({
-      data: compareData,
-      label: compareMeta.sub_category,
-      showMark: false,
-      curve: "linear",
-      color: "#b45309",
-      ...(isArea ? { area: true } : {}),
-    });
-  }
 
   const stat = selectedMeta?.summary_statistics || {};
   const n = xData.length;
@@ -82,7 +64,7 @@ function ChartPanel({
     return indices;
   })();
   const tickInterval = (_v, index) => shownTickIndices.has(index);
-  const allValues = [...mainData, ...(compareData || [])].filter(
+  const allValues = mainData.filter(
     (v) => v !== null && Number.isFinite(v),
   );
   const maxAbsValue = allValues.reduce(
