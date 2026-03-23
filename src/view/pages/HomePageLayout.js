@@ -3,6 +3,7 @@ import FilterPanel from "../moles/FilterPanel";
 import DatasetList from "../moles/DatasetList";
 import ChartPanel from "../moles/ChartPanel";
 import SeasonalityPanel from "../moles/SeasonalityPanel";
+import ForecastPanel from "../moles/ForecastPanel";
 import DatasetDetails from "../moles/DatasetDetails";
 import { DATETIME_STR } from "../../nonview/cons/VERSION";
 
@@ -114,20 +115,24 @@ export default function HomePageLayout({
             onMovingWindowChange={setMovingWindow}
           />
         </div>
-        <div
-          className={
-            "layout-cell details-cell" +
-            (mobileTab === "details" ? " mobile-show" : "")
-          }
-        >
-          <DatasetDetails meta={selectedMeta} mainSeries={mainSeries} />
-        </div>
-        <div
-          className={
-            "layout-cell ai-cell" + (mobileTab === "ai" ? " mobile-show" : "")
-          }
-        >
-          <SeasonalityPanel mainSeries={mainSeries} />
+        <div className="layout-right-col">
+          <div
+            className={
+              "layout-cell details-cell" +
+              (mobileTab === "details" ? " mobile-show" : "")
+            }
+          >
+            <DatasetDetails meta={selectedMeta} mainSeries={mainSeries} />
+          </div>
+          <div
+            className={
+              "layout-cell ai-cell" +
+              (mobileTab === "ai" ? " mobile-show" : "")
+            }
+          >
+            <SeasonalityPanel mainSeries={mainSeries} />
+            <ForecastPanel mainSeries={mainSeries} />
+          </div>
         </div>
       </div>
       <footer className="footer-note">

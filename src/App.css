@@ -56,6 +56,12 @@
   align-content: start;
 }
 
+.layout-right-col {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
 .chart-cell,
 .ai-cell,
 .details-cell {
@@ -787,4 +793,35 @@ details[open] > .filter-summary::before {
   .chart-controls {
     flex-wrap: wrap;
   }
+}
+
+/* ForecastPanel */
+.forecast-meta-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.forecast-meta-table td {
+  padding: 0.25rem 0.4rem;
+  vertical-align: top;
+}
+
+.forecast-meta-label {
+  color: var(--muted-ink);
+  white-space: nowrap;
+  width: 40%;
+}
+
+.forecast-meta-value {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.forecast-note {
+  font-size: 0.8rem;
+  color: var(--muted-ink);
+  line-height: 1.5;
+  margin: 0.3rem 0 0;
 }

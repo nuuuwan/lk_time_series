@@ -128,3 +128,25 @@ function fallbackTrend(pts, steps, medianGap) {
     value: intercept + slope * (n + i),
   }));
 }
+
+// Returns metadata about the model used for the last forecast, for display purposes.
+export function getForecastMeta(series) {
+  const pts = series.filter(
+    (p) =>
+      Number.isFinite(p.timeMs) && p.value !== null && Number.isFinite(p.value),
+  );
+  if (pts.length < 4) return null;
+
+  const maxLag = 24;
+  const lag = Math.min(maxLag, Math.max(1, pts.length - 10));
+  const steps = Math.max(5, Math.min(20, Math.round(pts.length * 0.1)));
+  const usesAR = pts.length >= lag + 10 + 1;
+
+  // Estimate median gap in days
+  const gaps = pts.slice(1).map((p, i) => p.timeMs - pts[i].timeMs);
+  gaps.sort((a, b) => a - b);
+  const medianGapMs = gaps[Math.floor(gaps.length / 2)];
+  const medianGapDays = Math.round(medianGapMs / 86_400_000);
+
+  return { lag, steps, usesAR, nPoints: pts.length, medianGapDays };
+}
