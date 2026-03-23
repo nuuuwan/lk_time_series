@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import {
-  getDeterministicInsightLines,
-  getSeasonalityInsightLines,
-} from "../../nonview/core/timeSeriesUtils";
+import { getSeasonalityInsightLines } from "../../nonview/core/timeSeriesUtils";
 import useMetadata from "./useMetadata";
 import useSelectedDataset from "./useSelectedDataset";
 import HomePageLayout from "./HomePageLayout";
@@ -33,7 +30,6 @@ function HomePage() {
     datasetError,
     datasetLoading,
   } = useSelectedDataset(filteredMetadata, timeWindow, movingWindow);
-  const insights = getDeterministicInsightLines(mainSeries);
   const seasonalityLines = getSeasonalityInsightLines(mainSeries);
   const onFilterChange = (field, value) =>
     setFilters((prev) => ({ ...prev, [field]: value }));
@@ -67,7 +63,6 @@ function HomePage() {
       setTimeWindow={setTimeWindow}
       movingWindow={movingWindow}
       setMovingWindow={setMovingWindow}
-      insights={insights}
       seasonalityLines={seasonalityLines}
     />
   );
