@@ -69,3 +69,19 @@ Based on the existing project tree:
 ## Product Goal
 
 Build the best public interface for Sri Lankan time-series intelligence: searchable, visual, explainable, and AI-assisted.
+
+## Source Data
+
+The frontend reads dataset metadata from:
+
+- <https://raw.githubusercontent.com/nuuuwan/lanka_data_timeseries/refs/heads/data/summary.json>
+
+Individual datasets are available in the following URL format:
+
+- <https://github.com/nuuuwan/lanka_data_timeseries/blob/data/sources/><source_id>/<source_id>.<sub_category>.<frequency_name>.json
+
+Where:
+
+- `<source_id>` identifies the source namespace.
+- `<sub_category>` identifies the dataset subgroup under a source.
+- `<frequency_name>` identifies temporal frequency (for example: daily, monthly, yearly).
