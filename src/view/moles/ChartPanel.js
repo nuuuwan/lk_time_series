@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { BarChart, LineChart } from "@mui/x-charts";
+import { BarChart, LineChart, ChartsReferenceLine } from "@mui/x-charts";
 import { toPng } from "html-to-image";
 import StatChip from "../atoms/StatChip";
 import ChartControls from "../atoms/ChartControls";
@@ -93,6 +93,11 @@ function ChartPanel({
     64,
     new Intl.NumberFormat().format(maxAbsValue).length * 8 + 20,
   );
+
+  const finiteMain = mainData.filter((v) => v !== null && Number.isFinite(v));
+  const maxVal = finiteMain.length ? Math.max(...finiteMain) : null;
+  const minVal = finiteMain.length ? Math.min(...finiteMain) : null;
+
   const sharedProps = {
     height: 380,
     series,
@@ -131,12 +136,50 @@ function ChartPanel({
           <BarChart
             {...sharedProps}
             xAxis={[{ data: xData, scaleType: "band", tickInterval }]}
-          />
+          >
+            {maxVal !== null && (
+              <ChartsReferenceLine
+                y={maxVal}
+                label={`Max: ${formatNumber(maxVal)}`}
+                lineStyle={{ stroke: "#0f766e", strokeDasharray: "4 3" }}
+                labelStyle={{ fill: "#0f766e", fontSize: 11, fontWeight: 600 }}
+                labelAlign="end"
+              />
+            )}
+            {minVal !== null && (
+              <ChartsReferenceLine
+                y={minVal}
+                label={`Min: ${formatNumber(minVal)}`}
+                lineStyle={{ stroke: "#b45309", strokeDasharray: "4 3" }}
+                labelStyle={{ fill: "#b45309", fontSize: 11, fontWeight: 600 }}
+                labelAlign="end"
+              />
+            )}
+          </BarChart>
         ) : (
           <LineChart
             {...sharedProps}
             xAxis={[{ data: xData, scaleType: "point", tickInterval }]}
-          />
+          >
+            {maxVal !== null && (
+              <ChartsReferenceLine
+                y={maxVal}
+                label={`Max: ${formatNumber(maxVal)}`}
+                lineStyle={{ stroke: "#0f766e", strokeDasharray: "4 3" }}
+                labelStyle={{ fill: "#0f766e", fontSize: 11, fontWeight: 600 }}
+                labelAlign="end"
+              />
+            )}
+            {minVal !== null && (
+              <ChartsReferenceLine
+                y={minVal}
+                label={`Min: ${formatNumber(minVal)}`}
+                lineStyle={{ stroke: "#b45309", strokeDasharray: "4 3" }}
+                labelStyle={{ fill: "#b45309", fontSize: 11, fontWeight: 600 }}
+                labelAlign="end"
+              />
+            )}
+          </LineChart>
         )}
       </div>
       <div className="stat-grid">
