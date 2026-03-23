@@ -412,13 +412,17 @@
   list-style: none;
   user-select: none;
 }
-.filter-summary::-webkit-details-marker { display: none; }
+.filter-summary::-webkit-details-marker {
+  display: none;
+}
 .filter-summary::before {
   content: "▸";
   font-size: 0.65rem;
   transition: transform 0.15s;
 }
-details[open] > .filter-summary::before { transform: rotate(90deg); }
+details[open] > .filter-summary::before {
+  transform: rotate(90deg);
+}
 .filter-badge {
   background: var(--accent);
   color: #fff;
