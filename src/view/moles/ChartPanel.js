@@ -105,6 +105,8 @@ function ChartPanel({
   const finiteMain = mainData.filter((v) => v !== null && Number.isFinite(v));
   const maxVal = finiteMain.length ? Math.max(...finiteMain) : null;
   const minVal = finiteMain.length ? Math.min(...finiteMain) : null;
+  const maxDate = maxVal !== null ? xData[mainData.indexOf(maxVal)] : null;
+  const minDate = minVal !== null ? xData[mainData.indexOf(minVal)] : null;
   const lineColor = isSmoothed ? "#e07b39" : "#0f766e";
 
   const smoothSx = isSmoothed
@@ -157,7 +159,7 @@ function ChartPanel({
             {maxVal !== null && (
               <ChartsReferenceLine
                 y={maxVal}
-                label={`Max: ${formatNumber(maxVal)}`}
+                label={`Max: ${formatNumber(maxVal)} (${maxDate})`}
                 lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
                 labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
                 labelAlign="end"
@@ -166,7 +168,7 @@ function ChartPanel({
             {minVal !== null && (
               <ChartsReferenceLine
                 y={minVal}
-                label={`Min: ${formatNumber(minVal)}`}
+                label={`Min: ${formatNumber(minVal)} (${minDate})`}
                 lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
                 labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
                 labelAlign="end"
@@ -181,7 +183,7 @@ function ChartPanel({
             {maxVal !== null && (
               <ChartsReferenceLine
                 y={maxVal}
-                label={`Max: ${formatNumber(maxVal)}`}
+                label={`Max: ${formatNumber(maxVal)} (${maxDate})`}
                 lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
                 labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
                 labelAlign="end"
@@ -190,7 +192,7 @@ function ChartPanel({
             {minVal !== null && (
               <ChartsReferenceLine
                 y={minVal}
-                label={`Min: ${formatNumber(minVal)}`}
+                label={`Min: ${formatNumber(minVal)} (${minDate})`}
                 lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
                 labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
                 labelAlign="end"
@@ -205,8 +207,12 @@ function ChartPanel({
             <span className="chart-legend-item" style={{ opacity: 0.5 }}>
               <svg width="36" height="10">
                 <line
-                  x1="0" y1="5" x2="36" y2="5"
-                  stroke="#0f766e" strokeWidth="2"
+                  x1="0"
+                  y1="5"
+                  x2="36"
+                  y2="5"
+                  stroke="#0f766e"
+                  strokeWidth="2"
                   style={{ strokeDasharray: "6 4" }}
                 />
               </svg>
@@ -214,7 +220,14 @@ function ChartPanel({
             </span>
             <span className="chart-legend-item">
               <svg width="36" height="10">
-                <line x1="0" y1="5" x2="36" y2="5" stroke="#e07b39" strokeWidth="2" />
+                <line
+                  x1="0"
+                  y1="5"
+                  x2="36"
+                  y2="5"
+                  stroke="#e07b39"
+                  strokeWidth="2"
+                />
               </svg>
               {smoothLabel}
             </span>
@@ -222,7 +235,14 @@ function ChartPanel({
         ) : (
           <span className="chart-legend-item">
             <svg width="36" height="10">
-              <line x1="0" y1="5" x2="36" y2="5" stroke="#0f766e" strokeWidth="2" />
+              <line
+                x1="0"
+                y1="5"
+                x2="36"
+                y2="5"
+                stroke="#0f766e"
+                strokeWidth="2"
+              />
             </svg>
             {datasetName}
           </span>
