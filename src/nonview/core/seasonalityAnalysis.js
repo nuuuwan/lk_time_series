@@ -1,5 +1,3 @@
-import { formatNumber } from "./formatUtils";
-
 const MONTH_NAMES = [
   "Jan",
   "Feb",
@@ -68,12 +66,12 @@ export function getSeasonalityInsightLines(series) {
 
   const peakLabel = labels[means.indexOf(maxVal)];
   const troughLabel = labels[means.indexOf(minVal)];
-  const peakDiff = maxVal - overallMean;
-  const troughDiff = minVal - overallMean;
+  const peakPct = ((maxVal - overallMean) / Math.abs(overallMean)) * 100;
+  const troughPct = ((minVal - overallMean) / Math.abs(overallMean)) * 100;
 
   return [
     `${periodLabel} seasonality detected (amplitude ±${amplitude.toFixed(0)}% around mean).`,
-    `Peak: ${peakLabel} — +${formatNumber(peakDiff)} above mean.`,
-    `Trough: ${troughLabel} — ${formatNumber(troughDiff)} below mean.`,
+    `Peak: ${peakLabel} — +${peakPct.toFixed(1)}% above mean.`,
+    `Trough: ${troughLabel} — ${troughPct.toFixed(1)}% below mean.`,
   ];
 }
