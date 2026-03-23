@@ -134,8 +134,6 @@ export default function HomePageLayout({
         </div>
       </div>
       <footer className="footer-note">
-        Metadata source: lanka_data_timeseries summary.json | Dataset URLs
-        generated from source_id, sub_category, and frequency_name.
         <span className="footer-version">v{DATETIME_STR}</span>
       </footer>
     </main>
