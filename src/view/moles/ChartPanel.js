@@ -69,9 +69,13 @@ function ChartPanel({
     new Date(p.timeMs).toISOString().slice(0, 10),
   );
   const forecastValues = forecastPoints.map((p) => p.value);
+  const lastActualValue = mainData.length ? mainData[mainData.length - 1] : null;
   const fullXData = hasForecast ? [...xData, ...forecastXData] : xData;
   const pad = hasForecast ? Array(forecastSteps).fill(null) : [];
-  const histPad = hasForecast ? Array(xData.length).fill(null) : [];
+  // histPad leaves the last slot as the actual value so the forecast line connects
+  const histPad = hasForecast
+    ? [...Array(xData.length - 1).fill(null), lastActualValue]
+    : [];
 
   const isArea = chartType === "area";
   const series = [
