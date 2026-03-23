@@ -7,33 +7,33 @@ function DatasetList({ datasets, selectedKey, onSelectDataset }) {
       <div className="dataset-list" role="listbox" aria-label="Dataset results">
         {[...datasets]
           .sort((a, b) =>
-            (b.last_updated_time_str || "").localeCompare(
-              a.last_updated_time_str || "",
+            String(b.summary_statistics?.max_t || "").localeCompare(
+              String(a.summary_statistics?.max_t || ""),
             ),
           )
           .slice(0, 200)
           .map((meta) => (
-          <button
-            key={meta.key}
-            type="button"
-            className={`dataset-list-item ${meta.key === selectedKey ? "active" : ""}`}
-            onClick={() => onSelectDataset(meta.key)}
-          >
-            <strong>{meta.sub_category}</strong>
-            <span>{meta.category}</span>
-            <span>
-              {meta.source_id} • {meta.frequency_name}
-            </span>
-            <span className="dataset-list-dates">
-              <span title="Latest value date">
-                Latest: {formatDate(meta.summary_statistics?.max_t)}
+            <button
+              key={meta.key}
+              type="button"
+              className={`dataset-list-item ${meta.key === selectedKey ? "active" : ""}`}
+              onClick={() => onSelectDataset(meta.key)}
+            >
+              <strong>{meta.sub_category}</strong>
+              <span>{meta.category}</span>
+              <span>
+                {meta.source_id} • {meta.frequency_name}
               </span>
-              <span title="Time updated">
-                Updated: {formatDate(meta.last_updated_time_str)}
+              <span className="dataset-list-dates">
+                <span title="Latest value date">
+                  Latest: {formatDate(meta.summary_statistics?.max_t)}
+                </span>
+                <span title="Time updated">
+                  Updated: {formatDate(meta.last_updated_time_str)}
+                </span>
               </span>
-            </span>
-          </button>
-        ))}
+            </button>
+          ))}
       </div>
 
       {datasets.length > 200 && (
