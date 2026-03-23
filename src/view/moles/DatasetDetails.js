@@ -4,6 +4,7 @@ import {
   buildDatasetRawUrl,
 } from "../../nonview/core/datasetApi";
 import { formatDate } from "../../nonview/core/timeSeriesUtils";
+import { getSourceLabel, getSourceImage } from "../../nonview/cons/DATA_SOURCE_IDX";
 
 function DatasetDetails({ meta }) {
   if (!meta) {
@@ -17,12 +18,20 @@ function DatasetDetails({ meta }) {
 
   return (
     <section className="panel dataset-details-panel">
-      <h2>Dataset Details</h2>
-      <div className="details-grid">
+      <div className="details-header">
+        {getSourceImage(meta.source_id) && (
+          <img
+            src={getSourceImage(meta.source_id)}
+            alt={getSourceLabel(meta.source_id)}
+            className="details-source-logo"
+          />
+        )}
         <div>
-          <span className="detail-label">Source</span>
-          <strong>{meta.source_id}</strong>
+          <h2>Dataset Details</h2>
+          <p className="panel-subtitle">{getSourceLabel(meta.source_id)}</p>
         </div>
+      </div>
+      <div className="details-grid">
         <div>
           <span className="detail-label">Category</span>
           <strong>{meta.category}</strong>

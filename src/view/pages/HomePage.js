@@ -70,7 +70,8 @@ function HomePage() {
       .sort()
       .map((sourceId) => ({
         id: sourceId,
-        label: DATA_SOURCE_IDX[sourceId] || sourceId,
+        label: DATA_SOURCE_IDX[sourceId]?.label || sourceId,
+        image: DATA_SOURCE_IDX[sourceId]?.image || null,
       }));
 
     const frequencies = [

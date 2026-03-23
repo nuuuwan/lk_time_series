@@ -262,6 +262,82 @@
   display: none;
 }
 
+.source-logo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.source-logo-btn {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: #fff;
+  padding: 0.3rem;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.15s, border-color 0.15s;
+}
+
+.source-logo-btn:hover {
+  opacity: 1;
+}
+
+.source-logo-btn.active {
+  border-color: var(--accent);
+  opacity: 1;
+}
+
+.source-logo-img {
+  display: block;
+  height: 36px;
+  width: auto;
+  max-width: 80px;
+  object-fit: contain;
+}
+
+.source-logo-fallback {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted-ink);
+  padding: 0.2rem 0.4rem;
+}
+
+.source-selected-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted-ink);
+  margin: 0.3rem 0 0.6rem;
+}
+
+.source-clear-btn {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.details-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.details-source-logo {
+  height: 48px;
+  width: auto;
+  max-width: 96px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .footer-note {
   margin-top: 1rem;
   color: var(--muted-ink);

@@ -1,5 +1,22 @@
 import React from "react";
 
+function SourceLogo({ source, selected, onSelect }) {
+  return (
+    <button
+      type="button"
+      className={`source-logo-btn${selected ? " active" : ""}`}
+      onClick={() => onSelect(selected ? "all" : source.id)}
+      title={source.label}
+    >
+      {source.image ? (
+        <img src={source.image} alt={source.label} className="source-logo-img" />
+      ) : (
+        <span className="source-logo-fallback">{source.id}</span>
+      )}
+    </button>
+  );
+}
+
 function FilterPanel({
   filters,
   onFilterChange,
@@ -27,22 +44,29 @@ function FilterPanel({
         placeholder="Search source, category, sub-category, frequency"
       />
 
-      <label className="field-label" htmlFor="source-filter">
-        Source
-      </label>
-      <select
-        id="source-filter"
-        className="select-input"
-        value={filters.source}
-        onChange={(event) => onFilterChange("source", event.target.value)}
-      >
-        <option value="all">All sources</option>
+      <label className="field-label">Source</label>
+      <div className="source-logo-row">
         {options.sources.map((source) => (
-          <option key={source.id} value={source.id}>
-            {source.label}
-          </option>
+          <SourceLogo
+            key={source.id}
+            source={source}
+            selected={filters.source === source.id}
+            onSelect={(id) => onFilterChange("source", id)}
+          />
         ))}
-      </select>
+      </div>
+      {filters.source !== "all" && (
+        <p className="source-selected-label">
+          {options.sources.find((s) => s.id === filters.source)?.label}
+          <button
+            type="button"
+            className="source-clear-btn"
+            onClick={() => onFilterChange("source", "all")}
+          >
+            ✕ Clear
+          </button>
+        </p>
+      )}
 
       <label className="field-label" htmlFor="category-filter">
         Category
