@@ -168,6 +168,24 @@
   font-size: 0.9rem;
 }
 
+.icon-btn {
+  border: 1px solid var(--soft-line);
+  background: none;
+  color: var(--muted-ink);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.28rem 0.55rem;
+  border-radius: 4px;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: all 0.1s;
+}
+.icon-btn:hover {
+  background: var(--soft-line);
+  color: var(--ink);
+}
+
 .chart-wrap {
   margin-top: 0.45rem;
 }

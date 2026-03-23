@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useRef } from "react";
 import { BarChart, LineChart } from "@mui/x-charts";
+import { toPng } from "html-to-image";
 import StatChip from "../atoms/StatChip";
 import { formatDate, formatNumber } from "../../nonview/core/timeSeriesUtils";
 
@@ -26,6 +27,20 @@ function ChartPanel({
   normalize,
   onNormalizeChange,
 }) {
+  const chartWrapRef = useRef(null);
+
+  function downloadChart() {
+    const node = chartWrapRef.current;
+    if (!node) return;
+    const label = selectedMeta?.sub_category || "chart";
+    const filename = `${label.replace(/[^a-z0-9]/gi, "_")}.png`;
+    toPng(node, { backgroundColor: "#ffffff", pixelRatio: 2, skipFonts: true }).then((dataUrl) => {
+      const link = document.createElement("a");
+      link.download = filename;
+      link.href = dataUrl;
+      link.click();
+    });
+  }
   const xData = mainSeries.map((point, index) => {
     if (Number.isFinite(point.timeMs)) {
       return new Date(point.timeMs).toISOString().slice(0, 10);
@@ -160,10 +175,21 @@ function ChartPanel({
             />
             Normalize
           </label>
+
+          {mainSeries.length > 0 && (
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={downloadChart}
+              title="Download chart as PNG"
+            >
+              ↓ PNG
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="chart-wrap">
+      <div className="chart-wrap" ref={chartWrapRef}>
         {mainSeries.length === 0 ? (
           <div className="empty-state">
             No chart points available for this dataset.
