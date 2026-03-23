@@ -1,20 +1,104 @@
+const parseNumericValue = (rawValue) => {
+  if (typeof rawValue === "number") {
+    return Number.isFinite(rawValue) ? rawValue : null;
+  }
+
+  if (typeof rawValue !== "string") {
+    return null;
+  }
+
+  const trimmed = rawValue.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const isBracketNegative = /^\(.+\)$/.test(trimmed);
+  const cleaned = trimmed
+    .replace(/^\(/, "")
+    .replace(/\)$/, "")
+    .replace(/,/g, "")
+    .replace(/%/g, "")
+    .replace(/\s+/g, "");
+
+  const numericValue = Number(cleaned);
+  if (!Number.isFinite(numericValue)) {
+    return null;
+  }
+
+  return isBracketNegative ? -numericValue : numericValue;
+};
+
+const parseTimeToMs = (timeLabel) => {
+  if (typeof timeLabel !== "string") {
+    return NaN;
+  }
+
+  const t = timeLabel.trim();
+  if (!t) {
+    return NaN;
+  }
+
+  const quarterMatch = t.match(/^(\d{4})\s*-?\s*[Qq]([1-4])$/);
+  if (quarterMatch) {
+    const year = Number(quarterMatch[1]);
+    const quarter = Number(quarterMatch[2]);
+    return new Date(Date.UTC(year, (quarter - 1) * 3, 1)).getTime();
+  }
+
+  const yearlyMatch = t.match(/^\d{4}$/);
+  if (yearlyMatch) {
+    return new Date(Date.UTC(Number(t), 0, 1)).getTime();
+  }
+
+  const monthlyMatch = t.match(/^(\d{4})-(\d{2})$/);
+  if (monthlyMatch) {
+    return new Date(
+      Date.UTC(Number(monthlyMatch[1]), Number(monthlyMatch[2]) - 1, 1),
+    ).getTime();
+  }
+
+  const directDate = new Date(t).getTime();
+  return Number.isFinite(directDate) ? directDate : NaN;
+};
+
 export const parseSeriesFromRawData = (rawData) => {
   if (!rawData || typeof rawData !== "object") {
     return [];
   }
 
-  return Object.entries(rawData)
-    .map(([t, value]) => {
-      const numericValue = Number(value);
-      const timeMs = new Date(t).getTime();
+  const entries = Array.isArray(rawData)
+    ? rawData.map((item, index) => [String(item?.t ?? index), item?.value])
+    : Object.entries(rawData);
+
+  return entries
+    .map(([t, value], index) => {
+      const numericValue = parseNumericValue(value);
+      const timeMs = parseTimeToMs(String(t));
       return {
-        t,
+        t: String(t),
         timeMs,
-        value: Number.isFinite(numericValue) ? numericValue : null,
+        value: numericValue,
+        index,
       };
     })
-    .filter((point) => Number.isFinite(point.timeMs) && point.value !== null)
-    .sort((a, b) => a.timeMs - b.timeMs);
+    .filter((point) => point.value !== null)
+    .sort((a, b) => {
+      const aHasTime = Number.isFinite(a.timeMs);
+      const bHasTime = Number.isFinite(b.timeMs);
+
+      if (aHasTime && bHasTime) {
+        return a.timeMs - b.timeMs;
+      }
+
+      if (aHasTime) {
+        return -1;
+      }
+      if (bHasTime) {
+        return 1;
+      }
+
+      return a.index - b.index;
+    });
 };
 
 export const applyTimeWindow = (series, years) => {
@@ -22,7 +106,8 @@ export const applyTimeWindow = (series, years) => {
     return series;
   }
 
-  const latest = series.at(-1);
+  const datedPoints = series.filter((point) => Number.isFinite(point.timeMs));
+  const latest = datedPoints.at(-1);
   if (!latest) {
     return series;
   }
@@ -30,7 +115,10 @@ export const applyTimeWindow = (series, years) => {
   const threshold = new Date(latest.timeMs);
   threshold.setFullYear(threshold.getFullYear() - Number(years));
 
-  return series.filter((point) => point.timeMs >= threshold.getTime());
+  return series.filter(
+    (point) =>
+      !Number.isFinite(point.timeMs) || point.timeMs >= threshold.getTime(),
+  );
 };
 
 export const normalizeSeries = (series) => {

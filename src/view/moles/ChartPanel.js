@@ -15,7 +15,12 @@ function ChartPanel({
   normalize,
   onNormalizeChange,
 }) {
-  const xData = mainSeries.map((point) => point.timeMs);
+  const xData = mainSeries.map((point, index) => {
+    if (Number.isFinite(point.timeMs)) {
+      return new Date(point.timeMs).toISOString().slice(0, 10);
+    }
+    return point.t || `Point ${index + 1}`;
+  });
   const mainData = mainSeries.map((point) =>
     normalize ? point.normalizedValue : point.value,
   );
@@ -111,8 +116,6 @@ function ChartPanel({
               {
                 data: xData,
                 scaleType: "band",
-                valueFormatter: (value) =>
-                  new Date(value).toISOString().slice(0, 10),
               },
             ]}
             series={series}
@@ -124,8 +127,7 @@ function ChartPanel({
             xAxis={[
               {
                 data: xData,
-                valueFormatter: (value) =>
-                  new Date(value).toISOString().slice(0, 10),
+                scaleType: "point",
               },
             ]}
             series={series}
