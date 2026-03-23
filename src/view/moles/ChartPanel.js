@@ -3,6 +3,7 @@ import { BarChart, LineChart, ChartsReferenceLine } from "@mui/x-charts";
 import { toPng } from "html-to-image";
 import ChartControls from "../atoms/ChartControls";
 import { formatNumber } from "../../nonview/core/timeSeriesUtils";
+import { forecastLinear } from "../../nonview/core/forecastSeries";
 
 function ChartPanel({
   selectedMeta,
@@ -56,13 +57,29 @@ function ChartPanel({
   };
   const smoothLabel = WINDOW_LABELS[movingWindow] || `${movingWindow}-day avg`;
 
+  // Forecast
+  const forecastSteps = Math.max(
+    5,
+    Math.min(20, Math.round(mainSeries.length * 0.1)),
+  );
+  const forecastPoints =
+    mainSeries.length >= 2 ? forecastLinear(mainSeries, forecastSteps) : [];
+  const hasForecast = forecastPoints.length > 0;
+  const forecastXData = forecastPoints.map((p) =>
+    new Date(p.timeMs).toISOString().slice(0, 10),
+  );
+  const forecastValues = forecastPoints.map((p) => p.value);
+  const fullXData = hasForecast ? [...xData, ...forecastXData] : xData;
+  const pad = hasForecast ? Array(forecastSteps).fill(null) : [];
+  const histPad = hasForecast ? Array(xData.length).fill(null) : [];
+
   const isArea = chartType === "area";
   const series = [
     ...(isSmoothed && rawData
       ? [
           {
             id: "raw",
-            data: rawData,
+            data: [...rawData, ...pad],
             label: datasetName,
             showMark: false,
             curve: "linear",
@@ -73,16 +90,29 @@ function ChartPanel({
       : []),
     {
       id: "main",
-      data: mainData,
+      data: [...mainData, ...pad],
       label: isSmoothed ? smoothLabel : datasetName,
       showMark: false,
       curve: "linear",
       color: isSmoothed ? "#e07b39" : "#0f766e",
       ...(isArea && !isSmoothed ? { area: true } : {}),
     },
+    ...(hasForecast
+      ? [
+          {
+            id: "forecast",
+            data: [...histPad, ...forecastValues],
+            label: "Forecast",
+            showMark: false,
+            curve: "linear",
+            color: "#94a3b8",
+            valueFormatter: (v) => (v !== null ? formatNumber(v) + " ★" : ""),
+          },
+        ]
+      : []),
   ];
 
-  const n = xData.length;
+  const n = fullXData.length;
   const shownTickIndices = (() => {
     if (n <= 7) return new Set(Array.from({ length: n }, (_, i) => i));
     const inner = 5;
@@ -109,14 +139,23 @@ function ChartPanel({
   const minDate = minVal !== null ? xData[mainData.indexOf(minVal)] : null;
   const lineColor = isSmoothed ? "#e07b39" : "#0f766e";
 
-  const smoothSx = isSmoothed
-    ? {
-        "& .MuiLineElement-series-raw": {
-          strokeDasharray: "4 3",
-          strokeOpacity: 0.4,
-        },
-      }
-    : {};
+  const smoothSx = {
+    ...(isSmoothed
+      ? {
+          "& .MuiLineElement-series-raw": {
+            strokeDasharray: "4 3",
+            strokeOpacity: 0.4,
+          },
+        }
+      : {}),
+    ...(hasForecast
+      ? {
+          "& .MuiLineElement-series-forecast": {
+            strokeDasharray: "6 4",
+          },
+        }
+      : {}),
+  };
 
   const sharedProps = {
     height: 360,
@@ -154,7 +193,7 @@ function ChartPanel({
         ) : chartType === "bar" ? (
           <BarChart
             {...sharedProps}
-            xAxis={[{ data: xData, scaleType: "band", tickInterval }]}
+            xAxis={[{ data: fullXData, scaleType: "band", tickInterval }]}
           >
             {maxVal !== null && (
               <ChartsReferenceLine
@@ -178,7 +217,7 @@ function ChartPanel({
         ) : (
           <LineChart
             {...sharedProps}
-            xAxis={[{ data: xData, scaleType: "point", tickInterval }]}
+            xAxis={[{ data: fullXData, scaleType: "point", tickInterval }]}
           >
             {maxVal !== null && (
               <ChartsReferenceLine
@@ -245,6 +284,22 @@ function ChartPanel({
               />
             </svg>
             {datasetName}
+          </span>
+        )}
+        {hasForecast && (
+          <span className="chart-legend-item" style={{ opacity: 0.7 }}>
+            <svg width="36" height="10">
+              <line
+                x1="0"
+                y1="5"
+                x2="36"
+                y2="5"
+                stroke="#94a3b8"
+                strokeWidth="2"
+                style={{ strokeDasharray: "6 4" }}
+              />
+            </svg>
+            Forecast
           </span>
         )}
       </div>
