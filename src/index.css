@@ -1,6 +1,10 @@
 body {
   margin: 0;
-  font-family: "Quicksand", system-ui, -apple-system, sans-serif;
+  font-family:
+    "Quicksand",
+    system-ui,
+    -apple-system,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 14px;
@@ -15,11 +19,15 @@ code {
   font-family: "GeistMono", "Fira Code", ui-monospace, monospace;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-button, select, input {
+button,
+select,
+input {
   font-family: inherit;
   font-size: inherit;
 }
