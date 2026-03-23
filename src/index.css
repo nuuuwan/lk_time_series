@@ -1,8 +1,10 @@
 body {
   margin: 0;
-  font-family: "IBM Plex Sans", "Source Sans 3", "Trebuchet MS", sans-serif;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 #root {
@@ -10,6 +12,14 @@ body {
 }
 
 code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-family: "GeistMono", "Fira Code", ui-monospace, monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+button, select, input {
+  font-family: inherit;
+  font-size: inherit;
 }
