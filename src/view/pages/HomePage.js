@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { getSeasonalityInsightLines } from "../../nonview/core/timeSeriesUtils";
 import useMetadata from "./useMetadata";
 import useSelectedDataset from "./useSelectedDataset";
 import HomePageLayout from "./HomePageLayout";
 
 function HomePage() {
+  const { datasetKey } = useParams();
+  const navigate = useNavigate();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     sources: null,
@@ -30,6 +34,26 @@ function HomePage() {
     datasetError,
     datasetLoading,
   } = useSelectedDataset(filteredMetadata, timeWindow, movingWindow);
+
+  // On mount / URL change: push URL key into selection state
+  useEffect(() => {
+    if (datasetKey) {
+      setSelectedKey(decodeURIComponent(datasetKey));
+    }
+  }, [datasetKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // When the selected dataset changes, update the URL
+  useEffect(() => {
+    if (selectedMeta?.key) {
+      const encoded = encodeURIComponent(selectedMeta.key);
+      const target = `/${encoded}`;
+      if (decodeURIComponent(datasetKey || "") !== selectedMeta.key) {
+        navigate(target, { replace: true });
+      }
+      if (mobileTab === "search") setMobileTab("chart");
+    }
+  }, [selectedMeta?.key]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const seasonalityLines = getSeasonalityInsightLines(mainSeries);
   const onFilterChange = (field, value) =>
     setFilters((prev) => ({ ...prev, [field]: value }));
