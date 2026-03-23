@@ -68,10 +68,12 @@ export function getSeasonalityInsightLines(series) {
 
   const peakLabel = labels[means.indexOf(maxVal)];
   const troughLabel = labels[means.indexOf(minVal)];
+  const peakDiff = maxVal - overallMean;
+  const troughDiff = minVal - overallMean;
 
   return [
     `${periodLabel} seasonality detected (amplitude ±${amplitude.toFixed(0)}% around mean).`,
-    `Peak: ${peakLabel} — avg ${formatNumber(maxVal)}.`,
-    `Trough: ${troughLabel} — avg ${formatNumber(minVal)}.`,
+    `Peak: ${peakLabel} — +${formatNumber(peakDiff)} above mean.`,
+    `Trough: ${troughLabel} — ${formatNumber(troughDiff)} below mean.`,
   ];
 }
