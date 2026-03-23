@@ -20,12 +20,6 @@ function FilterPanel({
   return (
     <section className="panel filter-panel">
       <div className="panel-head-row">
-        <div>
-          <h2>Discovery</h2>
-          <p className="panel-subtitle">
-            Filter and search across the full catalog.
-          </p>
-        </div>
         {isFiltered && (
           <button type="button" className="reset-btn" onClick={onReset}>
             Reset

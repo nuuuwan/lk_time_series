@@ -44,7 +44,6 @@ export default function HomePageLayout({
       <header className="top-nav">
         <div>
           <h1>Sri Lanka Time Series</h1>
-          <p>Search and visualize 3500+ public datasets.</p>
         </div>
         <div className="top-nav-right"></div>
       </header>

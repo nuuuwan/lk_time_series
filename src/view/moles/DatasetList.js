@@ -4,9 +4,6 @@ import { formatDate } from "../../nonview/core/timeSeriesUtils";
 function DatasetList({ datasets, selectedKey, onSelectDataset }) {
   return (
     <section className="panel dataset-list-panel">
-      <h2>Dataset List</h2>
-      <p className="panel-subtitle">Select a dataset to visualize.</p>
-
       <div className="dataset-list" role="listbox" aria-label="Dataset results">
         {datasets.slice(0, 200).map((meta) => (
           <button

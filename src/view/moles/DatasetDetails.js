@@ -14,7 +14,6 @@ function DatasetDetails({ meta }) {
   if (!meta) {
     return (
       <section className="panel dataset-details-panel">
-        <h2>Dataset Details</h2>
         <div className="empty-state">Select a dataset to view details.</div>
       </section>
     );

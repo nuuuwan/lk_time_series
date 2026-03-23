@@ -88,14 +88,11 @@ function ChartPanel({
   return (
     <section className="panel chart-panel">
       <div className="panel-head-row">
-        <div>
-          <h2>Visualization</h2>
-          <p className="panel-subtitle">
-            {selectedMeta
-              ? selectedMeta.sub_category
-              : "Pick a dataset from the left panel."}
-          </p>
-        </div>
+        <p className="panel-subtitle">
+          {selectedMeta
+            ? selectedMeta.sub_category
+            : "Pick a dataset from the left panel."}
+        </p>
         <ChartControls
           chartType={chartType}
           onChartTypeChange={onChartTypeChange}
