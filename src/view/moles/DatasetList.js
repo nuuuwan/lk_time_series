@@ -1,38 +1,50 @@
 import React from "react";
 import { formatDate } from "../../nonview/core/timeSeriesUtils";
+import {
+  getSourceLabel,
+  getSourceImage,
+} from "../../nonview/cons/DATA_SOURCE_IDX";
 
 function DatasetList({ datasets, selectedKey, onSelectDataset }) {
+  const sorted = [...datasets]
+    .sort((a, b) =>
+      String(b.summary_statistics?.max_t || "").localeCompare(
+        String(a.summary_statistics?.max_t || ""),
+      ),
+    )
+    .slice(0, 200);
+
   return (
     <section className="panel dataset-list-panel">
       <div className="dataset-list" role="listbox" aria-label="Dataset results">
-        {[...datasets]
-          .sort((a, b) =>
-            String(b.summary_statistics?.max_t || "").localeCompare(
-              String(a.summary_statistics?.max_t || ""),
-            ),
-          )
-          .slice(0, 200)
-          .map((meta) => (
-            <button
-              key={meta.key}
-              type="button"
-              className={`dataset-list-item ${meta.key === selectedKey ? "active" : ""}`}
-              onClick={() => onSelectDataset(meta.key)}
-            >
+        {sorted.map((meta, idx) => (
+          <button
+            key={meta.key}
+            type="button"
+            className={`dataset-list-item ${meta.key === selectedKey ? "active" : ""}`}
+            onClick={() => onSelectDataset(meta.key)}
+          >
+            <span className="dataset-list-num">{idx + 1}</span>
+            <span className="dataset-list-body">
               <strong>{meta.sub_category}</strong>
-              <span>{meta.category}</span>
-              <span>
-                {meta.source_id} • {meta.frequency_name}
+              <span className="dataset-list-meta">
+                {getSourceImage(meta.source_id) && (
+                  <img
+                    src={getSourceImage(meta.source_id)}
+                    alt={getSourceLabel(meta.source_id)}
+                    className="dataset-list-source-img"
+                  />
+                )}
+                <span>{getSourceLabel(meta.source_id)}</span>
+                <span className="dataset-list-sep">·</span>
+                <span>{meta.frequency_name}</span>
+                <span className="dataset-list-sep">·</span>
+                <span>{formatDate(meta.summary_statistics?.max_t)}</span>
               </span>
-              <span className="dataset-list-dates">
-                <span title="Latest value date">
-                  {formatDate(meta.summary_statistics?.max_t)}
-                </span>
-              </span>
-            </button>
-          ))}
+            </span>
+          </button>
+        ))}
       </div>
-
       {datasets.length > 200 && (
         <p className="panel-note">
           Showing first 200 results. Narrow filters to see specific datasets.
