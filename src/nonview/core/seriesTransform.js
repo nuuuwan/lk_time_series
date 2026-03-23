@@ -23,7 +23,9 @@ export const applyMovingAverage = (series, windowDays) => {
     return series;
   }
   const windowMs = Number(windowDays) * 24 * 60 * 60 * 1000;
-  const firstValidTimeMs = series.find((p) => Number.isFinite(p.timeMs))?.timeMs;
+  const firstValidTimeMs = series.find((p) =>
+    Number.isFinite(p.timeMs),
+  )?.timeMs;
   return series.map((point, i) => {
     if (!Number.isFinite(point.timeMs)) return point;
     const windowStart = point.timeMs - windowMs;
@@ -41,7 +43,9 @@ export const applyMovingAverage = (series, windowDays) => {
         count++;
       }
     }
-    return count > 0 ? { ...point, value: sum / count } : { ...point, value: null };
+    return count > 0
+      ? { ...point, value: sum / count }
+      : { ...point, value: null };
   });
 };
 

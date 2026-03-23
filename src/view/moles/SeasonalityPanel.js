@@ -1,5 +1,5 @@
 import React from "react";
-import { BarChart, ChartsReferenceLine } from "@mui/x-charts";
+import { ScatterChart, ChartsReferenceLine } from "@mui/x-charts";
 import { getSeasonalityData } from "../../nonview/core/timeSeriesUtils";
 
 function SeasonalityPanel({ mainSeries }) {
@@ -10,7 +10,8 @@ function SeasonalityPanel({ mainSeries }) {
   const {
     periodLabel,
     labels,
-    pctDeviations,
+    count,
+    allPoints,
     peakLabel,
     peakPct,
     troughLabel,
@@ -20,34 +21,35 @@ function SeasonalityPanel({ mainSeries }) {
   const series = [
     {
       id: "seasonality",
-      data: pctDeviations,
-      label: "% vs mean",
-      valueFormatter: (v) => (v !== null ? v.toFixed(1) + "%" : ""),
-      color: "#0f766e",
+      data: allPoints,
+      valueFormatter: ({ x, y }) =>
+        `${labels[x] ?? x}: ${y.toFixed(1)}% vs mean`,
+      color: "rgba(15, 118, 110, 0.1)",
+      markerSize: 6,
     },
   ];
 
   return (
     <section className="panel seasonality-panel">
       <p className="panel-subtitle">{periodLabel} Seasonality</p>
-      <BarChart
+      <ScatterChart
         height={220}
         series={series}
-        xAxis={[{ data: labels, scaleType: "band" }]}
+        xAxis={[{
+          min: -0.5,
+          max: count - 0.5,
+          tickInterval: labels.map((_, i) => i),
+          valueFormatter: (v) => labels[Math.round(v)] ?? "",
+        }]}
         yAxis={[{ label: "% vs mean" }]}
         margin={{ left: 52, right: 16, top: 12, bottom: 36 }}
         slotProps={{ legend: { hidden: true } }}
-        sx={{
-          "& .MuiBarElement-series-seasonality": {
-            fill: (d) => (d?.value >= 0 ? "#0f766e" : "#e07b39"),
-          },
-        }}
       >
         <ChartsReferenceLine
           y={0}
           lineStyle={{ stroke: "#94a3b8", strokeWidth: 1 }}
         />
-      </BarChart>
+      </ScatterChart>
       <ul className="insight-list">
         <li>
           Peak: <strong>{peakLabel}</strong> — +{peakPct.toFixed(1)}% above mean

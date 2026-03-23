@@ -116,10 +116,18 @@ export function getSeasonalityData(series) {
   const maxPct = Math.max(...pctDeviations);
   const minPct = Math.min(...pctDeviations);
 
+  const allPoints = pts.map((p, i) => ({
+    id: `pt-${i}`,
+    x: groupFn(p),
+    y: ((p.value - overallMean) / Math.abs(overallMean)) * 100,
+  }));
+
   return {
     periodLabel,
     labels,
+    count,
     pctDeviations,
+    allPoints,
     amplitude,
     peakLabel: labels[pctDeviations.indexOf(maxPct)],
     troughLabel: labels[pctDeviations.indexOf(minPct)],
