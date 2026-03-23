@@ -1,6 +1,27 @@
 import React from "react";
 import MultiCheckList from "../atoms/MultiCheckList";
 
+function FilterSection({ label, selected, items, onChange, renderItem }) {
+  const isActive = selected !== null;
+  const activeCount = isActive ? selected.length : null;
+  return (
+    <details className="filter-details" open={isActive || undefined}>
+      <summary className="filter-summary">
+        {label}
+        {isActive && activeCount > 0 && (
+          <span className="filter-badge">{activeCount}</span>
+        )}
+      </summary>
+      <MultiCheckList
+        items={items}
+        selected={selected}
+        onChange={onChange}
+        renderItem={renderItem}
+      />
+    </details>
+  );
+}
+
 function FilterPanel({
   filters,
   onFilterChange,
@@ -19,29 +40,17 @@ function FilterPanel({
 
   return (
     <section className="panel filter-panel">
-      <div className="panel-head-row">
-        {isFiltered && (
-          <button type="button" className="reset-btn" onClick={onReset}>
-            Reset
-          </button>
-        )}
-      </div>
-      <label className="field-label" htmlFor="search-input">
-        Global Search
-      </label>
       <input
         id="search-input"
         className="text-input"
         value={searchQuery}
-        onChange={(event) => onSearchQueryChange(event.target.value)}
-        placeholder="Search source, category, sub-category, frequency"
+        onChange={(e) => onSearchQueryChange(e.target.value)}
+        placeholder="Search datasets…"
       />
-      <div className="filter-section-header">
-        <label className="field-label">Source</label>
-      </div>
-      <MultiCheckList
-        items={options.sources}
+      <FilterSection
+        label="Source"
         selected={filters.sources}
+        items={options.sources}
         onChange={(val) => onFilterChange("sources", val)}
         renderItem={(source) => (
           <span className="source-check-item">
@@ -56,25 +65,27 @@ function FilterPanel({
           </span>
         )}
       />
-      <div className="filter-section-header">
-        <label className="field-label">Category</label>
-      </div>
-      <MultiCheckList
-        items={options.categories}
+      <FilterSection
+        label="Category"
         selected={filters.categories}
+        items={options.categories}
         onChange={(val) => onFilterChange("categories", val)}
       />
-      <div className="filter-section-header">
-        <label className="field-label">Frequency</label>
-      </div>
-      <MultiCheckList
-        items={options.frequencies}
+      <FilterSection
+        label="Frequency"
         selected={filters.frequencies}
+        items={options.frequencies}
         onChange={(val) => onFilterChange("frequencies", val)}
       />
       <div className="result-meta">
-        <span>{resultCount.toLocaleString()} matched</span>
-        <span>{datasetCount.toLocaleString()} total</span>
+        <span>
+          {resultCount.toLocaleString()} / {datasetCount.toLocaleString()}
+        </span>
+        {isFiltered && (
+          <button type="button" className="reset-btn" onClick={onReset}>
+            Reset
+          </button>
+        )}
       </div>
     </section>
   );
