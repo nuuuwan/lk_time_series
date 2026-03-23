@@ -16,11 +16,6 @@ const MOBILE_TABS = [
 export default function HomePageLayout({
   mobileTab,
   setMobileTab,
-  compareEnabled,
-  setCompareEnabled,
-  compareMeta,
-  compareCandidates,
-  setCompareKey,
   metadataLoading,
   metadataError,
   datasetError,
@@ -36,7 +31,6 @@ export default function HomePageLayout({
   selectedMeta,
   setSelectedKey,
   mainSeries,
-  compareSeries,
   chartType,
   setChartType,
   timeWindow,
@@ -50,30 +44,9 @@ export default function HomePageLayout({
       <header className="top-nav">
         <div>
           <h1>Sri Lanka Time Series</h1>
-          <p>Search, visualize, and compare 3500+ public datasets.</p>
+          <p>Search and visualize 3500+ public datasets.</p>
         </div>
         <div className="top-nav-right">
-          <label className="toggle-label">
-            <input
-              type="checkbox"
-              checked={compareEnabled}
-              onChange={(e) => setCompareEnabled(e.target.checked)}
-            />
-            Compare mode
-          </label>
-          {compareEnabled && (
-            <select
-              className="select-input"
-              value={compareMeta?.key || ""}
-              onChange={(e) => setCompareKey(e.target.value)}
-            >
-              {compareCandidates.map((item) => (
-                <option key={item.key} value={item.key}>
-                  {item.sub_category} ({item.frequency_name})
-                </option>
-              ))}
-            </select>
-          )}
         </div>
       </header>
       <nav className="mobile-tabs" aria-label="Mobile panel tabs">
@@ -132,8 +105,6 @@ export default function HomePageLayout({
           <ChartPanel
             selectedMeta={selectedMeta}
             mainSeries={mainSeries}
-            compareSeries={compareEnabled ? compareSeries : null}
-            compareMeta={compareEnabled ? compareMeta : null}
             chartType={chartType}
             onChartTypeChange={setChartType}
             timeWindow={timeWindow}

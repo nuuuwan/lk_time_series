@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { getDeterministicInsightLines } from "../../nonview/core/timeSeriesUtils";
 import useMetadata from "./useMetadata";
 import useSelectedDataset from "./useSelectedDataset";
-import useCompareDataset from "./useCompareDataset";
 import HomePageLayout from "./HomePageLayout";
 
 function HomePage() {
@@ -12,7 +11,6 @@ function HomePage() {
     categories: null,
     frequencies: null,
   });
-  const [compareEnabled, setCompareEnabled] = useState(false);
   const [chartType, setChartType] = useState("line");
   const [timeWindow, setTimeWindow] = useState("all");
   const [movingWindow, setMovingWindow] = useState("none");
@@ -32,15 +30,6 @@ function HomePage() {
     datasetError,
     datasetLoading,
   } = useSelectedDataset(filteredMetadata, timeWindow, movingWindow);
-  const { compareCandidates, compareMeta, setCompareKey, compareSeries } =
-    useCompareDataset(
-      filteredMetadata,
-      selectedMeta,
-      compareEnabled,
-      timeWindow,
-      movingWindow,
-    );
-
   const insights = getDeterministicInsightLines(mainSeries);
   const onFilterChange = (field, value) =>
     setFilters((prev) => ({ ...prev, [field]: value }));
@@ -53,11 +42,6 @@ function HomePage() {
     <HomePageLayout
       mobileTab={mobileTab}
       setMobileTab={setMobileTab}
-      compareEnabled={compareEnabled}
-      setCompareEnabled={setCompareEnabled}
-      compareMeta={compareMeta}
-      compareCandidates={compareCandidates}
-      setCompareKey={setCompareKey}
       metadataLoading={metadataLoading}
       metadataError={metadataError}
       datasetError={datasetError}
@@ -73,7 +57,6 @@ function HomePage() {
       selectedMeta={selectedMeta}
       setSelectedKey={setSelectedKey}
       mainSeries={mainSeries}
-      compareSeries={compareSeries}
       chartType={chartType}
       setChartType={setChartType}
       timeWindow={timeWindow}
