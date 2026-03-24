@@ -61,13 +61,13 @@ function DatasetDetails({ meta, mainSeries = [] }) {
         <div className="details-stat">
           <span className="details-stat-label">Date Range</span>
           <strong className="details-stat-value">
-            {formatDate(stat.min_t)} – {formatDate(stat.max_t)}
+            {formatDate(stat.min_t)} to {formatDate(stat.max_t)}
           </strong>
         </div>
         <div className="details-stat">
           <span className="details-stat-label">Value Range</span>
           <strong className="details-stat-value">
-            {formatNumber(stat.min_value)} – {formatNumber(stat.max_value)}
+            {formatNumber(stat.min_value)} to {formatNumber(stat.max_value)}
           </strong>
         </div>
       </div>
