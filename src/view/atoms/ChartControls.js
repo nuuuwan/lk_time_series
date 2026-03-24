@@ -1,38 +1,30 @@
 import React from "react";
 
 const MOVING_WINDOW_OPTIONS = [
-  { value: "365", label: "Year" },
-  { value: "3650", label: "Decade" },
+  { value: "365", label: "Year avg", minYears: 2 },
+  { value: "3650", label: "Decade avg", minYears: 12 },
 ];
 
 function ChartControls({
-  timeWindow,
-  onTimeWindowChange,
   movingWindow,
   onMovingWindowChange,
   onDownload,
   hasData,
+  dataSpanYears,
 }) {
+  const availableMovingWindows = MOVING_WINDOW_OPTIONS.filter(
+    (opt) => dataSpanYears >= opt.minYears,
+  );
+
   return (
     <div className="chart-controls">
-      <select
-        className="select-input compact"
-        value={timeWindow}
-        onChange={(e) => onTimeWindowChange(e.target.value)}
-      >
-        <option value="all">All data</option>
-        <option value="25">25Y</option>
-        <option value="10">10Y</option>
-        <option value="5">5Y</option>
-        <option value="1">1Y</option>
-      </select>
       <select
         className="select-input compact"
         value={movingWindow}
         onChange={(e) => onMovingWindowChange(e.target.value)}
       >
-        <option value="none">No rolling window</option>
-        {MOVING_WINDOW_OPTIONS.map((opt) => (
+        <option value="none">No avg</option>
+        {availableMovingWindows.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
           </option>

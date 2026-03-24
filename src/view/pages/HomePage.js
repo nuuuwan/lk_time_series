@@ -83,6 +83,7 @@ function HomePage() {
     if (datasetKey !== slug) {
       navigate(`/${slug}`, { replace: true });
     }
+    setTimeWindow("all"); // reset time window for the new dataset
     if (mobileTab === "search") setMobileTab("chart");
   }, [selectedMeta?.key]); // eslint-disable-line react-hooks/exhaustive-deps
 

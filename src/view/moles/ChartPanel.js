@@ -1,9 +1,15 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { LineChart, ChartsReferenceLine } from "@mui/x-charts";
+import { Slider } from "@mui/material";
 import { toPng } from "html-to-image";
 import ChartControls from "../atoms/ChartControls";
 import { formatNumber } from "../../nonview/core/timeSeriesUtils";
 import { forecastLinear } from "../../nonview/core/forecastSeries";
+
+function parseYear(t) {
+  const m = String(t || "").match(/^(\d{4})/);
+  return m ? parseInt(m[1], 10) : null;
+}
 
 function ChartPanel({
   selectedMeta,
@@ -38,6 +44,57 @@ function ChartPanel({
       ? new Date(point.timeMs).toISOString().slice(0, 10)
       : point.t || "Point " + (i + 1),
   );
+  const timeMsValues = mainSeries.map((p) => p.timeMs).filter(Number.isFinite);
+  const dataSpanYears =
+    timeMsValues.length >= 2
+      ? (Math.max(...timeMsValues) - Math.min(...timeMsValues)) /
+        (365.25 * 24 * 3600 * 1000)
+      : 0;
+
+  // Full dataset range for slider (from metadata, not windowed series)
+  const now = new Date().getFullYear();
+  const fullMinYear =
+    parseYear(selectedMeta?.summary_statistics?.min_t) ?? now - 10;
+  const fullMaxYear =
+    parseYear(selectedMeta?.summary_statistics?.max_t) ?? now;
+
+  // Derive committed slider value from timeWindow prop
+  const committedSlider = Array.isArray(timeWindow)
+    ? [
+        new Date(timeWindow[0]).getUTCFullYear(),
+        new Date(timeWindow[1]).getUTCFullYear(),
+      ]
+    : timeWindow === "all" || !timeWindow
+    ? [fullMinYear, fullMaxYear]
+    : [Math.max(fullMinYear, fullMaxYear - Number(timeWindow)), fullMaxYear];
+
+  const [localSlider, setLocalSlider] = useState(committedSlider);
+
+  // Sync slider when dataset changes (timeWindow resets externally)
+  useEffect(() => {
+    setLocalSlider(committedSlider);
+  }, [timeWindow, fullMinYear, fullMaxYear]); // eslint-disable-line
+
+  const yearSpan = fullMaxYear - fullMinYear;
+  const markStep =
+    yearSpan > 30 ? 10 : yearSpan > 15 ? 5 : yearSpan > 7 ? 2 : 1;
+  const sliderMarks = [];
+  const firstMark =
+    Math.ceil(fullMinYear / markStep) * markStep;
+  for (let y = firstMark; y <= fullMaxYear; y += markStep) {
+    sliderMarks.push({ value: y, label: String(y) });
+  }
+
+  const handleRangeCommit = (_, [startYear, endYear]) => {
+    if (startYear <= fullMinYear && endYear >= fullMaxYear) {
+      onTimeWindowChange("all");
+    } else {
+      onTimeWindowChange([
+        new Date(startYear, 0, 1).getTime(),
+        new Date(endYear, 11, 31, 23, 59, 59, 999).getTime(),
+      ]);
+    }
+  };
   const mainData = mainSeries.map((p) => p.value);
   const isSmoothed =
     rawSeries &&
@@ -225,12 +282,11 @@ function ChartPanel({
             : "Pick a dataset from the left panel."}
         </p>
         <ChartControls
-          timeWindow={timeWindow}
-          onTimeWindowChange={onTimeWindowChange}
           movingWindow={movingWindow}
           onMovingWindowChange={onMovingWindowChange}
           onDownload={downloadChart}
           hasData={mainSeries.length > 0}
+          dataSpanYears={dataSpanYears}
         />
       </div>
       <div className="chart-wrap">
@@ -271,6 +327,36 @@ function ChartPanel({
           </LineChart>
         )}
       </div>
+      {mainSeries.length > 0 && fullMinYear < fullMaxYear && (
+        <div
+          className="chart-range-slider"
+          style={{ paddingLeft: dynamicLeft, paddingRight: 48 }}
+        >
+          <Slider
+            value={localSlider}
+            min={fullMinYear}
+            max={fullMaxYear}
+            step={1}
+            marks={sliderMarks}
+            onChange={(_, v) => setLocalSlider(v)}
+            onChangeCommitted={handleRangeCommit}
+            valueLabelDisplay="auto"
+            disableSwap
+            size="small"
+            sx={{
+              color: "#0f766e",
+              "& .MuiSlider-markLabel": {
+                fontSize: "0.68rem",
+                fontFamily: '"Lato", system-ui, sans-serif',
+              },
+              "& .MuiSlider-valueLabel": {
+                fontSize: "0.7rem",
+                fontFamily: '"Lato", system-ui, sans-serif',
+              },
+            }}
+          />
+        </div>
+      )}
       <div className="chart-legend">
         {isSmoothed ? (
           <>

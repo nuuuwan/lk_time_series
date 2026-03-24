@@ -1,12 +1,24 @@
-export const applyTimeWindow = (series, years) => {
-  if (!Array.isArray(series) || years === "all") {
+export const applyTimeWindow = (series, timeWindow) => {
+  if (!Array.isArray(series)) return series;
+
+  // Custom range: [minMs, maxMs]
+  if (Array.isArray(timeWindow)) {
+    const [minMs, maxMs] = timeWindow;
+    return series.filter(
+      (point) =>
+        !Number.isFinite(point.timeMs) ||
+        (point.timeMs >= minMs && point.timeMs <= maxMs),
+    );
+  }
+
+  if (!timeWindow || timeWindow === "all") {
     return series;
   }
   const datedPoints = series.filter((point) => Number.isFinite(point.timeMs));
   const latest = datedPoints.at(-1);
   if (!latest) return series;
   const threshold = new Date(latest.timeMs);
-  threshold.setFullYear(threshold.getFullYear() - Number(years));
+  threshold.setFullYear(threshold.getFullYear() - Number(timeWindow));
   return series.filter(
     (point) =>
       !Number.isFinite(point.timeMs) || point.timeMs >= threshold.getTime(),

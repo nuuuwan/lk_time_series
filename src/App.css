@@ -310,6 +310,11 @@
   font-family: "Lato", system-ui, sans-serif !important;
 }
 
+.chart-range-slider {
+  margin: 0.2rem 0 0.5rem;
+  padding-bottom: 0.4rem;
+}
+
 .chart-legend {
   display: flex;
   gap: 1rem;
