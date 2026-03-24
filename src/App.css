@@ -394,13 +394,21 @@
   flex-shrink: 0;
   margin-left: auto;
   opacity: 0;
-  transition: opacity 0.15s;
+  transition: opacity 0.15s, color 0.15s;
   color: var(--accent) !important;
 }
 
 .dataset-list-item:hover .dataset-list-add-btn,
 .dataset-list-item.active .dataset-list-add-btn {
   opacity: 1;
+}
+
+.dataset-list-remove-btn {
+  color: var(--muted-ink) !important;
+}
+
+.dataset-list-item:hover .dataset-list-remove-btn {
+  color: #be123c !important;
 }
 
 .dataset-list-num {

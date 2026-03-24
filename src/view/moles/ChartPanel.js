@@ -203,6 +203,7 @@ function ChartPanel({
       area: datasets.length === 1,
       showMark: ({ isHighlighted }) => isHighlighted,
       curve: "linear",
+      connectNulls: true,
       valueFormatter: (v) =>
         v !== null ? `${formatNumber(v)}${rawUnit ? " " + rawUnit : ""}` : "",
     };

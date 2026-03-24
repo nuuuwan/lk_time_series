@@ -9,7 +9,7 @@ import {
 } from "../../nonview/cons/DATA_SOURCE_IDX";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
-import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 
 function DatasetList({
   datasets,
@@ -93,15 +93,19 @@ function DatasetList({
             </span>
             <IconButton
               size="small"
-              className="dataset-list-add-btn"
+              className={`dataset-list-add-btn${selectedKeys.includes(meta.key) ? " dataset-list-remove-btn" : ""}`}
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleDataset(meta.key);
               }}
-              aria-label={`Select ${meta.sub_category}`}
+              aria-label={
+                selectedKeys.includes(meta.key)
+                  ? `Remove ${meta.sub_category}`
+                  : `Select ${meta.sub_category}`
+              }
             >
               {selectedKeys.includes(meta.key) ? (
-                <CheckIcon fontSize="small" />
+                <CloseIcon fontSize="small" />
               ) : (
                 <AddIcon fontSize="small" />
               )}
