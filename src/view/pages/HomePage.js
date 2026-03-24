@@ -9,7 +9,11 @@ function toSlug(meta) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
-  return `${meta.source_id}-${name}`;
+  const freq = (meta.frequency_name || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return freq ? `${meta.source_id}-${name}-${freq}` : `${meta.source_id}-${name}`;
 }
 
 function HomePage() {
