@@ -231,6 +231,14 @@ function ChartPanel({
     </defs>
   );
 
+  if (datasets.length === 0) {
+    return (
+      <section className="panel chart-panel chart-panel-empty" ref={panelRef}>
+        <p className="chart-empty-prompt">Pick a dataset from the left panel.</p>
+      </section>
+    );
+  }
+
   const hasData = allDates.length > 0;
 
   // Y-axis label: single dataset shows full label, multiple shows "Multiple datasets"
