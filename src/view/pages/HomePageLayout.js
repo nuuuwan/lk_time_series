@@ -6,6 +6,7 @@ import SeasonalityPanel from "../moles/SeasonalityPanel";
 import ForecastPanel from "../moles/ForecastPanel";
 import DatasetDetails from "../moles/DatasetDetails";
 import { DATETIME_STR } from "../../nonview/cons/VERSION";
+import DATA_SOURCE_IDX from "../../nonview/cons/DATA_SOURCE_IDX";
 
 const MOBILE_TABS = [
   ["search", "Search"],
@@ -42,11 +43,26 @@ export default function HomePageLayout({
     <main className="app-shell">
       <header className="top-nav">
         <div>
-          <h1>Sri Lanka Time Series</h1>
+          <div className="top-nav-title-row">
+            <h1>Sri Lanka Time Series</h1>
+            <div className="top-nav-source-icons">
+              {Object.values(DATA_SOURCE_IDX).map((src) =>
+                src.image ? (
+                  <img
+                    key={src.label}
+                    src={src.image}
+                    alt={src.label}
+                    title={src.label}
+                    className="top-nav-source-img"
+                  />
+                ) : null,
+              )}
+            </div>
+          </div>
           {metadata.length > 0 && (
             <p>
               Search and visualize {metadata.length.toLocaleString()} public
-              datasets.
+              datasets from {Object.keys(DATA_SOURCE_IDX).length} sources.
             </p>
           )}
         </div>
