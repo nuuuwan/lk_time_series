@@ -11,7 +11,7 @@ import {
 import MetaField from "../atoms/MetaField";
 import { DATETIME_STR } from "../../nonview/cons/VERSION";
 
-function DatasetDetails({ meta, mainSeries = [] }) {
+function DatasetDetails({ meta, mainSeries = [], color = null }) {
   if (!meta) {
     return (
       <section className="panel dataset-details-panel">
@@ -41,6 +41,9 @@ function DatasetDetails({ meta, mainSeries = [] }) {
   const { metric, breadcrumb } = splitDatasetName(meta.sub_category);
   return (
     <section className="panel dataset-details-panel">
+      {color && (
+        <span className="details-color-swatch" style={{ background: color }} />
+      )}
       <div className="details-source-row">
         {getSourceImage(meta.source_id) && (
           <img

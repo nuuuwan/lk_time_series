@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import FilterPanel from "../moles/FilterPanel";
 import DatasetList from "../moles/DatasetList";
-import ChartPanel from "../moles/ChartPanel";
+import ChartPanel, { PALETTE } from "../moles/ChartPanel";
 import SeasonalityPanel from "../moles/SeasonalityPanel";
 import ForecastPanel from "../moles/ForecastPanel";
 import DatasetDetails from "../moles/DatasetDetails";
@@ -268,9 +268,22 @@ export default function HomePageLayout({
         {/* ── Right column ── */}
         <aside className="right-sidebar">
           <div className="right-sidebar-inner">
-            <DatasetDetails meta={detailMeta} mainSeries={detailSeries ?? []} />
-            <SeasonalityPanel mainSeries={detailSeries ?? []} />
-            <ForecastPanel mainSeries={detailSeries ?? []} />
+            {datasets.length > 1 ? (
+              datasets.map((ds, i) => (
+                <DatasetDetails
+                  key={ds.meta.key}
+                  meta={ds.meta}
+                  mainSeries={ds.mainSeries ?? []}
+                  color={PALETTE[i % PALETTE.length]}
+                />
+              ))
+            ) : (
+              <>
+                <DatasetDetails meta={detailMeta} mainSeries={detailSeries ?? []} />
+                <SeasonalityPanel mainSeries={detailSeries ?? []} />
+                <ForecastPanel mainSeries={detailSeries ?? []} />
+              </>
+            )}
           </div>
         </aside>
       </div>

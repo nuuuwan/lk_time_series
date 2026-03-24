@@ -20,7 +20,7 @@ const MOVING_WINDOW_OPTIONS = [
 ];
 
 // Contrasting palette (colorblind-friendly)
-const PALETTE = [
+export const PALETTE = [
   "#0f766e", // teal
   "#c2410c", // orange-red
   "#1d4ed8", // blue

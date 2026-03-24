@@ -70,7 +70,6 @@ function DatasetList({
                   : onToggleDataset(meta.key))
               }
             >
-
               <span className="dataset-list-body">
                 {(() => {
                   const { metric, breadcrumb } = splitDatasetName(
