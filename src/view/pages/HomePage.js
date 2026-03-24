@@ -75,7 +75,7 @@ function HomePage() {
     if (!slugResolved.current) return; // wait until URL slug is resolved first
     const slug = toSlug(selectedMeta);
     if (datasetKey !== slug) {
-      navigate(`${slug}`, { replace: true });
+      navigate(`/${slug}`, { replace: true });
     }
     if (mobileTab === "search") setMobileTab("chart");
   }, [selectedMeta?.key]); // eslint-disable-line react-hooks/exhaustive-deps

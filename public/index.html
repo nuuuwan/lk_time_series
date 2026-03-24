@@ -52,7 +52,7 @@
           history.replaceState(
             null,
             null,
-            window.location.pathname.split("?")[0] +
+            window.location.pathname.split("?")[0].replace(/\/$/, "") +
               decoded.path +
               (decoded.query || "") +
               (decoded.hash || ""),
