@@ -185,12 +185,25 @@
   border: none;
   background: transparent;
   border-radius: 8px;
-  padding: 0.45rem 0.56rem;
+  padding: 0.45rem 0.3rem 0.45rem 0.56rem;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.5rem;
   cursor: pointer;
   transition: background 0.1s;
+}
+
+.dataset-list-add-btn {
+  flex-shrink: 0;
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.15s;
+  color: var(--accent) !important;
+}
+
+.dataset-list-item:hover .dataset-list-add-btn,
+.dataset-list-item.active .dataset-list-add-btn {
+  opacity: 1;
 }
 
 .dataset-list-num {

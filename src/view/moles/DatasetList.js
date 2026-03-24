@@ -1,12 +1,14 @@
 import React from "react";
 import {
-  formatDate,
   formatDateByFrequency,
 } from "../../nonview/core/timeSeriesUtils";
 import {
   getSourceLabel,
   getSourceImage,
 } from "../../nonview/cons/DATA_SOURCE_IDX";
+import IconButton from "@mui/material/IconButton";
+import AddIcon from "@mui/icons-material/Add";
+import CheckIcon from "@mui/icons-material/Check";
 
 function DatasetList({ datasets, selectedKey, onSelectDataset }) {
   const sorted = [...datasets]
@@ -28,11 +30,17 @@ function DatasetList({ datasets, selectedKey, onSelectDataset }) {
     <section className="panel dataset-list-panel">
       <div className="dataset-list" role="listbox" aria-label="Dataset results">
         {sorted.map((meta, idx) => (
-          <button
+        <div
             key={meta.key}
-            type="button"
             className={`dataset-list-item ${meta.key === selectedKey ? "active" : ""}`}
             onClick={() => onSelectDataset(meta.key)}
+            role="option"
+            aria-selected={meta.key === selectedKey}
+            tabIndex={0}
+            onKeyDown={(e) =>
+              (e.key === "Enter" || e.key === " ") &&
+              onSelectDataset(meta.key)
+            }
           >
             <span className="dataset-list-num">{idx + 1}</span>
             <span className="dataset-list-body">
@@ -57,7 +65,22 @@ function DatasetList({ datasets, selectedKey, onSelectDataset }) {
                 </span>
               </span>
             </span>
-          </button>
+            <IconButton
+              size="small"
+              className="dataset-list-add-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectDataset(meta.key);
+              }}
+              aria-label={`Select ${meta.sub_category}`}
+            >
+              {meta.key === selectedKey ? (
+                <CheckIcon fontSize="small" />
+              ) : (
+                <AddIcon fontSize="small" />
+              )}
+            </IconButton>
+          </div>
         ))}
       </div>
       {datasets.length > 200 && (
