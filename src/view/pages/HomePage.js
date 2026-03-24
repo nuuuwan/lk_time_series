@@ -53,8 +53,18 @@ function HomePage() {
       const match = metadata.find((m) => toSlug(m) === datasetKey);
       if (match) setSelectedKey(match.key);
     } else {
-      // No slug: select first dataset by default
-      if (filteredMetadata.length > 0) setSelectedKey(filteredMetadata[0].key);
+      // No slug: select the dataset with the most recent max_t
+      const normalize = (t) => {
+        if (!t) return "";
+        const s = String(t);
+        return /^\d{4}$/.test(s) ? s + "-12-31" : s;
+      };
+      const mostRecent = [...metadata].sort((a, b) =>
+        normalize(b.summary_statistics?.max_t).localeCompare(
+          normalize(a.summary_statistics?.max_t),
+        ),
+      )[0];
+      if (mostRecent) setSelectedKey(mostRecent.key);
     }
     slugResolved.current = true;
   }, [metadata]); // eslint-disable-line react-hooks/exhaustive-deps
