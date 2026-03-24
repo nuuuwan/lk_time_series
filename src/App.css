@@ -17,6 +17,11 @@
 
 * {
   box-sizing: border-box;
+  scrollbar-width: none; /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Edge */
 }
 
 .app-shell {
@@ -50,8 +55,6 @@
   min-width: 290px;
   flex-shrink: 0;
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--soft-line) transparent;
 }
 
 .sidebar-inner {
@@ -66,8 +69,6 @@
   min-width: 290px;
   flex-shrink: 0;
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--soft-line) transparent;
 }
 
 .right-sidebar-inner {
@@ -337,8 +338,6 @@
 }
 
 .dataset-list {
-  max-height: calc(100vh - 280px);
-  overflow-y: auto;
   display: grid;
   gap: 0.45rem;
 }
