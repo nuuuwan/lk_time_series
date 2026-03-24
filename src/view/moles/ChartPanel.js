@@ -169,7 +169,7 @@ function ChartPanel({
       "& text": { fontFamily: '"Quicksand", system-ui, sans-serif' },
       "& tspan": { fontFamily: '"Quicksand", system-ui, sans-serif' },
     },
-    slotProps: { legend: { hidden: true } },
+    hideLegend: true,
   };
 
   return (
