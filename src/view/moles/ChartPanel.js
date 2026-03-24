@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { LineChart, ChartsReferenceLine } from "@mui/x-charts";
-import { Slider } from "@mui/material";
+import { Slider, IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { toPng } from "html-to-image";
 import ChartControls from "../atoms/ChartControls";
 import {
@@ -22,6 +23,7 @@ function ChartPanel({
   onTimeWindowChange,
   movingWindow,
   onMovingWindowChange,
+  onClose,
 }) {
   const panelRef = useRef(null);
 
@@ -287,6 +289,7 @@ function ChartPanel({
             ? selectedMeta.sub_category
             : "Pick a dataset from the left panel."}
         </p>
+        <div className="panel-head-actions">
         <ChartControls
           movingWindow={movingWindow}
           onMovingWindowChange={onMovingWindowChange}
@@ -294,6 +297,17 @@ function ChartPanel({
           hasData={mainSeries.length > 0}
           dataSpanYears={dataSpanYears}
         />
+        {onClose && (
+          <IconButton
+            onClick={onClose}
+            size="small"
+            aria-label="Close chart"
+            className="chart-close-btn"
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        )}
+        </div>
       </div>
       <div className="chart-wrap">
         {mainSeries.length === 0 ? (

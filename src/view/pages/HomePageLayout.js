@@ -165,6 +165,7 @@ export default function HomePageLayout({
               onTimeWindowChange={setTimeWindow}
               movingWindow={movingWindow}
               onMovingWindowChange={setMovingWindow}
+              onClose={selectedMeta ? () => setSelectedKey(null) : undefined}
             />
           </div>
           <div className="layout-right-col">

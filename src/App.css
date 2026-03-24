@@ -267,6 +267,21 @@
   gap: 0.8rem;
 }
 
+.panel-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.chart-close-btn {
+  opacity: 0.5;
+}
+
+.chart-close-btn:hover {
+  opacity: 1;
+}
+
 .chart-controls {
   display: flex;
   align-items: center;
