@@ -14,10 +14,10 @@ function ChartPanel({
   movingWindow,
   onMovingWindowChange,
 }) {
-  const chartWrapRef = useRef(null);
+  const panelRef = useRef(null);
 
   function downloadChart() {
-    const node = chartWrapRef.current;
+    const node = panelRef.current;
     if (!node) return;
     const label = selectedMeta?.sub_category || "chart";
     const filename = label.replace(/[^a-z0-9]/gi, "_") + ".png";
@@ -173,7 +173,7 @@ function ChartPanel({
   };
 
   return (
-    <section className="panel chart-panel">
+    <section className="panel chart-panel" ref={panelRef}>
       <div className="panel-head-row">
         <p className="panel-subtitle">
           {selectedMeta
@@ -189,7 +189,7 @@ function ChartPanel({
           hasData={mainSeries.length > 0}
         />
       </div>
-      <div className="chart-wrap" ref={chartWrapRef}>
+      <div className="chart-wrap">
         {mainSeries.length === 0 ? (
           <div className="empty-state">
             No chart points available for this dataset.
