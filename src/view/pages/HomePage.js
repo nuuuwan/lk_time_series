@@ -33,7 +33,6 @@ function HomePage() {
   });
   const [timeWindow, setTimeWindow] = useState("all");
   const [movingWindow, setMovingWindow] = useState("none");
-  const [mobileTab, setMobileTab] = useState("search");
 
   const {
     metadata,
@@ -84,7 +83,6 @@ function HomePage() {
       navigate(`/${slug}`, { replace: true });
     }
     setTimeWindow("all"); // reset time window for the new dataset
-    if (mobileTab === "search") setMobileTab("chart");
   }, [selectedMeta?.key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onFilterChange = (field, value) =>
@@ -96,8 +94,6 @@ function HomePage() {
 
   return (
     <HomePageLayout
-      mobileTab={mobileTab}
-      setMobileTab={setMobileTab}
       metadataLoading={metadataLoading}
       metadataError={metadataError}
       datasetError={datasetError}

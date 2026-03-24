@@ -290,23 +290,23 @@ function ChartPanel({
             : "Pick a dataset from the left panel."}
         </p>
         <div className="panel-head-actions">
-        <ChartControls
-          movingWindow={movingWindow}
-          onMovingWindowChange={onMovingWindowChange}
-          onDownload={downloadChart}
-          hasData={mainSeries.length > 0}
-          dataSpanYears={dataSpanYears}
-        />
-        {onClose && (
-          <IconButton
-            onClick={onClose}
-            size="small"
-            aria-label="Close chart"
-            className="chart-close-btn"
-          >
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        )}
+          <ChartControls
+            movingWindow={movingWindow}
+            onMovingWindowChange={onMovingWindowChange}
+            onDownload={downloadChart}
+            hasData={mainSeries.length > 0}
+            dataSpanYears={dataSpanYears}
+          />
+          {onClose && (
+            <IconButton
+              onClick={onClose}
+              size="small"
+              aria-label="Close chart"
+              className="chart-close-btn"
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          )}
         </div>
       </div>
       <div className="chart-wrap">

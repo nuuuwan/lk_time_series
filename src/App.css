@@ -407,8 +407,8 @@
   font-size: 0.92rem;
 }
 
-.mobile-tabs {
-  display: none;
+.narrow-screen-alert {
+  margin-bottom: 1rem;
 }
 
 .source-logo-row {
@@ -839,49 +839,6 @@ details[open] > .filter-summary::before {
 
   .app-bar-toolbar.MuiToolbar-root {
     padding: 0.5rem 0.85rem;
-  }
-
-  .layout-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .layout-cell {
-    display: none;
-  }
-
-  .layout-cell.mobile-show {
-    display: block;
-  }
-
-  .mobile-tabs {
-    position: sticky;
-    bottom: 0;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.4rem;
-    margin-bottom: 0.7rem;
-  }
-
-  .mobile-tabs button {
-    border: none;
-    border-radius: 10px;
-    background: #f3f4f6;
-    padding: 0.45rem;
-    font-weight: 600;
-    color: var(--muted-ink);
-  }
-
-  .mobile-tabs button.active {
-    color: var(--accent);
-    background: #e6f4f2;
-  }
-
-  .dataset-list {
-    max-height: 40vh;
-  }
-
-  .chart-controls {
-    flex-wrap: wrap;
   }
 }
 

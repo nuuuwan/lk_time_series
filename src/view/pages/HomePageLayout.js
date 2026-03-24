@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FilterPanel from "../moles/FilterPanel";
 import DatasetList from "../moles/DatasetList";
 import ChartPanel from "../moles/ChartPanel";
@@ -12,17 +12,9 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-
-const MOBILE_TABS = [
-  ["search", "Search"],
-  ["chart", "Chart"],
-  ["ai", "AI"],
-  ["details", "Details"],
-];
+import Alert from "@mui/material/Alert";
 
 export default function HomePageLayout({
-  mobileTab,
-  setMobileTab,
   metadataLoading,
   metadataError,
   datasetError,
@@ -45,6 +37,13 @@ export default function HomePageLayout({
   setMovingWindow,
 }) {
   const [menuAnchor, setMenuAnchor] = useState(null);
+  const [isNarrow, setIsNarrow] = useState(() => window.innerWidth < 800);
+
+  useEffect(() => {
+    const handler = () => setIsNarrow(window.innerWidth < 800);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
 
   return (
     <>
@@ -104,18 +103,12 @@ export default function HomePageLayout({
         </Toolbar>
       </AppBar>
       <main className="app-shell">
-        <nav className="mobile-tabs" aria-label="Mobile panel tabs">
-          {MOBILE_TABS.map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              className={mobileTab === value ? "active" : ""}
-              onClick={() => setMobileTab(value)}
-            >
-              {label}
-            </button>
-          ))}
-        </nav>
+        {isNarrow && (
+          <Alert severity="warning" className="narrow-screen-alert">
+            This tool is designed for wide desktop screens and is not optimised
+            for mobile or narrow viewports.
+          </Alert>
+        )}
         {metadataLoading && (
           <div className="global-message">Loading metadata catalog...</div>
         )}
@@ -129,12 +122,7 @@ export default function HomePageLayout({
           <div className="global-message">Loading dataset time-series...</div>
         )}
         <div className="layout-grid">
-          <div
-            className={
-              "layout-cell search-cell" +
-              (mobileTab === "search" ? " mobile-show" : "")
-            }
-          >
+          <div className="layout-cell search-cell">
             <FilterPanel
               filters={filters}
               onFilterChange={onFilterChange}
@@ -151,12 +139,7 @@ export default function HomePageLayout({
               onSelectDataset={setSelectedKey}
             />
           </div>
-          <div
-            className={
-              "layout-cell chart-cell" +
-              (mobileTab === "chart" ? " mobile-show" : "")
-            }
-          >
+          <div className="layout-cell chart-cell">
             <ChartPanel
               selectedMeta={selectedMeta}
               mainSeries={mainSeries}
@@ -169,20 +152,10 @@ export default function HomePageLayout({
             />
           </div>
           <div className="layout-right-col">
-            <div
-              className={
-                "layout-cell details-cell" +
-                (mobileTab === "details" ? " mobile-show" : "")
-              }
-            >
+            <div className="layout-cell details-cell">
               <DatasetDetails meta={selectedMeta} mainSeries={mainSeries} />
             </div>
-            <div
-              className={
-                "layout-cell ai-cell" +
-                (mobileTab === "ai" ? " mobile-show" : "")
-              }
-            >
+            <div className="layout-cell ai-cell">
               <SeasonalityPanel mainSeries={mainSeries} />
               <ForecastPanel mainSeries={mainSeries} />
             </div>
