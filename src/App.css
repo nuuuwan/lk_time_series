@@ -20,17 +20,41 @@
   background: var(--bg-a);
 }
 
-.top-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+/* ─── AppBar ─────────────────────────────────────────────── */
+.app-bar.MuiAppBar-root {
+  background: #fff !important;
+  color: var(--ink) !important;
+  box-shadow: 0 1px 0 var(--soft-line) !important;
 }
 
-.top-nav h1 {
+.app-bar-toolbar.MuiToolbar-root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 1.1rem;
+  min-height: unset;
+}
+
+.app-bar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.app-bar-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.app-bar-subtitle {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 0.82rem;
+  color: var(--muted-ink);
+}
+
+.app-bar-menu-btn.MuiIconButton-root {
+  color: var(--muted-ink);
 }
 
 .top-nav-title-row {
@@ -54,17 +78,6 @@
   object-fit: contain;
   opacity: 0.7;
   filter: grayscale(0.3);
-}
-
-.top-nav p {
-  margin: 0.3rem 0 0;
-  color: var(--muted-ink);
-}
-
-.top-nav-right {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
 }
 
 .layout-grid {
@@ -772,9 +785,8 @@ details[open] > .filter-summary::before {
     padding: 0.85rem;
   }
 
-  .top-nav {
-    flex-direction: column;
-    align-items: stretch;
+  .app-bar-toolbar.MuiToolbar-root {
+    padding: 0.5rem 0.85rem;
   }
 
   .layout-grid {
