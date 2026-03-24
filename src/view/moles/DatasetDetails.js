@@ -92,10 +92,6 @@ function DatasetDetails({ meta, mainSeries = [] }) {
         <MetaField label="Frequency" value={meta.frequency_name} />
         <MetaField label="Unit" value={meta.unit || "N/A"} />
         <MetaField label="Scale" value={meta.scale || "N/A"} />
-        <MetaField
-          label="Last Updated"
-          value={formatDate(meta.last_updated_time_str)}
-        />
       </div>
       <div className="link-row">
         <a
