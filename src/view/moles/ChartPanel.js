@@ -260,7 +260,10 @@ function ChartPanel({
     const firstCrumb = splits[0].breadcrumb;
     const breadcrumb = splits.every((s) => s.breadcrumb === firstCrumb)
       ? firstCrumb
-      : splits.map((s) => s.breadcrumb).filter(Boolean).join(" / ");
+      : splits
+          .map((s) => s.breadcrumb)
+          .filter(Boolean)
+          .join(" / ");
     return { title, breadcrumb };
   })();
 

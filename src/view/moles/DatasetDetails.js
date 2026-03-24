@@ -74,9 +74,7 @@ function DatasetDetails({ meta, mainSeries = [] }) {
         </span>
       </div>
       <h2 className="details-title">{metric}</h2>
-      <p className="details-category">
-        {breadcrumb || meta.category}
-      </p>
+      <p className="details-category">{breadcrumb || meta.category}</p>
       <div className="details-stat-row">
         <div className="details-stat">
           <span className="details-stat-label">Data Points</span>

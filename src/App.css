@@ -330,6 +330,8 @@
   text-overflow: ellipsis;
   letter-spacing: 0.01em;
 }
+
+.seasonality-confidence-note {
   margin: -0.4rem 0 0.6rem;
   font-size: 0.78rem;
   color: var(--muted-ink);
