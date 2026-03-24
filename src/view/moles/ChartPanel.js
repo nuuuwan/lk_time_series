@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useId, useRef, useState, useEffect } from "react";
 import { LineChart } from "@mui/x-charts";
 import { Slider, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -168,7 +168,8 @@ function ChartPanel({
       data,
       label: seriesLabel,
       color,
-      showMark: true,
+      area: datasets.length === 1,
+      showMark: ({ isHighlighted }) => isHighlighted,
       curve: "linear",
       valueFormatter: (v) =>
         v !== null ? `${formatNumber(v)}${rawUnit ? " " + rawUnit : ""}` : "",
@@ -176,7 +177,26 @@ function ChartPanel({
   });
 
   const n = allDates.length;
-  const markRadius = Math.max(0.5, Math.min(4, 120 / Math.max(n, 1)));
+
+  // One SVG gradient def per series for the area fill
+  const gradientId = useId();
+  const gradientDefs = (
+    <defs>
+      {seriesList.map((s, i) => (
+        <linearGradient
+          key={s.id}
+          id={`${gradientId}-grad-${i}`}
+          x1="0"
+          y1="0"
+          x2="0"
+          y2="1"
+        >
+          <stop offset="0%" stopColor={s.color} stopOpacity={0.32} />
+          <stop offset="100%" stopColor={s.color} stopOpacity={0.02} />
+        </linearGradient>
+      ))}
+    </defs>
+  );
 
   const hasData = allDates.length > 0;
 
@@ -227,10 +247,10 @@ function ChartPanel({
     formatDateByFrequency(v, primaryMeta?.frequency_name);
   const xAxisLabel = primaryMeta?.frequency_name || undefined;
 
-  const forecastSx = {};
   const sharedProps = {
     height: 360,
     series: seriesList,
+    grid: {}, // gridlines handled via sx
     margin: { left: dynamicLeft, right: 48, top: 12, bottom: 72 },
     yAxis: [
       {
@@ -239,10 +259,36 @@ function ChartPanel({
       },
     ],
     sx: {
-      ...forecastSx,
-      "& text": { fontFamily: '"Lato", system-ui, sans-serif' },
+      /* Line: thicker, smooth joins */
+      "& .MuiLineElement-root": {
+        strokeWidth: 3,
+        strokeLinejoin: "round",
+        strokeLinecap: "round",
+      },
+      /* Area fill: use the per-series gradient */
+      ...Object.fromEntries(
+        seriesList.map((s, i) => [
+          `& .MuiAreaElement-series-ds-${i}`,
+          { fill: `url(#${gradientId}-grad-${i})` },
+        ]),
+      ),
+      /* Remove all gridlines */
+      "& .MuiChartsGrid-horizontalLine": { display: "none" },
+      "& .MuiChartsGrid-verticalLine": { display: "none" },
+      /* Axis lines very faint, ticks off */
+      "& .MuiChartsAxis-line": { stroke: "#e2e5e8", strokeWidth: 1 },
+      "& .MuiChartsAxis-tick": { display: "none" },
+      /* Hover marker: solid filled dot with white ring */
+      "& .MuiMarkElement-root": {
+        r: 4,
+        strokeWidth: 2,
+        stroke: "#ffffff",
+      },
+      "& text": {
+        fontFamily: '"Lato", system-ui, sans-serif',
+        fill: "#6b7280",
+      },
       "& tspan": { fontFamily: '"Lato", system-ui, sans-serif' },
-      "& .MuiMarkElement-root": { r: markRadius },
     },
     hideLegend: true,
   };
@@ -318,7 +364,9 @@ function ChartPanel({
                 valueFormatter: xTickFormatter,
               },
             ]}
-          />
+          >
+            {gradientDefs}
+          </LineChart>
         )}
       </div>
       {hasData && fullMinYear < fullMaxYear && (
@@ -353,18 +401,12 @@ function ChartPanel({
       )}
       {hasData && (
         <div className="chart-legend">
-          {seriesList.map((s, i) => (
+          {seriesList.map((s) => (
             <span key={s.id} className="chart-legend-item">
-              <svg width="36" height="10">
-                <line
-                  x1="0"
-                  y1="5"
-                  x2="36"
-                  y2="5"
-                  stroke={s.color}
-                  strokeWidth="2"
-                />
-              </svg>
+              <span
+                className="chart-legend-swatch"
+                style={{ background: s.color }}
+              />
               {s.label}
             </span>
           ))}

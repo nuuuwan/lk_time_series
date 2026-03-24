@@ -531,6 +531,10 @@
   position: relative;
   display: flex;
   align-items: center;
+  background: #f5f6f7;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #eaecee;
 }
 
 .chart-y-label {
@@ -579,6 +583,14 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+.chart-legend-swatch {
+  display: inline-block;
+  width: 20px;
+  height: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
 }
 
 .stat-grid {
