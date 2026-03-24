@@ -268,9 +268,9 @@ export default function HomePageLayout({
         {/* ── Right column ── */}
         <aside className="right-sidebar">
           <div className="right-sidebar-inner">
-            <DatasetDetails meta={detailMeta} mainSeries={detailSeries} />
-            <SeasonalityPanel mainSeries={detailSeries} />
-            <ForecastPanel mainSeries={detailSeries} />
+            <DatasetDetails meta={detailMeta} mainSeries={detailSeries ?? []} />
+            <SeasonalityPanel mainSeries={detailSeries ?? []} />
+            <ForecastPanel mainSeries={detailSeries ?? []} />
           </div>
         </aside>
       </div>
