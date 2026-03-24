@@ -249,7 +249,8 @@
 }
 
 /* Pull Quicksand into MUI chart SVG text */
-.chart-wrap svg text {
+.chart-wrap svg text,
+.chart-wrap svg tspan {
   font-family: "Quicksand", system-ui, sans-serif !important;
 }
 

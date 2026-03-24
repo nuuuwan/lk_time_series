@@ -46,6 +46,10 @@ function SeasonalityPanel({ mainSeries }) {
         yAxis={[{ label: "% vs mean" }]}
         margin={{ left: 52, right: 16, top: 12, bottom: 36 }}
         slotProps={{ legend: { hidden: true } }}
+        sx={{
+          "& text": { fontFamily: '"Quicksand", system-ui, sans-serif' },
+          "& tspan": { fontFamily: '"Quicksand", system-ui, sans-serif' },
+        }}
       >
         <ChartsReferenceLine
           y={0}

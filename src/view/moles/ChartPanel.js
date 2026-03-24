@@ -164,7 +164,11 @@ function ChartPanel({
     series,
     margin: { left: dynamicLeft, right: 24, top: 12, bottom: 64 },
     yAxis: [{ width: dynamicLeft }],
-    sx: smoothSx,
+    sx: {
+      ...smoothSx,
+      "& text": { fontFamily: '"Quicksand", system-ui, sans-serif' },
+      "& tspan": { fontFamily: '"Quicksand", system-ui, sans-serif' },
+    },
     slotProps: { legend: { hidden: true } },
   };
 
