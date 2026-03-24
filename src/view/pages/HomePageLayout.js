@@ -14,6 +14,10 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
+import Drawer from "@mui/material/Drawer";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default function HomePageLayout({
   metadataLoading,
@@ -41,12 +45,35 @@ export default function HomePageLayout({
 }) {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [isNarrow, setIsNarrow] = useState(() => window.innerWidth < 800);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  // Track which dataset key the drawer is showing details for
+  const [drawerKey, setDrawerKey] = useState(null);
 
   useEffect(() => {
     const handler = () => setIsNarrow(window.innerWidth < 800);
     window.addEventListener("resize", handler);
     return () => window.removeEventListener("resize", handler);
   }, []);
+
+  // When a dataset is toggled from the list, also open the drawer and set drawerKey
+  function handleToggleDataset(key) {
+    toggleKey(key);
+    setDrawerKey(key);
+    setDrawerOpen(true);
+  }
+
+  // When clicking the row body (not the toggle button), open drawer for that key
+  // without changing selection
+  function handleSelectForDetail(key) {
+    setDrawerKey(key);
+    setDrawerOpen(true);
+  }
+
+  // Find meta + series for the drawer
+  const drawerDataset = datasets.find((d) => d.meta.key === drawerKey) ?? datasets[0] ?? null;
+  const drawerMeta = drawerDataset?.meta ?? selectedMeta;
+  const drawerSeries = drawerDataset?.mainSeries ?? mainSeries;
 
   return (
     <>
@@ -105,75 +132,106 @@ export default function HomePageLayout({
           </Menu>
         </Toolbar>
       </AppBar>
-      <main className="app-shell">
-        {isNarrow && (
-          <Alert severity="warning" className="narrow-screen-alert">
-            This tool is designed for wide desktop screens and is not optimised
-            for mobile or narrow viewports.
-          </Alert>
-        )}
-        {metadataLoading && (
-          <div className="global-loading">
-            <CircularProgress size={18} thickness={5} />
-            <span>Loading metadata catalog…</span>
+
+      <div className="page-body">
+        {/* ── Collapsible Sidebar ── */}
+        <aside className={`sidebar${sidebarCollapsed ? " sidebar-collapsed" : ""}`}>
+          <div className="sidebar-inner">
+            {!sidebarCollapsed && (
+              <>
+                {isNarrow && (
+                  <Alert severity="warning" className="narrow-screen-alert">
+                    This tool is designed for wide desktop screens.
+                  </Alert>
+                )}
+                {metadataLoading && (
+                  <div className="global-loading">
+                    <CircularProgress size={18} thickness={5} />
+                    <span>Loading catalog…</span>
+                  </div>
+                )}
+                {metadataError && (
+                  <div className="global-message error">{metadataError}</div>
+                )}
+                {datasetError && (
+                  <div className="global-message error">{datasetError}</div>
+                )}
+                {datasetLoading && (
+                  <div className="global-loading">
+                    <CircularProgress size={18} thickness={5} />
+                    <span>Loading dataset…</span>
+                  </div>
+                )}
+                <FilterPanel
+                  filters={filters}
+                  onFilterChange={onFilterChange}
+                  onReset={onResetFilters}
+                  options={options}
+                  resultCount={filteredMetadata.length}
+                  datasetCount={metadata.length}
+                  searchQuery={searchQuery}
+                  onSearchQueryChange={setSearchQuery}
+                />
+                <DatasetList
+                  datasets={filteredMetadata}
+                  selectedKeys={datasets.map((d) => d.meta.key)}
+                  onToggleDataset={handleToggleDataset}
+                  onSelectForDetail={handleSelectForDetail}
+                />
+              </>
+            )}
           </div>
-        )}
-        {metadataError && (
-          <div className="global-message error">{metadataError}</div>
-        )}
-        {datasetError && (
-          <div className="global-message error">{datasetError}</div>
-        )}
-        {datasetLoading && (
-          <div className="global-loading">
-            <CircularProgress size={18} thickness={5} />
-            <span>Loading dataset…</span>
+          <button
+            className="sidebar-collapse-btn"
+            onClick={() => setSidebarCollapsed((v) => !v)}
+            aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {sidebarCollapsed ? <ChevronRightIcon fontSize="small" /> : <ChevronLeftIcon fontSize="small" />}
+          </button>
+        </aside>
+
+        {/* ── Main chart area ── */}
+        <main className="chart-main">
+          <ChartPanel
+            datasets={datasets}
+            timeWindow={timeWindow}
+            onTimeWindowChange={setTimeWindow}
+            movingWindow={movingWindow}
+            onMovingWindowChange={setMovingWindow}
+            onClose={
+              datasets.length > 0 ? () => setSelectedKey(null) : undefined
+            }
+          />
+          <footer className="footer-note">
+            <span className="footer-version">v{DATETIME_STR}</span>
+          </footer>
+        </main>
+
+        {/* ── Slide-out Details Drawer ── */}
+        <Drawer
+          anchor="right"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          variant="temporary"
+          PaperProps={{ className: "details-drawer-paper" }}
+        >
+          <div className="details-drawer-header">
+            <span className="details-drawer-title">Dataset Details</span>
+            <IconButton
+              size="small"
+              onClick={() => setDrawerOpen(false)}
+              aria-label="Close details"
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
           </div>
-        )}
-        <div className="layout-grid">
-          <div className="layout-cell search-cell">
-            <FilterPanel
-              filters={filters}
-              onFilterChange={onFilterChange}
-              onReset={onResetFilters}
-              options={options}
-              resultCount={filteredMetadata.length}
-              datasetCount={metadata.length}
-              searchQuery={searchQuery}
-              onSearchQueryChange={setSearchQuery}
-            />
-            <DatasetList
-              datasets={filteredMetadata}
-              selectedKeys={datasets.map((d) => d.meta.key)}
-              onToggleDataset={toggleKey}
-            />
+          <div className="details-drawer-body">
+            <DatasetDetails meta={drawerMeta} mainSeries={drawerSeries} />
+            <SeasonalityPanel mainSeries={drawerSeries} />
+            <ForecastPanel mainSeries={drawerSeries} />
           </div>
-          <div className="layout-cell chart-cell">
-            <ChartPanel
-              datasets={datasets}
-              timeWindow={timeWindow}
-              onTimeWindowChange={setTimeWindow}
-              movingWindow={movingWindow}
-              onMovingWindowChange={setMovingWindow}
-              onClose={
-                datasets.length > 0 ? () => setSelectedKey(null) : undefined
-              }
-            />
-          </div>
-          <div className="layout-right-col">
-            <div className="layout-cell details-cell">
-              <DatasetDetails meta={selectedMeta} mainSeries={mainSeries} />
-            </div>
-            <div className="layout-cell ai-cell">
-              <SeasonalityPanel mainSeries={mainSeries} />
-              <ForecastPanel mainSeries={mainSeries} />
-            </div>
-          </div>
-        </div>
-        <footer className="footer-note">
-          <span className="footer-version">v{DATETIME_STR}</span>
-        </footer>
-      </main>
+        </Drawer>
+      </div>
     </>
   );
 }

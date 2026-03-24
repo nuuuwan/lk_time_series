@@ -8,7 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
 
-function DatasetList({ datasets, selectedKeys = [], onToggleDataset }) {
+function DatasetList({ datasets, selectedKeys = [], onToggleDataset, onSelectForDetail }) {
   const sorted = [...datasets]
     .sort((a, b) => {
       // Normalise max_t: bare year → "YYYY-12-31" so it sorts correctly against ISO dates
@@ -31,12 +31,13 @@ function DatasetList({ datasets, selectedKeys = [], onToggleDataset }) {
           <div
             key={meta.key}
             className={`dataset-list-item ${selectedKeys.includes(meta.key) ? "active" : ""}`}
-            onClick={() => onToggleDataset(meta.key)}
+            onClick={() => onSelectForDetail ? onSelectForDetail(meta.key) : onToggleDataset(meta.key)}
             role="option"
             aria-selected={selectedKeys.includes(meta.key)}
             tabIndex={0}
             onKeyDown={(e) =>
-              (e.key === "Enter" || e.key === " ") && onToggleDataset(meta.key)
+              (e.key === "Enter" || e.key === " ") &&
+              (onSelectForDetail ? onSelectForDetail(meta.key) : onToggleDataset(meta.key))
             }
           >
             <span className="dataset-list-num">{idx + 1}</span>
