@@ -494,6 +494,19 @@ details[open] > .filter-summary::before {
   line-height: 1.4;
 }
 
+.filter-count {
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted-ink);
+  opacity: 0.6;
+}
+
+.filter-count.filter-count-partial {
+  color: var(--accent);
+  opacity: 1;
+}
+
 .filter-section-header {
   display: flex;
   align-items: center;

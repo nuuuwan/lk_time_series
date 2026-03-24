@@ -2,15 +2,16 @@ import React from "react";
 import MultiCheckList from "../atoms/MultiCheckList";
 
 function FilterSection({ label, selected, items, onChange, renderItem }) {
+  const total = items.length;
+  const checkedCount = selected === null ? total : selected.length;
   const isActive = selected !== null;
-  const activeCount = isActive ? selected.length : null;
   return (
     <details className="filter-details" open={isActive || undefined}>
       <summary className="filter-summary">
         {label}
-        {isActive && activeCount > 0 && (
-          <span className="filter-badge">{activeCount}</span>
-        )}
+        <span className={`filter-count${checkedCount < total ? " filter-count-partial" : ""}`}>
+          {checkedCount}/{total}
+        </span>
       </summary>
       <MultiCheckList
         items={items}
