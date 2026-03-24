@@ -244,6 +244,8 @@ export default function HomePageLayout({
                 <DatasetList
                   datasets={filteredMetadata}
                   selectedKeys={datasets.map((d) => d.meta.key)}
+                  selectedUnit={datasets[0]?.meta?.unit ?? null}
+                  selectedScale={datasets[0]?.meta?.scale ?? null}
                   onToggleDataset={handleToggleDataset}
                   onSelectForDetail={handleSelectForDetail}
                 />

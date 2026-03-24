@@ -14,9 +14,22 @@ import CloseIcon from "@mui/icons-material/Close";
 function DatasetList({
   datasets,
   selectedKeys = [],
+  selectedUnit = null,
+  selectedScale = null,
   onToggleDataset,
   onSelectForDetail,
 }) {
+  // When at least one dataset is selected, only show the + button for items
+  // whose unit and scale match. The × button on selected items is always shown.
+  const hasSelection = selectedKeys.length > 0;
+  function canAdd(meta) {
+    if (!hasSelection) return true;
+    const unitMatch =
+      selectedUnit === null || (meta.unit ?? "") === (selectedUnit ?? "");
+    const scaleMatch =
+      selectedScale === null || (meta.scale ?? "") === (selectedScale ?? "");
+    return unitMatch && scaleMatch;
+  }
   const sorted = [...datasets]
     .sort((a, b) => {
       // Normalise max_t: bare year → "YYYY-12-31" so it sorts correctly against ISO dates
@@ -102,6 +115,11 @@ function DatasetList({
                 selectedKeys.includes(meta.key)
                   ? `Remove ${meta.sub_category}`
                   : `Select ${meta.sub_category}`
+              }
+              style={
+                !selectedKeys.includes(meta.key) && !canAdd(meta)
+                  ? { display: "none" }
+                  : undefined
               }
             >
               {selectedKeys.includes(meta.key) ? (
