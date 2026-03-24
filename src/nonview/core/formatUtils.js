@@ -24,6 +24,39 @@ export const formatDate = (isoDate) => {
   return `${y}-${m}-${d}`;
 };
 
+const FREQ_NORM = (f) => (f || "").toLowerCase();
+
+export const formatDateByFrequency = (isoDate, frequencyName) => {
+  if (!isoDate) return "N/A";
+  const s = String(isoDate);
+  const f = FREQ_NORM(frequencyName);
+
+  // Annual / Yearly
+  if (/annual|yearly|year(?!ly)/.test(f) || /^\d{4}$/.test(s)) {
+    const m = s.match(/^(\d{4})/);
+    return m ? m[1] : s;
+  }
+
+  const date = new Date(isoDate);
+  if (!Number.isFinite(date.getTime())) return s;
+  const y = date.getUTCFullYear();
+  const mo = date.getUTCMonth(); // 0-based
+
+  // Quarterly
+  if (/quarter/.test(f)) {
+    return `${y}-Q${Math.floor(mo / 3) + 1}`;
+  }
+
+  // Monthly
+  if (/month/.test(f)) {
+    return `${y}-${String(mo + 1).padStart(2, "0")}`;
+  }
+
+  // Weekly / Daily / fallback → full date
+  const d = String(date.getUTCDate()).padStart(2, "0");
+  return `${y}-${String(mo + 1).padStart(2, "0")}-${d}`;
+};
+
 export const getDeterministicInsightLines = (series) => {
   if (!series || series.length < 2) {
     return ["Not enough points to produce insight lines yet."];

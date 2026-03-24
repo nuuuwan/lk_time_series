@@ -3,7 +3,10 @@ import { LineChart, ChartsReferenceLine } from "@mui/x-charts";
 import { Slider } from "@mui/material";
 import { toPng } from "html-to-image";
 import ChartControls from "../atoms/ChartControls";
-import { formatNumber } from "../../nonview/core/timeSeriesUtils";
+import {
+  formatNumber,
+  formatDateByFrequency,
+} from "../../nonview/core/timeSeriesUtils";
 import { forecastLinear } from "../../nonview/core/forecastSeries";
 
 function parseYear(t) {
@@ -151,6 +154,8 @@ function ChartPanel({
       ? `${rawUnit} (${scalePrefix})`
       : rawUnit || scalePrefix || undefined;
   const xAxisLabel = selectedMeta?.frequency_name || undefined;
+  const xTickFormatter = (v) =>
+    formatDateByFrequency(v, selectedMeta?.frequency_name);
   const scale = (v) => (v !== null && Number.isFinite(v) ? v / scaleFactor : v);
 
   const scaledMainData = mainData.map(scale);
@@ -301,6 +306,7 @@ function ChartPanel({
                 scaleType: "point",
                 tickInterval,
                 label: xAxisLabel,
+                valueFormatter: xTickFormatter,
               },
             ]}
           >

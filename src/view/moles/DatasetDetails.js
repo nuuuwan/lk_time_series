@@ -1,6 +1,10 @@
 import React from "react";
 import { buildDatasetRawUrl } from "../../nonview/core/datasetApi";
-import { formatDate, formatNumber } from "../../nonview/core/timeSeriesUtils";
+import {
+  formatDate,
+  formatNumber,
+  formatDateByFrequency,
+} from "../../nonview/core/timeSeriesUtils";
 import {
   getSourceLabel,
   getSourceImage,
@@ -78,7 +82,8 @@ function DatasetDetails({ meta, mainSeries = [] }) {
         <div className="details-stat">
           <span className="details-stat-label">Date Range</span>
           <strong className="details-stat-value">
-            {formatDate(stat.min_t)} to {formatDate(stat.max_t)}
+            {formatDateByFrequency(stat.min_t, meta.frequency_name)} to{" "}
+            {formatDateByFrequency(stat.max_t, meta.frequency_name)}
           </strong>
         </div>
         <div className="details-stat">

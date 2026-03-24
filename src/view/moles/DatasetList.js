@@ -1,5 +1,8 @@
 import React from "react";
-import { formatDate } from "../../nonview/core/timeSeriesUtils";
+import {
+  formatDate,
+  formatDateByFrequency,
+} from "../../nonview/core/timeSeriesUtils";
 import {
   getSourceLabel,
   getSourceImage,
@@ -46,7 +49,12 @@ function DatasetList({ datasets, selectedKey, onSelectDataset }) {
                 <span className="dataset-list-sep">·</span>
                 <span>{meta.frequency_name}</span>
                 <span className="dataset-list-sep">·</span>
-                <span>{formatDate(meta.summary_statistics?.max_t)}</span>
+                <span>
+                  {formatDateByFrequency(
+                    meta.summary_statistics?.max_t,
+                    meta.frequency_name,
+                  )}
+                </span>
               </span>
             </span>
           </button>

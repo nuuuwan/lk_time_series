@@ -7,6 +7,7 @@ export {
 export {
   formatNumber,
   formatDate,
+  formatDateByFrequency,
   getDeterministicInsightLines,
 } from "./formatUtils";
 export {
