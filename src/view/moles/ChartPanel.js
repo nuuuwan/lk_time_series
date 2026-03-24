@@ -7,6 +7,7 @@ import ChartControls from "../atoms/ChartControls";
 import {
   formatNumber,
   formatDateByFrequency,
+  splitDatasetName,
 } from "../../nonview/core/timeSeriesUtils";
 
 // Contrasting palette (colorblind-friendly)
@@ -246,15 +247,32 @@ function ChartPanel({
     hideLegend: true,
   };
 
-  const subtitleText =
-    datasets.length === 0
-      ? "Pick a dataset from the left panel."
-      : datasets.map((d) => d.meta?.sub_category).join(" · ");
+  const chartHeader = (() => {
+    if (datasets.length === 0) {
+      return { title: "Pick a dataset from the left panel.", breadcrumb: "" };
+    }
+    if (datasets.length === 1) {
+      return splitDatasetName(datasets[0].meta?.sub_category);
+    }
+    // Multiple datasets: show all metric names, shared breadcrumb if identical
+    const splits = datasets.map((d) => splitDatasetName(d.meta?.sub_category));
+    const title = splits.map((s) => s.metric).join(" · ");
+    const firstCrumb = splits[0].breadcrumb;
+    const breadcrumb = splits.every((s) => s.breadcrumb === firstCrumb)
+      ? firstCrumb
+      : splits.map((s) => s.breadcrumb).filter(Boolean).join(" / ");
+    return { title, breadcrumb };
+  })();
 
   return (
     <section className="panel chart-panel" ref={panelRef}>
       <div className="panel-head-row">
-        <p className="panel-subtitle">{subtitleText}</p>
+        <div className="chart-title-block">
+          <h2 className="chart-title">{chartHeader.title}</h2>
+          {chartHeader.breadcrumb && (
+            <p className="chart-breadcrumb">{chartHeader.breadcrumb}</p>
+          )}
+        </div>
         <div className="panel-head-actions">
           <ChartControls
             movingWindow={movingWindow}

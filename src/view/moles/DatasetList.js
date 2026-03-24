@@ -1,5 +1,5 @@
 import React from "react";
-import { formatDateByFrequency } from "../../nonview/core/timeSeriesUtils";
+import { formatDateByFrequency, splitDatasetName } from "../../nonview/core/timeSeriesUtils";
 import {
   getSourceLabel,
   getSourceImage,
@@ -53,7 +53,17 @@ function DatasetList({
           >
             <span className="dataset-list-num">{idx + 1}</span>
             <span className="dataset-list-body">
-              <strong>{meta.sub_category}</strong>
+              {(() => {
+                const { metric, breadcrumb } = splitDatasetName(meta.sub_category);
+                return (
+                  <>
+                    <strong className="dataset-list-metric">{metric}</strong>
+                    {breadcrumb && (
+                      <span className="dataset-list-breadcrumb">{breadcrumb}</span>
+                    )}
+                  </>
+                );
+              })()}
               <span className="dataset-list-meta">
                 {getSourceImage(meta.source_id) && (
                   <img

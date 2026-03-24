@@ -3,6 +3,7 @@ import { buildDatasetRawUrl } from "../../nonview/core/datasetApi";
 import {
   formatNumber,
   formatDateByFrequency,
+  splitDatasetName,
 } from "../../nonview/core/timeSeriesUtils";
 import {
   getSourceLabel,
@@ -57,6 +58,7 @@ function DatasetDetails({ meta, mainSeries = [] }) {
       ? Math.max(...finiteValues)
       : meta.summary_statistics?.max_value,
   };
+  const { metric, breadcrumb } = splitDatasetName(meta.sub_category);
   return (
     <section className="panel dataset-details-panel">
       <div className="details-source-row">
@@ -71,8 +73,10 @@ function DatasetDetails({ meta, mainSeries = [] }) {
           {getSourceLabel(meta.source_id)}
         </span>
       </div>
-      <h2 className="details-title">{meta.sub_category}</h2>
-      <p className="details-category">{meta.category}</p>
+      <h2 className="details-title">{metric}</h2>
+      <p className="details-category">
+        {breadcrumb || meta.category}
+      </p>
       <div className="details-stat-row">
         <div className="details-stat">
           <span className="details-stat-label">Data Points</span>

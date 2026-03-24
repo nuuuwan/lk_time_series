@@ -9,6 +9,7 @@ export {
   formatDate,
   formatDateByFrequency,
   getDeterministicInsightLines,
+  splitDatasetName,
 } from "./formatUtils";
 export {
   getSeasonalityInsightLines,

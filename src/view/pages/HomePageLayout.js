@@ -122,14 +122,59 @@ export default function HomePageLayout({
             disabled={metadata.length === 0}
           >
             {/* Dice face showing 6 dots */}
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <rect x="2" y="2" width="16" height="16" rx="3" />
-              <circle cx="6.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-              <circle cx="13.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-              <circle cx="6.5" cy="10" r="1" fill="currentColor" stroke="none" />
-              <circle cx="13.5" cy="10" r="1" fill="currentColor" stroke="none" />
-              <circle cx="6.5" cy="13.5" r="1" fill="currentColor" stroke="none" />
-              <circle cx="13.5" cy="13.5" r="1" fill="currentColor" stroke="none" />
+              <circle
+                cx="6.5"
+                cy="6.5"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+              />
+              <circle
+                cx="13.5"
+                cy="6.5"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+              />
+              <circle
+                cx="6.5"
+                cy="10"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+              />
+              <circle
+                cx="13.5"
+                cy="10"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+              />
+              <circle
+                cx="6.5"
+                cy="13.5"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+              />
+              <circle
+                cx="13.5"
+                cy="13.5"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+              />
             </svg>
           </IconButton>
           <IconButton

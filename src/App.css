@@ -7,6 +7,12 @@
   --bg-b: #eef0f3;
   --accent: #0f766e;
   --accent-2: #b45309;
+
+  /* Type scale — 4 stops */
+  --t-xs:   0.72rem;  /* 11.5px — micro labels, indices, timestamps */
+  --t-sm:   0.82rem;  /* 13px   — secondary meta, breadcrumbs */
+  --t-base: 0.93rem;  /* 15px   — body text, primary list values */
+  --t-lg:   1.1rem;   /* 17.6px — panel headings, chart title */
 }
 
 * {
@@ -254,13 +260,14 @@
 
 .panel h2 {
   margin: 0;
-  font-size: 1.04rem;
+  font-size: var(--t-lg);
+  font-weight: 700;
 }
 
 .panel-subtitle {
   margin: 0.32rem 0 0.9rem;
   color: var(--muted-ink);
-  font-size: 0.9rem;
+  font-size: var(--t-sm);
 }
 
 .panel-subtitle-row {
@@ -274,7 +281,55 @@
   margin: 0;
 }
 
-.seasonality-confidence-note {
+/* ─── Chart panel title block ───────────────────────────── */
+.chart-title-block {
+  min-width: 0;
+  flex: 1;
+}
+
+.chart-title {
+  margin: 0;
+  font-size: var(--t-lg);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chart-breadcrumb {
+  margin: 0.18rem 0 0;
+  font-size: var(--t-xs);
+  color: var(--muted-ink);
+  font-weight: 300;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.01em;
+}
+
+/* ─── Dataset list item typography ──────────────────────── */
+.dataset-list-metric {
+  display: block;
+  font-size: var(--t-base);
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dataset-list-breadcrumb {
+  display: block;
+  font-size: var(--t-xs);
+  font-weight: 300;
+  color: var(--muted-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.01em;
+}
   margin: -0.4rem 0 0.6rem;
   font-size: 0.78rem;
   color: var(--muted-ink);
@@ -348,7 +403,7 @@
 
 .dataset-list-num {
   flex-shrink: 0;
-  font-size: 0.72rem;
+  font-size: var(--t-xs);
   color: var(--muted-ink);
   min-width: 1.6rem;
   text-align: right;
@@ -362,7 +417,7 @@
 }
 
 .dataset-list-item strong {
-  font-size: 0.9rem;
+  font-size: var(--t-base);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -374,7 +429,7 @@
   gap: 0.3rem;
   flex-wrap: wrap;
   color: var(--muted-ink);
-  font-size: 0.76rem;
+  font-size: var(--t-xs);
 }
 
 .dataset-list-source-img {
@@ -389,7 +444,7 @@
 
 .dataset-list-item span {
   color: var(--muted-ink);
-  font-size: 0.8rem;
+  font-size: var(--t-xs);
 }
 
 .dataset-list-dates {
@@ -397,7 +452,7 @@
   gap: 0.6rem;
   flex-wrap: wrap;
   color: var(--muted-ink);
-  font-size: 0.75rem;
+  font-size: var(--t-xs);
 }
 
 .dataset-list-item:hover {
@@ -410,7 +465,7 @@
 
 .panel-note {
   color: var(--muted-ink);
-  font-size: 0.8rem;
+  font-size: var(--t-xs);
 }
 
 .panel-head-row {
@@ -881,17 +936,17 @@ details[open] > .filter-summary::before {
 }
 
 .details-source-name {
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-size: var(--t-xs);
+  font-weight: 700;
   color: var(--muted-ink);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 /* Hero title */
 .details-title {
-  margin: 0 0 0.2rem;
-  font-size: 1.15rem;
+  margin: 0 0 0.15rem;
+  font-size: var(--t-lg);
   font-weight: 700;
   line-height: 1.3;
   color: var(--ink);
@@ -899,8 +954,10 @@ details[open] > .filter-summary::before {
 
 .details-category {
   margin: 0 0 0.9rem;
-  font-size: 0.85rem;
+  font-size: var(--t-xs);
+  font-weight: 300;
   color: var(--muted-ink);
+  letter-spacing: 0.01em;
 }
 
 /* Stats row */
@@ -919,15 +976,15 @@ details[open] > .filter-summary::before {
 }
 
 .details-stat-label {
-  font-size: 0.75rem;
+  font-size: var(--t-xs);
   color: var(--muted-ink);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
 .details-stat-value {
-  font-size: 0.95rem;
+  font-size: var(--t-base);
   font-weight: 700;
   color: var(--ink);
 }
@@ -941,10 +998,11 @@ details[open] > .filter-summary::before {
 }
 
 .details-last-updated {
-  font-size: 0.65rem;
+  font-size: var(--t-xs);
   color: var(--muted-ink);
   text-align: right;
   margin: 0.5rem 0 0;
+  opacity: 0.6;
 }
 
 .detail-field {
@@ -956,14 +1014,14 @@ details[open] > .filter-summary::before {
 
 .detail-label {
   color: var(--muted-ink);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--t-xs);
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.035em;
 }
 
 .detail-value {
-  font-size: 0.9rem;
+  font-size: var(--t-sm);
   color: var(--ink);
 }
 
