@@ -96,8 +96,7 @@ function ChartPanel({
       ? `${scalePrefix} ${rawUnit}`
       : scalePrefix
     : rawUnit || undefined;
-  const scale = (v) =>
-    v !== null && Number.isFinite(v) ? v / scaleFactor : v;
+  const scale = (v) => (v !== null && Number.isFinite(v) ? v / scaleFactor : v);
 
   const scaledMainData = mainData.map(scale);
   const scaledRawData = rawData ? rawData.map(scale) : null;
