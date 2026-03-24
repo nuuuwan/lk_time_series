@@ -279,7 +279,10 @@ export default function HomePageLayout({
               ))
             ) : (
               <>
-                <DatasetDetails meta={detailMeta} mainSeries={detailSeries ?? []} />
+                <DatasetDetails
+                  meta={detailMeta}
+                  mainSeries={detailSeries ?? []}
+                />
                 <SeasonalityPanel mainSeries={detailSeries ?? []} />
                 <ForecastPanel mainSeries={detailSeries ?? []} />
               </>
