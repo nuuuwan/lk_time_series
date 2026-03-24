@@ -52,81 +52,81 @@ function DatasetList({
           const isSelected = selectedKeys.includes(meta.key);
           if (hasSelection && !isSelected && !canAdd(meta)) return null;
           return (
-          <div
-            key={meta.key}
-            className={`dataset-list-item ${isSelected ? "active" : ""}`}
-            onClick={() =>
-              onSelectForDetail
-                ? onSelectForDetail(meta.key)
-                : onToggleDataset(meta.key)
-            }
-            role="option"
-            aria-selected={isSelected}
-            tabIndex={0}
-            onKeyDown={(e) =>
-              (e.key === "Enter" || e.key === " ") &&
-              (onSelectForDetail
-                ? onSelectForDetail(meta.key)
-                : onToggleDataset(meta.key))
-            }
-          >
-            <span className="dataset-list-num">{idx + 1}</span>
-            <span className="dataset-list-body">
-              {(() => {
-                const { metric, breadcrumb } = splitDatasetName(
-                  meta.sub_category,
-                );
-                return (
-                  <>
-                    <strong className="dataset-list-metric">{metric}</strong>
-                    {breadcrumb && (
-                      <span className="dataset-list-breadcrumb">
-                        {breadcrumb}
-                      </span>
-                    )}
-                  </>
-                );
-              })()}
-              <span className="dataset-list-meta">
-                {getSourceImage(meta.source_id) && (
-                  <img
-                    src={getSourceImage(meta.source_id)}
-                    alt={getSourceLabel(meta.source_id)}
-                    className="dataset-list-source-img"
-                  />
-                )}
-                <span>{getSourceLabel(meta.source_id)}</span>
-                <span className="dataset-list-sep">·</span>
-                <span>{meta.frequency_name}</span>
-                <span className="dataset-list-sep">·</span>
-                <span>
-                  {formatDateByFrequency(
-                    meta.summary_statistics?.max_t,
-                    meta.frequency_name,
-                  )}
-                </span>
-              </span>
-            </span>
-            <IconButton
-              size="small"
-              className={`dataset-list-add-btn${isSelected ? " dataset-list-remove-btn" : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleDataset(meta.key);
-              }}
-              aria-label={
-                isSelected
-                  ? `Remove ${meta.sub_category}`
-                  : `Select ${meta.sub_category}`
+            <div
+              key={meta.key}
+              className={`dataset-list-item ${isSelected ? "active" : ""}`}
+              onClick={() =>
+                onSelectForDetail
+                  ? onSelectForDetail(meta.key)
+                  : onToggleDataset(meta.key)
+              }
+              role="option"
+              aria-selected={isSelected}
+              tabIndex={0}
+              onKeyDown={(e) =>
+                (e.key === "Enter" || e.key === " ") &&
+                (onSelectForDetail
+                  ? onSelectForDetail(meta.key)
+                  : onToggleDataset(meta.key))
               }
             >
-              {isSelected ? (
-                <CloseIcon fontSize="small" />
-              ) : (
-                <AddIcon fontSize="small" />
-              )}
-            </IconButton>
-          </div>
+
+              <span className="dataset-list-body">
+                {(() => {
+                  const { metric, breadcrumb } = splitDatasetName(
+                    meta.sub_category,
+                  );
+                  return (
+                    <>
+                      <strong className="dataset-list-metric">{metric}</strong>
+                      {breadcrumb && (
+                        <span className="dataset-list-breadcrumb">
+                          {breadcrumb}
+                        </span>
+                      )}
+                    </>
+                  );
+                })()}
+                <span className="dataset-list-meta">
+                  {getSourceImage(meta.source_id) && (
+                    <img
+                      src={getSourceImage(meta.source_id)}
+                      alt={getSourceLabel(meta.source_id)}
+                      className="dataset-list-source-img"
+                    />
+                  )}
+                  <span>{getSourceLabel(meta.source_id)}</span>
+                  <span className="dataset-list-sep">·</span>
+                  <span>{meta.frequency_name}</span>
+                  <span className="dataset-list-sep">·</span>
+                  <span>
+                    {formatDateByFrequency(
+                      meta.summary_statistics?.max_t,
+                      meta.frequency_name,
+                    )}
+                  </span>
+                </span>
+              </span>
+              <IconButton
+                size="small"
+                className={`dataset-list-add-btn${isSelected ? " dataset-list-remove-btn" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleDataset(meta.key);
+                }}
+                aria-label={
+                  isSelected
+                    ? `Remove ${meta.sub_category}`
+                    : `Select ${meta.sub_category}`
+                }
+              >
+                {isSelected ? (
+                  <CloseIcon fontSize="small" />
+                ) : (
+                  <AddIcon fontSize="small" />
+                )}
+              </IconButton>
+            </div>
           );
         })}
       </div>
