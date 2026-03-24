@@ -35,15 +35,14 @@
 .app-layout {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
 /* ─── Page body: three-column card layout ────────────────── */
 .page-body {
   display: flex;
   flex: 1;
-  overflow: hidden;
+  align-items: flex-start;
   background: var(--bg-a);
   padding: 1.25rem 1.5rem;
   gap: 1.25rem;
@@ -54,7 +53,6 @@
   width: 290px;
   min-width: 290px;
   flex-shrink: 0;
-  overflow-y: auto;
 }
 
 .sidebar-inner {
@@ -68,7 +66,6 @@
   width: 290px;
   min-width: 290px;
   flex-shrink: 0;
-  overflow-y: auto;
 }
 
 .right-sidebar-inner {
@@ -81,7 +78,6 @@
 .chart-main {
   flex: 1;
   min-width: 0;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1rem;
