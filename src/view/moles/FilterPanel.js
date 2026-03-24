@@ -9,7 +9,9 @@ function FilterSection({ label, selected, items, onChange, renderItem }) {
     <details className="filter-details" open={isActive || undefined}>
       <summary className="filter-summary">
         {label}
-        <span className={`filter-count${checkedCount < total ? " filter-count-partial" : ""}`}>
+        <span
+          className={`filter-count${checkedCount < total ? " filter-count-partial" : ""}`}
+        >
           {checkedCount}/{total}
         </span>
       </summary>
