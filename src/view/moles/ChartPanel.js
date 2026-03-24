@@ -91,9 +91,10 @@ function ChartPanel({
     scalePrefix = "Thousands";
   }
   const rawUnit = selectedMeta?.unit || "";
-  const yAxisLabel = rawUnit && scalePrefix
-    ? `${rawUnit} (${scalePrefix})`
-    : rawUnit || scalePrefix || undefined;
+  const yAxisLabel =
+    rawUnit && scalePrefix
+      ? `${rawUnit} (${scalePrefix})`
+      : rawUnit || scalePrefix || undefined;
   const xAxisLabel = selectedMeta?.frequency_name || undefined;
   const scale = (v) => (v !== null && Number.isFinite(v) ? v / scaleFactor : v);
 
@@ -240,7 +241,14 @@ function ChartPanel({
         ) : (
           <LineChart
             {...sharedProps}
-            xAxis={[{ data: fullXData, scaleType: "point", tickInterval, label: xAxisLabel }]}
+            xAxis={[
+              {
+                data: fullXData,
+                scaleType: "point",
+                tickInterval,
+                label: xAxisLabel,
+              },
+            ]}
           >
             {scaledMaxVal !== null && (
               <ChartsReferenceLine
