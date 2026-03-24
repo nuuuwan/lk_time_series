@@ -237,7 +237,9 @@
   border-radius: 6px;
   font-family: inherit;
   white-space: nowrap;
-  transition: background 0.1s, color 0.1s;
+  transition:
+    background 0.1s,
+    color 0.1s;
 }
 .icon-btn:hover {
   background: #e5e7eb;
@@ -478,7 +480,9 @@ details[open] > .filter-summary::before {
   padding: 0.12rem 0.42rem;
   border-radius: 4px;
   font-family: inherit;
-  transition: background 0.1s, color 0.1s;
+  transition:
+    background 0.1s,
+    color 0.1s;
 }
 
 .mca-btn:hover:not(:disabled) {
@@ -565,7 +569,9 @@ details[open] > .filter-summary::before {
   border-radius: 6px;
   white-space: nowrap;
   align-self: flex-start;
-  transition: background 0.1s, color 0.1s;
+  transition:
+    background 0.1s,
+    color 0.1s;
 }
 .reset-btn:hover {
   background: #f3f4f6;
