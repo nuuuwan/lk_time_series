@@ -200,7 +200,7 @@ function ChartPanel({
   const sharedProps = {
     height: 360,
     series,
-    margin: { left: dynamicLeft, right: 24, top: 12, bottom: 64 },
+    margin: { left: dynamicLeft, right: 48, top: 12, bottom: 64 },
     yAxis: [
       {
         width: dynamicLeft,
