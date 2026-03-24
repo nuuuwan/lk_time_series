@@ -663,6 +663,13 @@ details[open] > .filter-summary::before {
   margin-bottom: 0.9rem;
 }
 
+.details-last-updated {
+  font-size: 0.65rem;
+  color: var(--muted-ink);
+  text-align: right;
+  margin: 0.5rem 0 0;
+}
+
 .detail-field {
   display: flex;
   flex-direction: column;

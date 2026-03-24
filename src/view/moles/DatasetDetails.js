@@ -9,6 +9,7 @@ import {
   getSourceImage,
 } from "../../nonview/cons/DATA_SOURCE_IDX";
 import MetaField from "../atoms/MetaField";
+import { DATETIME_STR } from "../../nonview/cons/VERSION";
 
 function DatasetDetails({ meta, mainSeries = [] }) {
   if (!meta) {
@@ -98,6 +99,7 @@ function DatasetDetails({ meta, mainSeries = [] }) {
           GitHub
         </a>
       </div>
+      <p className="details-last-updated">Last Updated {DATETIME_STR}</p>
     </section>
   );
 }
