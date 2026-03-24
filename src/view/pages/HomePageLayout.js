@@ -14,10 +14,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
-import Drawer from "@mui/material/Drawer";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import CloseIcon from "@mui/icons-material/Close";
 
 export default function HomePageLayout({
   metadataLoading,
@@ -46,9 +44,8 @@ export default function HomePageLayout({
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [isNarrow, setIsNarrow] = useState(() => window.innerWidth < 800);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  // Track which dataset key the drawer is showing details for
-  const [drawerKey, setDrawerKey] = useState(null);
+  const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
+  const [detailKey, setDetailKey] = useState(null);
 
   useEffect(() => {
     const handler = () => setIsNarrow(window.innerWidth < 800);
@@ -56,38 +53,34 @@ export default function HomePageLayout({
     return () => window.removeEventListener("resize", handler);
   }, []);
 
-  // When a dataset is toggled from the list, also open the drawer and set drawerKey
+  // When a dataset is toggled from the list, update which key shows in the detail panel
   function handleToggleDataset(key) {
     toggleKey(key);
-    setDrawerKey(key);
-    setDrawerOpen(true);
+    setDetailKey(key);
   }
 
-  // When clicking the row body (not the toggle button), open drawer for that key
-  // without changing selection
+  // When clicking the row body (not the toggle button), show details for that key
   function handleSelectForDetail(key) {
-    setDrawerKey(key);
-    setDrawerOpen(true);
+    setDetailKey(key);
   }
 
-  // Find meta + series for the drawer
-  const drawerDataset =
-    datasets.find((d) => d.meta.key === drawerKey) ?? datasets[0] ?? null;
-  const drawerMeta = drawerDataset?.meta ?? selectedMeta;
-  const drawerSeries = drawerDataset?.mainSeries ?? mainSeries;
+  // Find meta + series for the detail panel
+  const detailDataset =
+    datasets.find((d) => d.meta.key === detailKey) ?? datasets[0] ?? null;
+  const detailMeta = detailDataset?.meta ?? selectedMeta;
+  const detailSeries = detailDataset?.mainSeries ?? mainSeries;
 
   function handleDice() {
     const pool = metadata.length > 0 ? metadata : filteredMetadata;
     if (!pool.length) return;
     const pick = pool[Math.floor(Math.random() * pool.length)];
     setSelectedKey(pick.key);
-    setDrawerKey(pick.key);
-    setDrawerOpen(true);
+    setDetailKey(pick.key);
   }
 
   return (
     <>
-      <AppBar position="static" className="app-bar">
+      <AppBar position="sticky" className="app-bar">
         <Toolbar className="app-bar-toolbar" disableGutters>
           <div className="app-bar-left">
             <div className="top-nav-title-row">
@@ -289,30 +282,50 @@ export default function HomePageLayout({
           </footer>
         </main>
 
-        {/* ── Slide-out Details Drawer ── */}
-        <Drawer
-          anchor="right"
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-          variant="temporary"
-          PaperProps={{ className: "details-drawer-paper" }}
+        {/* ── Persistent Right Sidebar ── */}
+        <aside
+          className={`right-sidebar${rightSidebarCollapsed ? " right-sidebar-collapsed" : ""}`}
         >
-          <div className="details-drawer-header">
-            <span className="details-drawer-title">Dataset Details</span>
-            <IconButton
-              size="small"
-              onClick={() => setDrawerOpen(false)}
-              aria-label="Close details"
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
+          <button
+            className="right-sidebar-collapse-btn"
+            onClick={() => setRightSidebarCollapsed((v) => !v)}
+            aria-label={
+              rightSidebarCollapsed
+                ? "Expand details panel"
+                : "Collapse details panel"
+            }
+          >
+            {rightSidebarCollapsed ? (
+              <ChevronLeftIcon fontSize="small" />
+            ) : (
+              <ChevronRightIcon fontSize="small" />
+            )}
+          </button>
+          <div className="right-sidebar-inner">
+            <details className="sidebar-accordion" open>
+              <summary className="sidebar-accordion-summary">
+                Dataset Details
+              </summary>
+              <div className="sidebar-accordion-body">
+                <DatasetDetails meta={detailMeta} mainSeries={detailSeries} />
+              </div>
+            </details>
+            <details className="sidebar-accordion">
+              <summary className="sidebar-accordion-summary">
+                Seasonality
+              </summary>
+              <div className="sidebar-accordion-body">
+                <SeasonalityPanel mainSeries={detailSeries} />
+              </div>
+            </details>
+            <details className="sidebar-accordion">
+              <summary className="sidebar-accordion-summary">Forecast</summary>
+              <div className="sidebar-accordion-body">
+                <ForecastPanel mainSeries={detailSeries} />
+              </div>
+            </details>
           </div>
-          <div className="details-drawer-body">
-            <DatasetDetails meta={drawerMeta} mainSeries={drawerSeries} />
-            <SeasonalityPanel mainSeries={drawerSeries} />
-            <ForecastPanel mainSeries={drawerSeries} />
-          </div>
-        </Drawer>
+        </aside>
       </div>
     </>
   );
