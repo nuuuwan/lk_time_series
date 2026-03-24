@@ -167,12 +167,15 @@ function ChartPanel({
       data,
       label: seriesLabel,
       color,
-      showMark: datasets.length === 1,
+      showMark: true,
       curve: "linear",
       valueFormatter: (v) =>
         v !== null ? `${formatNumber(v)}${rawUnit ? " " + rawUnit : ""}` : "",
     };
   });
+
+  const n = allDates.length;
+  const markRadius = Math.max(0.5, Math.min(4, 120 / Math.max(n, 1)));
 
   const hasData = allDates.length > 0;
 
@@ -209,7 +212,6 @@ function ChartPanel({
     new Intl.NumberFormat().format(maxScaled).length * 8 + 20,
   );
 
-  const n = allDates.length;
   const shownTickIndices = (() => {
     if (n <= 7) return new Set(Array.from({ length: n }, (_, i) => i));
     const inner = 5;
@@ -239,6 +241,7 @@ function ChartPanel({
       ...forecastSx,
       "& text": { fontFamily: '"Lato", system-ui, sans-serif' },
       "& tspan": { fontFamily: '"Lato", system-ui, sans-serif' },
+      "& .MuiMarkElement-root": { r: markRadius },
     },
     hideLegend: true,
   };
