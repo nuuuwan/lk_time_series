@@ -48,17 +48,20 @@ function DatasetList({
   return (
     <section className="panel dataset-list-panel">
       <div className="dataset-list" role="listbox" aria-label="Dataset results">
-        {sorted.map((meta, idx) => (
+        {sorted.map((meta, idx) => {
+          const isSelected = selectedKeys.includes(meta.key);
+          if (hasSelection && !isSelected && !canAdd(meta)) return null;
+          return (
           <div
             key={meta.key}
-            className={`dataset-list-item ${selectedKeys.includes(meta.key) ? "active" : ""}`}
+            className={`dataset-list-item ${isSelected ? "active" : ""}`}
             onClick={() =>
               onSelectForDetail
                 ? onSelectForDetail(meta.key)
                 : onToggleDataset(meta.key)
             }
             role="option"
-            aria-selected={selectedKeys.includes(meta.key)}
+            aria-selected={isSelected}
             tabIndex={0}
             onKeyDown={(e) =>
               (e.key === "Enter" || e.key === " ") &&
@@ -106,30 +109,26 @@ function DatasetList({
             </span>
             <IconButton
               size="small"
-              className={`dataset-list-add-btn${selectedKeys.includes(meta.key) ? " dataset-list-remove-btn" : ""}`}
+              className={`dataset-list-add-btn${isSelected ? " dataset-list-remove-btn" : ""}`}
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleDataset(meta.key);
               }}
               aria-label={
-                selectedKeys.includes(meta.key)
+                isSelected
                   ? `Remove ${meta.sub_category}`
                   : `Select ${meta.sub_category}`
               }
-              style={
-                !selectedKeys.includes(meta.key) && !canAdd(meta)
-                  ? { display: "none" }
-                  : undefined
-              }
             >
-              {selectedKeys.includes(meta.key) ? (
+              {isSelected ? (
                 <CloseIcon fontSize="small" />
               ) : (
                 <AddIcon fontSize="small" />
               )}
             </IconButton>
           </div>
-        ))}
+          );
+        })}
       </div>
       {datasets.length > 200 && (
         <p className="panel-note">
