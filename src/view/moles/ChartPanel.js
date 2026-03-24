@@ -71,18 +71,67 @@ function ChartPanel({
     ? mainData[mainData.length - 1]
     : null;
   const fullXData = hasForecast ? [...xData, ...forecastXData] : xData;
-  const pad = hasForecast ? Array(forecastSteps).fill(null) : [];
-  // histPad leaves the last slot as the actual value so the forecast line connects
-  const histPad = hasForecast
-    ? [...Array(xData.length - 1).fill(null), lastActualValue]
+
+  // Scale factor to reduce trailing zeros on Y axis
+  const allValues = mainData.filter((v) => v !== null && Number.isFinite(v));
+  const maxAbsValue = allValues.reduce(
+    (max, v) => Math.max(max, Math.abs(v)),
+    0,
+  );
+  let scaleFactor = 1;
+  let scalePrefix = "";
+  if (maxAbsValue >= 1e9) {
+    scaleFactor = 1e9;
+    scalePrefix = "Billions";
+  } else if (maxAbsValue >= 1e6) {
+    scaleFactor = 1e6;
+    scalePrefix = "Millions";
+  } else if (maxAbsValue >= 1e4) {
+    scaleFactor = 1e3;
+    scalePrefix = "Thousands";
+  }
+  const rawUnit = selectedMeta?.unit || "";
+  const yAxisLabel = scalePrefix
+    ? rawUnit
+      ? `${scalePrefix} ${rawUnit}`
+      : scalePrefix
+    : rawUnit || undefined;
+  const scale = (v) =>
+    v !== null && Number.isFinite(v) ? v / scaleFactor : v;
+
+  const scaledMainData = mainData.map(scale);
+  const scaledRawData = rawData ? rawData.map(scale) : null;
+  const scaledForecastValues = forecastValues.map(scale);
+  const scaledLastActualValue = scale(lastActualValue);
+
+  const scaledPad = hasForecast ? Array(forecastSteps).fill(null) : [];
+  const scaledHistPad = hasForecast
+    ? [...Array(xData.length - 1).fill(null), scaledLastActualValue]
     : [];
 
+  const scaledMaxAbs = allValues.reduce(
+    (max, v) => Math.max(max, Math.abs(v / scaleFactor)),
+    0,
+  );
+  const dynamicLeft = Math.max(
+    64,
+    new Intl.NumberFormat().format(scaledMaxAbs).length * 8 + 20,
+  );
+
+  const finiteMain = mainData.filter((v) => v !== null && Number.isFinite(v));
+  const maxVal = finiteMain.length ? Math.max(...finiteMain) : null;
+  const minVal = finiteMain.length ? Math.min(...finiteMain) : null;
+  const scaledMaxVal = scale(maxVal);
+  const scaledMinVal = scale(minVal);
+  const maxDate = maxVal !== null ? xData[mainData.indexOf(maxVal)] : null;
+  const minDate = minVal !== null ? xData[mainData.indexOf(minVal)] : null;
+
   const series = [
-    ...(isSmoothed && rawData
+    ...(isSmoothed && scaledRawData
       ? [
           {
             id: "raw",
-            data: [...rawData, ...pad],
+            data: [...scaledRawData, ...scaledPad],
             label: datasetName,
             showMark: false,
             curve: "linear",
@@ -93,22 +142,27 @@ function ChartPanel({
       : []),
     {
       id: "main",
-      data: [...mainData, ...pad],
+      data: [...scaledMainData, ...scaledPad],
       label: isSmoothed ? smoothLabel : datasetName,
       showMark: false,
       curve: "linear",
       color: isSmoothed ? "#e07b39" : "#0f766e",
+      valueFormatter: (v) =>
+        v !== null ? `${formatNumber(v)}${rawUnit ? " " + rawUnit : ""}` : "",
     },
     ...(hasForecast
       ? [
           {
             id: "forecast",
-            data: [...histPad, ...forecastValues],
+            data: [...scaledHistPad, ...scaledForecastValues],
             label: "Forecast",
             showMark: false,
             curve: "linear",
             color: "#94a3b8",
-            valueFormatter: (v) => (v !== null ? formatNumber(v) + " ★" : ""),
+            valueFormatter: (v) =>
+              v !== null
+                ? `${formatNumber(v)}${rawUnit ? " " + rawUnit : ""} ★`
+                : "",
           },
         ]
       : []),
@@ -124,21 +178,6 @@ function ChartPanel({
     return indices;
   })();
   const tickInterval = (_v, index) => shownTickIndices.has(index);
-  const allValues = mainData.filter((v) => v !== null && Number.isFinite(v));
-  const maxAbsValue = allValues.reduce(
-    (max, v) => Math.max(max, Math.abs(v)),
-    0,
-  );
-  const dynamicLeft = Math.max(
-    64,
-    new Intl.NumberFormat().format(maxAbsValue).length * 8 + 20,
-  );
-
-  const finiteMain = mainData.filter((v) => v !== null && Number.isFinite(v));
-  const maxVal = finiteMain.length ? Math.max(...finiteMain) : null;
-  const minVal = finiteMain.length ? Math.min(...finiteMain) : null;
-  const maxDate = maxVal !== null ? xData[mainData.indexOf(maxVal)] : null;
-  const minDate = minVal !== null ? xData[mainData.indexOf(minVal)] : null;
   const lineColor = isSmoothed ? "#e07b39" : "#0f766e";
 
   const smoothSx = {
@@ -163,7 +202,13 @@ function ChartPanel({
     height: 360,
     series,
     margin: { left: dynamicLeft, right: 24, top: 12, bottom: 64 },
-    yAxis: [{ width: dynamicLeft }],
+    yAxis: [
+      {
+        width: dynamicLeft,
+        label: yAxisLabel,
+        valueFormatter: (v) => formatNumber(v),
+      },
+    ],
     sx: {
       ...smoothSx,
       "& text": { fontFamily: '"Quicksand", system-ui, sans-serif' },
@@ -199,19 +244,19 @@ function ChartPanel({
             {...sharedProps}
             xAxis={[{ data: fullXData, scaleType: "point", tickInterval }]}
           >
-            {maxVal !== null && (
+            {scaledMaxVal !== null && (
               <ChartsReferenceLine
-                y={maxVal}
-                label={`Max: ${formatNumber(maxVal)} (${maxDate})`}
+                y={scaledMaxVal}
+                label={`Max: ${formatNumber(scaledMaxVal)}${rawUnit ? " " + rawUnit : ""} (${maxDate})`}
                 lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
                 labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
                 labelAlign="end"
               />
             )}
-            {minVal !== null && (
+            {scaledMinVal !== null && (
               <ChartsReferenceLine
-                y={minVal}
-                label={`Min: ${formatNumber(minVal)} (${minDate})`}
+                y={scaledMinVal}
+                label={`Min: ${formatNumber(scaledMinVal)}${rawUnit ? " " + rawUnit : ""} (${minDate})`}
                 lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
                 labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
                 labelAlign="end"
