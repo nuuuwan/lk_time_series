@@ -9,10 +9,10 @@
   --accent-2: #b45309;
 
   /* Type scale — 4 stops */
-  --t-xs:   0.72rem;  /* 11.5px — micro labels, indices, timestamps */
-  --t-sm:   0.82rem;  /* 13px   — secondary meta, breadcrumbs */
-  --t-base: 0.93rem;  /* 15px   — body text, primary list values */
-  --t-lg:   1.1rem;   /* 17.6px — panel headings, chart title */
+  --t-xs: 0.72rem; /* 11.5px — micro labels, indices, timestamps */
+  --t-sm: 0.82rem; /* 13px   — secondary meta, breadcrumbs */
+  --t-base: 0.93rem; /* 15px   — body text, primary list values */
+  --t-lg: 1.1rem; /* 17.6px — panel headings, chart title */
 }
 
 * {
@@ -126,7 +126,9 @@
 
 .app-bar-dice-btn.MuiIconButton-root {
   color: var(--muted-ink);
-  transition: color 0.15s, transform 0.18s;
+  transition:
+    color 0.15s,
+    transform 0.18s;
 }
 
 .app-bar-dice-btn.MuiIconButton-root:hover {
@@ -358,7 +360,9 @@
   flex-shrink: 0;
   margin-left: auto;
   opacity: 0;
-  transition: opacity 0.15s, color 0.15s;
+  transition:
+    opacity 0.15s,
+    color 0.15s;
   color: var(--accent) !important;
 }
 

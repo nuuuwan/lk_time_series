@@ -61,8 +61,7 @@ export default function HomePageLayout({
   }
 
   // Find meta + series for the detail panel
-  const detailDataset =
-    datasets.find((d) => d.meta.key === detailKey) ?? null;
+  const detailDataset = datasets.find((d) => d.meta.key === detailKey) ?? null;
   const detailMeta =
     detailDataset?.meta ??
     (metadata ?? []).find((m) => m.key === detailKey) ??
