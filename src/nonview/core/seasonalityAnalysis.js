@@ -50,7 +50,14 @@ function bucketCycleDeviations(pts, groupFn, count) {
   const pctDeviations = buckets.map(
     (b) => b.reduce((s, v) => s + v, 0) / b.length,
   );
-  return { pctDeviations, cycleMeans };
+
+  const stdDevs = buckets.map((b, i) => {
+    const mean = pctDeviations[i];
+    const variance = b.reduce((s, v) => s + (v - mean) ** 2, 0) / b.length;
+    return Math.sqrt(variance);
+  });
+
+  return { pctDeviations, stdDevs, cycleMeans };
 }
 
 function getSeasonConfig(pts) {
@@ -115,15 +122,17 @@ export function getSeasonalityData(series) {
 
   const result = bucketCycleDeviations(pts, groupFn, count);
   if (!result) return null;
-  const { pctDeviations, cycleMeans } = result;
-
-  const amplitude =
-    (Math.max(...pctDeviations) - Math.min(...pctDeviations)) / 2;
-
-  if (amplitude < 2.5) return null;
+  const { pctDeviations, stdDevs, cycleMeans } = result;
 
   const maxPct = Math.max(...pctDeviations);
   const minPct = Math.min(...pctDeviations);
+  const amplitude = (maxPct - minPct) / 2;
+  const hasPattern = amplitude >= 2.5;
+
+  const meanStd = stdDevs.reduce((s, v) => s + v, 0) / stdDevs.length;
+  const snr = meanStd > 0 ? amplitude / meanStd : 0;
+  const confidence =
+    snr >= 2.5 ? "high" : snr >= 1.5 ? "medium" : snr >= 0.75 ? "low" : "none";
 
   const allPoints = pts
     .map((p, i) => {
@@ -142,8 +151,11 @@ export function getSeasonalityData(series) {
     labels,
     count,
     pctDeviations,
+    stdDevs,
     allPoints,
     amplitude,
+    hasPattern,
+    confidence,
     peakLabel: labels[pctDeviations.indexOf(maxPct)],
     troughLabel: labels[pctDeviations.indexOf(minPct)],
     peakPct: maxPct,

@@ -122,6 +122,24 @@
   font-size: 0.9rem;
 }
 
+.panel-subtitle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.panel-subtitle-row .panel-subtitle {
+  margin: 0;
+}
+
+.seasonality-confidence-note {
+  margin: -0.4rem 0 0.6rem;
+  font-size: 0.78rem;
+  color: var(--muted-ink);
+  font-style: italic;
+}
+
 .field-label {
   display: block;
   font-weight: 600;
