@@ -256,9 +256,6 @@
   font-weight: 700;
   line-height: 1.25;
   color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .chart-breadcrumb {
@@ -266,9 +263,6 @@
   font-size: var(--t-xs);
   color: var(--muted-ink);
   font-weight: 300;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   letter-spacing: 0.01em;
 }
 
@@ -278,9 +272,6 @@
   font-size: var(--t-base);
   font-weight: 700;
   color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .dataset-list-breadcrumb {
@@ -288,9 +279,6 @@
   font-size: var(--t-xs);
   font-weight: 300;
   color: var(--muted-ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   letter-spacing: 0.01em;
 }
 
@@ -391,9 +379,6 @@
 
 .dataset-list-item strong {
   font-size: var(--t-base);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .dataset-list-meta {
