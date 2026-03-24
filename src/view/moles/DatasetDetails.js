@@ -1,7 +1,6 @@
 import React from "react";
 import { buildDatasetRawUrl } from "../../nonview/core/datasetApi";
 import {
-  formatDate,
   formatNumber,
   formatDateByFrequency,
 } from "../../nonview/core/timeSeriesUtils";
