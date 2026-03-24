@@ -129,8 +129,8 @@ function SeasonalityPanel({ mainSeries }) {
         margin={{ left: 52, right: 16, top: 12, bottom: 36 }}
         hideLegend
         sx={{
-          "& text": { fontFamily: '"Quicksand", system-ui, sans-serif' },
-          "& tspan": { fontFamily: '"Quicksand", system-ui, sans-serif' },
+          "& text": { fontFamily: '"Lato", system-ui, sans-serif' },
+          "& tspan": { fontFamily: '"Lato", system-ui, sans-serif' },
         }}
       >
         <ChartsReferenceLine

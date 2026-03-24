@@ -304,10 +304,10 @@
   margin-top: 0.45rem;
 }
 
-/* Pull Quicksand into MUI chart SVG text */
+/* Pull Lato into MUI chart SVG text */
 .chart-wrap svg text,
 .chart-wrap svg tspan {
-  font-family: "Quicksand", system-ui, sans-serif !important;
+  font-family: "Lato", system-ui, sans-serif !important;
 }
 
 .chart-legend {

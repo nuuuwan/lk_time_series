@@ -210,8 +210,8 @@ function ChartPanel({
     ],
     sx: {
       ...smoothSx,
-      "& text": { fontFamily: '"Quicksand", system-ui, sans-serif' },
-      "& tspan": { fontFamily: '"Quicksand", system-ui, sans-serif' },
+      "& text": { fontFamily: '"Lato", system-ui, sans-serif' },
+      "& tspan": { fontFamily: '"Lato", system-ui, sans-serif' },
     },
     hideLegend: true,
   };
