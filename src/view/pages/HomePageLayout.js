@@ -76,6 +76,15 @@ export default function HomePageLayout({
   const drawerMeta = drawerDataset?.meta ?? selectedMeta;
   const drawerSeries = drawerDataset?.mainSeries ?? mainSeries;
 
+  function handleDice() {
+    const pool = metadata.length > 0 ? metadata : filteredMetadata;
+    if (!pool.length) return;
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    setSelectedKey(pick.key);
+    setDrawerKey(pick.key);
+    setDrawerOpen(true);
+  }
+
   return (
     <>
       <AppBar position="static" className="app-bar">
@@ -104,6 +113,25 @@ export default function HomePageLayout({
               </p>
             )}
           </div>
+          <IconButton
+            className="app-bar-dice-btn"
+            onClick={handleDice}
+            aria-label="Random dataset"
+            title="Surprise me — open a random dataset"
+            size="small"
+            disabled={metadata.length === 0}
+          >
+            {/* Dice face showing 6 dots */}
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="2" width="16" height="16" rx="3" />
+              <circle cx="6.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+              <circle cx="13.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+              <circle cx="6.5" cy="10" r="1" fill="currentColor" stroke="none" />
+              <circle cx="13.5" cy="10" r="1" fill="currentColor" stroke="none" />
+              <circle cx="6.5" cy="13.5" r="1" fill="currentColor" stroke="none" />
+              <circle cx="13.5" cy="13.5" r="1" fill="currentColor" stroke="none" />
+            </svg>
+          </IconButton>
           <IconButton
             className="app-bar-menu-btn"
             onClick={(e) => setMenuAnchor(e.currentTarget)}

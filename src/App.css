@@ -142,6 +142,16 @@
   color: var(--muted-ink);
 }
 
+.app-bar-dice-btn.MuiIconButton-root {
+  color: var(--muted-ink);
+  transition: color 0.15s, transform 0.18s;
+}
+
+.app-bar-dice-btn.MuiIconButton-root:hover {
+  color: var(--accent);
+  transform: rotate(20deg) scale(1.1);
+}
+
 .top-nav-title-row {
   display: flex;
   align-items: center;
