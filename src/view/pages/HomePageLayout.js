@@ -14,8 +14,6 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 export default function HomePageLayout({
   metadataLoading,
@@ -43,8 +41,6 @@ export default function HomePageLayout({
 }) {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [isNarrow, setIsNarrow] = useState(() => window.innerWidth < 800);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
   const [detailKey, setDetailKey] = useState(null);
 
   useEffect(() => {
@@ -79,7 +75,7 @@ export default function HomePageLayout({
   }
 
   return (
-    <>
+    <div className="app-layout">
       <AppBar position="sticky" className="app-bar">
         <Toolbar className="app-bar-toolbar" disableGutters>
           <div className="app-bar-left">
@@ -201,70 +197,51 @@ export default function HomePageLayout({
       </AppBar>
 
       <div className="page-body">
-        {/* ── Collapsible Sidebar ── */}
-        <aside
-          className={`sidebar${sidebarCollapsed ? " sidebar-collapsed" : ""}`}
-        >
+        {/* ── Left column ── */}
+        <aside className="sidebar">
           <div className="sidebar-inner">
-            {!sidebarCollapsed && (
-              <>
-                {isNarrow && (
-                  <Alert severity="warning" className="narrow-screen-alert">
-                    This tool is designed for wide desktop screens.
-                  </Alert>
-                )}
-                {metadataLoading && (
-                  <div className="global-loading">
-                    <CircularProgress size={18} thickness={5} />
-                    <span>Loading catalog…</span>
-                  </div>
-                )}
-                {metadataError && (
-                  <div className="global-message error">{metadataError}</div>
-                )}
-                {datasetError && (
-                  <div className="global-message error">{datasetError}</div>
-                )}
-                {datasetLoading && (
-                  <div className="global-loading">
-                    <CircularProgress size={18} thickness={5} />
-                    <span>Loading dataset…</span>
-                  </div>
-                )}
-                <FilterPanel
-                  filters={filters}
-                  onFilterChange={onFilterChange}
-                  onReset={onResetFilters}
-                  options={options}
-                  resultCount={filteredMetadata.length}
-                  datasetCount={metadata.length}
-                  searchQuery={searchQuery}
-                  onSearchQueryChange={setSearchQuery}
-                />
-                <DatasetList
-                  datasets={filteredMetadata}
-                  selectedKeys={datasets.map((d) => d.meta.key)}
-                  selectedUnit={datasets[0]?.meta?.unit ?? null}
-                  selectedScale={datasets[0]?.meta?.scale ?? null}
-                  onToggleDataset={handleToggleDataset}
-                  onSelectForDetail={handleSelectForDetail}
-                />
-              </>
+            {isNarrow && (
+              <Alert severity="warning" className="narrow-screen-alert">
+                This tool is designed for wide desktop screens.
+              </Alert>
             )}
+            {metadataLoading && (
+              <div className="global-loading">
+                <CircularProgress size={18} thickness={5} />
+                <span>Loading catalog…</span>
+              </div>
+            )}
+            {metadataError && (
+              <div className="global-message error">{metadataError}</div>
+            )}
+            {datasetError && (
+              <div className="global-message error">{datasetError}</div>
+            )}
+            {datasetLoading && (
+              <div className="global-loading">
+                <CircularProgress size={18} thickness={5} />
+                <span>Loading dataset…</span>
+              </div>
+            )}
+            <FilterPanel
+              filters={filters}
+              onFilterChange={onFilterChange}
+              onReset={onResetFilters}
+              options={options}
+              resultCount={filteredMetadata.length}
+              datasetCount={metadata.length}
+              searchQuery={searchQuery}
+              onSearchQueryChange={setSearchQuery}
+            />
+            <DatasetList
+              datasets={filteredMetadata}
+              selectedKeys={datasets.map((d) => d.meta.key)}
+              selectedUnit={datasets[0]?.meta?.unit ?? null}
+              selectedScale={datasets[0]?.meta?.scale ?? null}
+              onToggleDataset={handleToggleDataset}
+              onSelectForDetail={handleSelectForDetail}
+            />
           </div>
-          <button
-            className="sidebar-collapse-btn"
-            onClick={() => setSidebarCollapsed((v) => !v)}
-            aria-label={
-              sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
-            }
-          >
-            {sidebarCollapsed ? (
-              <ChevronRightIcon fontSize="small" />
-            ) : (
-              <ChevronLeftIcon fontSize="small" />
-            )}
-          </button>
         </aside>
 
         {/* ── Main chart area ── */}
@@ -284,51 +261,15 @@ export default function HomePageLayout({
           </footer>
         </main>
 
-        {/* ── Persistent Right Sidebar ── */}
-        <aside
-          className={`right-sidebar${rightSidebarCollapsed ? " right-sidebar-collapsed" : ""}`}
-        >
-          <button
-            className="right-sidebar-collapse-btn"
-            onClick={() => setRightSidebarCollapsed((v) => !v)}
-            aria-label={
-              rightSidebarCollapsed
-                ? "Expand details panel"
-                : "Collapse details panel"
-            }
-          >
-            {rightSidebarCollapsed ? (
-              <ChevronLeftIcon fontSize="small" />
-            ) : (
-              <ChevronRightIcon fontSize="small" />
-            )}
-          </button>
+        {/* ── Right column ── */}
+        <aside className="right-sidebar">
           <div className="right-sidebar-inner">
-            <details className="sidebar-accordion" open>
-              <summary className="sidebar-accordion-summary">
-                Dataset Details
-              </summary>
-              <div className="sidebar-accordion-body">
-                <DatasetDetails meta={detailMeta} mainSeries={detailSeries} />
-              </div>
-            </details>
-            <details className="sidebar-accordion">
-              <summary className="sidebar-accordion-summary">
-                Seasonality
-              </summary>
-              <div className="sidebar-accordion-body">
-                <SeasonalityPanel mainSeries={detailSeries} />
-              </div>
-            </details>
-            <details className="sidebar-accordion">
-              <summary className="sidebar-accordion-summary">Forecast</summary>
-              <div className="sidebar-accordion-body">
-                <ForecastPanel mainSeries={detailSeries} />
-              </div>
-            </details>
+            <DatasetDetails meta={detailMeta} mainSeries={detailSeries} />
+            <SeasonalityPanel mainSeries={detailSeries} />
+            <ForecastPanel mainSeries={detailSeries} />
           </div>
         </aside>
       </div>
-    </>
+    </div>
   );
 }
