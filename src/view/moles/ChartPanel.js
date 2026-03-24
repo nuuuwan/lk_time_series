@@ -55,8 +55,7 @@ function ChartPanel({
   const now = new Date().getFullYear();
   const fullMinYear =
     parseYear(selectedMeta?.summary_statistics?.min_t) ?? now - 10;
-  const fullMaxYear =
-    parseYear(selectedMeta?.summary_statistics?.max_t) ?? now;
+  const fullMaxYear = parseYear(selectedMeta?.summary_statistics?.max_t) ?? now;
 
   // Derive committed slider value from timeWindow prop
   const committedSlider = Array.isArray(timeWindow)
@@ -65,8 +64,8 @@ function ChartPanel({
         new Date(timeWindow[1]).getUTCFullYear(),
       ]
     : timeWindow === "all" || !timeWindow
-    ? [fullMinYear, fullMaxYear]
-    : [Math.max(fullMinYear, fullMaxYear - Number(timeWindow)), fullMaxYear];
+      ? [fullMinYear, fullMaxYear]
+      : [Math.max(fullMinYear, fullMaxYear - Number(timeWindow)), fullMaxYear];
 
   const [localSlider, setLocalSlider] = useState(committedSlider);
 
@@ -79,8 +78,7 @@ function ChartPanel({
   const markStep =
     yearSpan > 30 ? 10 : yearSpan > 15 ? 5 : yearSpan > 7 ? 2 : 1;
   const sliderMarks = [];
-  const firstMark =
-    Math.ceil(fullMinYear / markStep) * markStep;
+  const firstMark = Math.ceil(fullMinYear / markStep) * markStep;
   for (let y = firstMark; y <= fullMaxYear; y += markStep) {
     sliderMarks.push({ value: y, label: String(y) });
   }
