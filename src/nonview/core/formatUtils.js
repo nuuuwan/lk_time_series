@@ -77,19 +77,6 @@ export const getDeterministicInsightLines = (series) => {
   ];
 };
 
-/**
- * Split a raw database dataset name like "A-B-C-D" into a human-readable
- * metric name (last segment) and a breadcrumb path (preceding segments).
- * Uses a lookbehind to avoid splitting inside abbreviations like "G.C.E.(O-L)".
- */
 export function splitDatasetName(raw) {
-  const parts = (raw || "").split(/(?<=[a-z])-(?=[A-Z])/);
-  if (parts.length <= 1) return { metric: (raw || "").trim(), breadcrumb: "" };
-  return {
-    metric: parts[parts.length - 1].trim(),
-    breadcrumb: parts
-      .slice(0, -1)
-      .map((s) => s.trim())
-      .join(" · "),
-  };
+  return { metric: (raw || "").trim(), breadcrumb: "" };
 }
