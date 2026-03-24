@@ -410,6 +410,19 @@
   color: var(--muted-ink);
 }
 
+.global-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.55rem 0;
+  font-size: 0.9rem;
+  color: var(--muted-ink);
+}
+
+.global-loading .MuiCircularProgress-root {
+  color: var(--accent);
+}
+
 .global-message.error {
   color: #9f1239;
 }

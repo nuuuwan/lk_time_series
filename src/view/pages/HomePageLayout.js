@@ -13,6 +13,7 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Alert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function HomePageLayout({
   metadataLoading,
@@ -112,7 +113,10 @@ export default function HomePageLayout({
           </Alert>
         )}
         {metadataLoading && (
-          <div className="global-message">Loading metadata catalog...</div>
+          <div className="global-loading">
+            <CircularProgress size={18} thickness={5} />
+            <span>Loading metadata catalog…</span>
+          </div>
         )}
         {metadataError && (
           <div className="global-message error">{metadataError}</div>
@@ -121,7 +125,10 @@ export default function HomePageLayout({
           <div className="global-message error">{datasetError}</div>
         )}
         {datasetLoading && (
-          <div className="global-message">Loading dataset time-series...</div>
+          <div className="global-loading">
+            <CircularProgress size={18} thickness={5} />
+            <span>Loading dataset…</span>
+          </div>
         )}
         <div className="layout-grid">
           <div className="layout-cell search-cell">
@@ -148,7 +155,9 @@ export default function HomePageLayout({
               onTimeWindowChange={setTimeWindow}
               movingWindow={movingWindow}
               onMovingWindowChange={setMovingWindow}
-              onClose={datasets.length > 0 ? () => setSelectedKey(null) : undefined}
+              onClose={
+                datasets.length > 0 ? () => setSelectedKey(null) : undefined
+              }
             />
           </div>
           <div className="layout-right-col">

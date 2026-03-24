@@ -72,7 +72,9 @@ function ChartPanel({
     return [...set].sort();
   })();
 
-  const timeMsValues = primarySeries.map((p) => p.timeMs).filter(Number.isFinite);
+  const timeMsValues = primarySeries
+    .map((p) => p.timeMs)
+    .filter(Number.isFinite);
   const dataSpanYears =
     timeMsValues.length >= 2
       ? (Math.max(...timeMsValues) - Math.min(...timeMsValues)) /
@@ -81,7 +83,8 @@ function ChartPanel({
 
   // Slider: use primary dataset metadata
   const now = new Date().getFullYear();
-  const fullMinYear = parseYear(primaryMeta?.summary_statistics?.min_t) ?? now - 10;
+  const fullMinYear =
+    parseYear(primaryMeta?.summary_statistics?.min_t) ?? now - 10;
   const fullMaxYear = parseYear(primaryMeta?.summary_statistics?.max_t) ?? now;
 
   const committedSlider = Array.isArray(timeWindow)
@@ -100,7 +103,8 @@ function ChartPanel({
   }, [timeWindow, fullMinYear, fullMaxYear]); // eslint-disable-line
 
   const yearSpan = fullMaxYear - fullMinYear;
-  const markStep = yearSpan > 30 ? 10 : yearSpan > 15 ? 5 : yearSpan > 7 ? 2 : 1;
+  const markStep =
+    yearSpan > 30 ? 10 : yearSpan > 15 ? 5 : yearSpan > 7 ? 2 : 1;
   const sliderMarks = [];
   const firstMark = Math.ceil(fullMinYear / markStep) * markStep;
   for (let y = firstMark; y <= fullMaxYear; y += markStep) {
@@ -121,26 +125,40 @@ function ChartPanel({
   // Build per-dataset scale factors independently so each normalises cleanly
   const seriesList = datasets.map(({ meta, mainSeries }, i) => {
     const color = PALETTE[i % PALETTE.length];
-    const values = mainSeries.map((p) => p.value).filter((v) => v !== null && Number.isFinite(v));
+    const values = mainSeries
+      .map((p) => p.value)
+      .filter((v) => v !== null && Number.isFinite(v));
     const maxAbs = values.reduce((m, v) => Math.max(m, Math.abs(v)), 0);
 
     let sf = 1;
     let prefix = "";
-    if (maxAbs >= 1e9) { sf = 1e9; prefix = "B"; }
-    else if (maxAbs >= 1e6) { sf = 1e6; prefix = "M"; }
-    else if (maxAbs >= 1e4) { sf = 1e3; prefix = "K"; }
+    if (maxAbs >= 1e9) {
+      sf = 1e9;
+      prefix = "B";
+    } else if (maxAbs >= 1e6) {
+      sf = 1e6;
+      prefix = "M";
+    } else if (maxAbs >= 1e4) {
+      sf = 1e3;
+      prefix = "K";
+    }
 
     const scale = (v) => (v !== null && Number.isFinite(v) ? v / sf : v);
     const rawUnit = meta?.unit || "";
     const label = meta?.sub_category || `Series ${i + 1}`;
-    const unitTag = prefix ? `${rawUnit ? rawUnit + " " : ""}(${prefix})` : rawUnit;
+    const unitTag = prefix
+      ? `${rawUnit ? rawUnit + " " : ""}(${prefix})`
+      : rawUnit;
     const seriesLabel = unitTag ? `${label} [${unitTag}]` : label;
 
     // Map date → scaled value for quick lookup
     const dateMap = new Map(
       mainSeries
         .filter((p) => Number.isFinite(p.timeMs))
-        .map((p) => [new Date(p.timeMs).toISOString().slice(0, 10), scale(p.value)]),
+        .map((p) => [
+          new Date(p.timeMs).toISOString().slice(0, 10),
+          scale(p.value),
+        ]),
     );
     const data = allDates.map((d) => dateMap.get(d) ?? null);
 
@@ -172,16 +190,24 @@ function ChartPanel({
           else if (maxAbs >= 1e6) prefix = "Millions";
           else if (maxAbs >= 1e4) prefix = "Thousands";
           const rawUnit = meta?.unit || "";
-          const unitScale = rawUnit && prefix ? `${rawUnit} (${prefix})` : rawUnit || prefix || "";
+          const unitScale =
+            rawUnit && prefix
+              ? `${rawUnit} (${prefix})`
+              : rawUnit || prefix || "";
           const name = meta?.sub_category || "";
           return unitScale ? `${name} [${unitScale}]` : name || undefined;
         })()
       : "Value";
 
   // Dynamically size left margin based on largest tick label
-  const allScaledVals = seriesList.flatMap((s) => s.data.filter((v) => v !== null && Number.isFinite(v)));
+  const allScaledVals = seriesList.flatMap((s) =>
+    s.data.filter((v) => v !== null && Number.isFinite(v)),
+  );
   const maxScaled = allScaledVals.reduce((m, v) => Math.max(m, Math.abs(v)), 0);
-  const dynamicLeft = Math.max(64, new Intl.NumberFormat().format(maxScaled).length * 8 + 20);
+  const dynamicLeft = Math.max(
+    64,
+    new Intl.NumberFormat().format(maxScaled).length * 8 + 20,
+  );
 
   const n = allDates.length;
   const shownTickIndices = (() => {
@@ -302,7 +328,14 @@ function ChartPanel({
           {seriesList.map((s, i) => (
             <span key={s.id} className="chart-legend-item">
               <svg width="36" height="10">
-                <line x1="0" y1="5" x2="36" y2="5" stroke={s.color} strokeWidth="2" />
+                <line
+                  x1="0"
+                  y1="5"
+                  x2="36"
+                  y2="5"
+                  stroke={s.color}
+                  strokeWidth="2"
+                />
               </svg>
               {s.label}
             </span>
