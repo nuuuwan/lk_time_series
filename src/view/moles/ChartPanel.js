@@ -149,10 +149,13 @@ function ChartPanel({
     scalePrefix = "Thousands";
   }
   const rawUnit = selectedMeta?.unit || "";
-  const yAxisLabel =
+  const unitScale =
     rawUnit && scalePrefix
       ? `${rawUnit} (${scalePrefix})`
-      : rawUnit || scalePrefix || undefined;
+      : rawUnit || scalePrefix || "";
+  const yAxisLabel = unitScale
+    ? `${datasetName} [${unitScale}]`
+    : datasetName || undefined;
   const xAxisLabel = selectedMeta?.frequency_name || undefined;
   const xTickFormatter = (v) =>
     formatDateByFrequency(v, selectedMeta?.frequency_name);
@@ -203,7 +206,7 @@ function ChartPanel({
       id: "main",
       data: [...scaledMainData, ...scaledPad],
       label: isSmoothed ? smoothLabel : datasetName,
-      showMark: false,
+      showMark: true,
       curve: "linear",
       color: isSmoothed ? "#e07b39" : "#0f766e",
       valueFormatter: (v) =>
