@@ -62,9 +62,14 @@ export default function HomePageLayout({
 
   // Find meta + series for the detail panel
   const detailDataset =
-    datasets.find((d) => d.meta.key === detailKey) ?? datasets[0] ?? null;
-  const detailMeta = detailDataset?.meta ?? selectedMeta;
-  const detailSeries = detailDataset?.mainSeries ?? mainSeries;
+    datasets.find((d) => d.meta.key === detailKey) ?? null;
+  const detailMeta =
+    detailDataset?.meta ??
+    (metadata ?? []).find((m) => m.key === detailKey) ??
+    filteredMetadata.find((m) => m.key === detailKey) ??
+    datasets[0]?.meta ??
+    null;
+  const detailSeries = detailDataset?.mainSeries ?? null;
 
   function handleDice() {
     const pool = metadata.length > 0 ? metadata : filteredMetadata;

@@ -234,7 +234,9 @@ function ChartPanel({
   if (datasets.length === 0) {
     return (
       <section className="panel chart-panel chart-panel-empty" ref={panelRef}>
-        <p className="chart-empty-prompt">Pick a dataset from the left panel.</p>
+        <p className="chart-empty-prompt">
+          Pick a dataset from the left panel.
+        </p>
       </section>
     );
   }
