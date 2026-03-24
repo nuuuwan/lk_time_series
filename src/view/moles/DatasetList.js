@@ -1,7 +1,5 @@
 import React from "react";
-import {
-  formatDateByFrequency,
-} from "../../nonview/core/timeSeriesUtils";
+import { formatDateByFrequency } from "../../nonview/core/timeSeriesUtils";
 import {
   getSourceLabel,
   getSourceImage,
@@ -30,7 +28,7 @@ function DatasetList({ datasets, selectedKey, onSelectDataset }) {
     <section className="panel dataset-list-panel">
       <div className="dataset-list" role="listbox" aria-label="Dataset results">
         {sorted.map((meta, idx) => (
-        <div
+          <div
             key={meta.key}
             className={`dataset-list-item ${meta.key === selectedKey ? "active" : ""}`}
             onClick={() => onSelectDataset(meta.key)}
@@ -38,8 +36,7 @@ function DatasetList({ datasets, selectedKey, onSelectDataset }) {
             aria-selected={meta.key === selectedKey}
             tabIndex={0}
             onKeyDown={(e) =>
-              (e.key === "Enter" || e.key === " ") &&
-              onSelectDataset(meta.key)
+              (e.key === "Enter" || e.key === " ") && onSelectDataset(meta.key)
             }
           >
             <span className="dataset-list-num">{idx + 1}</span>
