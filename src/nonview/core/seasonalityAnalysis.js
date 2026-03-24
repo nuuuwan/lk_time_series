@@ -22,11 +22,55 @@ function medianInterval(pts) {
   return ivs[Math.floor(ivs.length / 2)];
 }
 
-function bucketMeans(pts, groupFn, count) {
+// Returns per-season-bucket mean % deviation from cycle (year) mean.
+// For monthly data the cycle is a calendar year; same for quarterly.
+// This normalises out long-run trend so the seasonal signal is isolated.
+function bucketCycleDeviations(pts, groupFn, count) {
+  // Step 1: compute the mean for each cycle (year)
+  const cycleMap = {};
+  for (const p of pts) {
+    const yr = new Date(p.timeMs).getUTCFullYear();
+    if (!cycleMap[yr]) cycleMap[yr] = [];
+    cycleMap[yr].push(p.value);
+  }
+  const cycleMeans = {};
+  for (const [yr, vals] of Object.entries(cycleMap)) {
+    cycleMeans[yr] = vals.reduce((s, v) => s + v, 0) / vals.length;
+  }
+
+  // Step 2: for each point, compute % deviation from its cycle mean
   const buckets = Array.from({ length: count }, () => []);
-  for (const p of pts) buckets[groupFn(p)].push(p.value);
+  for (const p of pts) {
+    const cm = cycleMeans[new Date(p.timeMs).getUTCFullYear()];
+    if (!cm || cm === 0) continue;
+    buckets[groupFn(p)].push(((p.value - cm) / Math.abs(cm)) * 100);
+  }
   if (buckets.some((b) => b.length < 2)) return null;
-  return buckets.map((b) => b.reduce((s, v) => s + v, 0) / b.length);
+
+  const pctDeviations = buckets.map(
+    (b) => b.reduce((s, v) => s + v, 0) / b.length,
+  );
+  return { pctDeviations, cycleMeans };
+}
+
+function getSeasonConfig(pts) {
+  const median = medianInterval(pts);
+  if (median < 50 * DAY_MS) {
+    return {
+      count: 12,
+      labels: MONTH_NAMES,
+      periodLabel: "Monthly",
+      groupFn: (p) => new Date(p.timeMs).getUTCMonth(),
+    };
+  } else if (median < 120 * DAY_MS) {
+    return {
+      count: 4,
+      labels: ["Q1", "Q2", "Q3", "Q4"],
+      periodLabel: "Quarterly",
+      groupFn: (p) => Math.floor(new Date(p.timeMs).getUTCMonth() / 3),
+    };
+  }
+  return null;
 }
 
 export function getSeasonalityInsightLines(series) {
@@ -35,44 +79,27 @@ export function getSeasonalityInsightLines(series) {
   );
   if (pts.length < 16) return [];
 
-  const median = medianInterval(pts);
-  let count, labels, groupFn, periodLabel;
+  const config = getSeasonConfig(pts);
+  if (!config) return [];
+  const { count, labels, groupFn, periodLabel } = config;
 
-  if (median < 50 * DAY_MS) {
-    count = 12;
-    labels = MONTH_NAMES;
-    periodLabel = "Monthly";
-    groupFn = (p) => new Date(p.timeMs).getUTCMonth();
-  } else if (median < 120 * DAY_MS) {
-    count = 4;
-    labels = ["Q1", "Q2", "Q3", "Q4"];
-    periodLabel = "Quarterly";
-    groupFn = (p) => Math.floor(new Date(p.timeMs).getUTCMonth() / 3);
-  } else {
-    return [];
-  }
+  const result = bucketCycleDeviations(pts, groupFn, count);
+  if (!result) return [];
+  const { pctDeviations } = result;
 
-  const means = bucketMeans(pts, groupFn, count);
-  if (!means) return [];
-
-  const overallMean = means.reduce((s, v) => s + v, 0) / means.length;
-  if (overallMean === 0) return [];
-
-  const maxVal = Math.max(...means);
-  const minVal = Math.min(...means);
-  const amplitude = ((maxVal - minVal) / Math.abs(overallMean)) * 100;
+  const maxPct = Math.max(...pctDeviations);
+  const minPct = Math.min(...pctDeviations);
+  const amplitude = maxPct - minPct;
 
   if (amplitude < 5) return ["No significant seasonal pattern detected."];
 
-  const peakLabel = labels[means.indexOf(maxVal)];
-  const troughLabel = labels[means.indexOf(minVal)];
-  const peakPct = ((maxVal - overallMean) / Math.abs(overallMean)) * 100;
-  const troughPct = ((minVal - overallMean) / Math.abs(overallMean)) * 100;
+  const peakLabel = labels[pctDeviations.indexOf(maxPct)];
+  const troughLabel = labels[pctDeviations.indexOf(minPct)];
 
   return [
-    `${periodLabel} seasonality detected (amplitude ±${amplitude.toFixed(0)}% around mean).`,
-    `Peak: ${peakLabel} — +${peakPct.toFixed(1)}% above mean.`,
-    `Trough: ${troughLabel} — ${troughPct.toFixed(1)}% below mean.`,
+    `${periodLabel} seasonality detected (amplitude ±${(amplitude / 2).toFixed(0)}% around mean).`,
+    `Peak: ${peakLabel} — +${maxPct.toFixed(1)}% above mean.`,
+    `Trough: ${troughLabel} — ${minPct.toFixed(1)}% below mean.`,
   ];
 }
 
@@ -82,32 +109,14 @@ export function getSeasonalityData(series) {
   );
   if (pts.length < 16) return null;
 
-  const median = medianInterval(pts);
-  let count, labels, groupFn, periodLabel;
+  const config = getSeasonConfig(pts);
+  if (!config) return null;
+  const { count, labels, groupFn, periodLabel } = config;
 
-  if (median < 50 * DAY_MS) {
-    count = 12;
-    labels = MONTH_NAMES;
-    periodLabel = "Monthly";
-    groupFn = (p) => new Date(p.timeMs).getUTCMonth();
-  } else if (median < 120 * DAY_MS) {
-    count = 4;
-    labels = ["Q1", "Q2", "Q3", "Q4"];
-    periodLabel = "Quarterly";
-    groupFn = (p) => Math.floor(new Date(p.timeMs).getUTCMonth() / 3);
-  } else {
-    return null;
-  }
+  const result = bucketCycleDeviations(pts, groupFn, count);
+  if (!result) return null;
+  const { pctDeviations, cycleMeans } = result;
 
-  const means = bucketMeans(pts, groupFn, count);
-  if (!means) return null;
-
-  const overallMean = means.reduce((s, v) => s + v, 0) / means.length;
-  if (overallMean === 0) return null;
-
-  const pctDeviations = means.map(
-    (v) => ((v - overallMean) / Math.abs(overallMean)) * 100,
-  );
   const amplitude =
     (Math.max(...pctDeviations) - Math.min(...pctDeviations)) / 2;
 
@@ -116,11 +125,17 @@ export function getSeasonalityData(series) {
   const maxPct = Math.max(...pctDeviations);
   const minPct = Math.min(...pctDeviations);
 
-  const allPoints = pts.map((p, i) => ({
-    id: `pt-${i}`,
-    x: groupFn(p),
-    y: ((p.value - overallMean) / Math.abs(overallMean)) * 100,
-  }));
+  const allPoints = pts
+    .map((p, i) => {
+      const cm = cycleMeans[new Date(p.timeMs).getUTCFullYear()];
+      if (!cm || cm === 0) return null;
+      return {
+        id: `pt-${i}`,
+        x: groupFn(p),
+        y: ((p.value - cm) / Math.abs(cm)) * 100,
+      };
+    })
+    .filter(Boolean);
 
   return {
     periodLabel,
