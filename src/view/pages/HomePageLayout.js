@@ -29,6 +29,8 @@ export default function HomePageLayout({
   setSearchQuery,
   selectedMeta,
   setSelectedKey,
+  toggleKey,
+  datasets,
   mainSeries,
   rawSeries,
   timeWindow,
@@ -135,20 +137,18 @@ export default function HomePageLayout({
             />
             <DatasetList
               datasets={filteredMetadata}
-              selectedKey={selectedMeta?.key || ""}
-              onSelectDataset={setSelectedKey}
+              selectedKeys={datasets.map((d) => d.meta.key)}
+              onToggleDataset={toggleKey}
             />
           </div>
           <div className="layout-cell chart-cell">
             <ChartPanel
-              selectedMeta={selectedMeta}
-              mainSeries={mainSeries}
-              rawSeries={rawSeries}
+              datasets={datasets}
               timeWindow={timeWindow}
               onTimeWindowChange={setTimeWindow}
               movingWindow={movingWindow}
               onMovingWindowChange={setMovingWindow}
-              onClose={selectedMeta ? () => setSelectedKey(null) : undefined}
+              onClose={datasets.length > 0 ? () => setSelectedKey(null) : undefined}
             />
           </div>
           <div className="layout-right-col">

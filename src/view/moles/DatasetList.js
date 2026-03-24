@@ -8,7 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
 
-function DatasetList({ datasets, selectedKey, onSelectDataset }) {
+function DatasetList({ datasets, selectedKeys = [], onToggleDataset }) {
   const sorted = [...datasets]
     .sort((a, b) => {
       // Normalise max_t: bare year → "YYYY-12-31" so it sorts correctly against ISO dates
@@ -30,13 +30,13 @@ function DatasetList({ datasets, selectedKey, onSelectDataset }) {
         {sorted.map((meta, idx) => (
           <div
             key={meta.key}
-            className={`dataset-list-item ${meta.key === selectedKey ? "active" : ""}`}
-            onClick={() => onSelectDataset(meta.key)}
+            className={`dataset-list-item ${selectedKeys.includes(meta.key) ? "active" : ""}`}
+            onClick={() => onToggleDataset(meta.key)}
             role="option"
-            aria-selected={meta.key === selectedKey}
+            aria-selected={selectedKeys.includes(meta.key)}
             tabIndex={0}
             onKeyDown={(e) =>
-              (e.key === "Enter" || e.key === " ") && onSelectDataset(meta.key)
+              (e.key === "Enter" || e.key === " ") && onToggleDataset(meta.key)
             }
           >
             <span className="dataset-list-num">{idx + 1}</span>
@@ -67,11 +67,11 @@ function DatasetList({ datasets, selectedKey, onSelectDataset }) {
               className="dataset-list-add-btn"
               onClick={(e) => {
                 e.stopPropagation();
-                onSelectDataset(meta.key);
+                onToggleDataset(meta.key);
               }}
               aria-label={`Select ${meta.sub_category}`}
             >
-              {meta.key === selectedKey ? (
+              {selectedKeys.includes(meta.key) ? (
                 <CheckIcon fontSize="small" />
               ) : (
                 <AddIcon fontSize="small" />

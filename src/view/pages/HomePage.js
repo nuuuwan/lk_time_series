@@ -43,7 +43,9 @@ function HomePage() {
   } = useMetadata(searchQuery, filters);
   const {
     setSelectedKey,
+    toggleKey,
     selectedMeta,
+    datasets,
     rawSeries,
     mainSeries,
     datasetError,
@@ -108,6 +110,8 @@ function HomePage() {
       setSearchQuery={setSearchQuery}
       selectedMeta={selectedMeta}
       setSelectedKey={setSelectedKey}
+      toggleKey={toggleKey}
+      datasets={datasets}
       mainSeries={mainSeries}
       rawSeries={rawSeries}
       timeWindow={timeWindow}

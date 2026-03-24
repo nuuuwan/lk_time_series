@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { LineChart, ChartsReferenceLine } from "@mui/x-charts";
+import { LineChart } from "@mui/x-charts";
 import { Slider, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { toPng } from "html-to-image";
@@ -8,7 +8,20 @@ import {
   formatNumber,
   formatDateByFrequency,
 } from "../../nonview/core/timeSeriesUtils";
-import { forecastLinear } from "../../nonview/core/forecastSeries";
+
+// Contrasting palette (colorblind-friendly)
+const PALETTE = [
+  "#0f766e", // teal
+  "#c2410c", // orange-red
+  "#1d4ed8", // blue
+  "#7e22ce", // purple
+  "#065f46", // dark green
+  "#92400e", // amber-brown
+  "#0c4a6e", // navy
+  "#be123c", // rose
+  "#3f6212", // olive
+  "#6b21a8", // violet
+];
 
 function parseYear(t) {
   const m = String(t || "").match(/^(\d{4})/);
@@ -16,9 +29,7 @@ function parseYear(t) {
 }
 
 function ChartPanel({
-  selectedMeta,
-  mainSeries,
-  rawSeries,
+  datasets = [],
   timeWindow,
   onTimeWindowChange,
   movingWindow,
@@ -27,10 +38,14 @@ function ChartPanel({
 }) {
   const panelRef = useRef(null);
 
+  // Derive primary meta from first dataset
+  const primaryMeta = datasets[0]?.meta ?? null;
+  const primarySeries = datasets[0]?.mainSeries ?? [];
+
   function downloadChart() {
     const node = panelRef.current;
     if (!node) return;
-    const label = selectedMeta?.sub_category || "chart";
+    const label = primaryMeta?.sub_category || "chart";
     const filename = label.replace(/[^a-z0-9]/gi, "_") + ".png";
     toPng(node, {
       backgroundColor: "#ffffff",
@@ -44,25 +59,31 @@ function ChartPanel({
     });
   }
 
-  const xData = mainSeries.map((point, i) =>
-    Number.isFinite(point.timeMs)
-      ? new Date(point.timeMs).toISOString().slice(0, 10)
-      : point.t || "Point " + (i + 1),
-  );
-  const timeMsValues = mainSeries.map((p) => p.timeMs).filter(Number.isFinite);
+  // Build a unified sorted x-axis (union of all date strings)
+  const allDates = (() => {
+    const set = new Set();
+    datasets.forEach(({ mainSeries }) =>
+      mainSeries.forEach((p) => {
+        if (Number.isFinite(p.timeMs)) {
+          set.add(new Date(p.timeMs).toISOString().slice(0, 10));
+        }
+      }),
+    );
+    return [...set].sort();
+  })();
+
+  const timeMsValues = primarySeries.map((p) => p.timeMs).filter(Number.isFinite);
   const dataSpanYears =
     timeMsValues.length >= 2
       ? (Math.max(...timeMsValues) - Math.min(...timeMsValues)) /
         (365.25 * 24 * 3600 * 1000)
       : 0;
 
-  // Full dataset range for slider (from metadata, not windowed series)
+  // Slider: use primary dataset metadata
   const now = new Date().getFullYear();
-  const fullMinYear =
-    parseYear(selectedMeta?.summary_statistics?.min_t) ?? now - 10;
-  const fullMaxYear = parseYear(selectedMeta?.summary_statistics?.max_t) ?? now;
+  const fullMinYear = parseYear(primaryMeta?.summary_statistics?.min_t) ?? now - 10;
+  const fullMaxYear = parseYear(primaryMeta?.summary_statistics?.max_t) ?? now;
 
-  // Derive committed slider value from timeWindow prop
   const committedSlider = Array.isArray(timeWindow)
     ? [
         new Date(timeWindow[0]).getUTCFullYear(),
@@ -74,14 +95,12 @@ function ChartPanel({
 
   const [localSlider, setLocalSlider] = useState(committedSlider);
 
-  // Sync slider when dataset changes (timeWindow resets externally)
   useEffect(() => {
     setLocalSlider(committedSlider);
   }, [timeWindow, fullMinYear, fullMaxYear]); // eslint-disable-line
 
   const yearSpan = fullMaxYear - fullMinYear;
-  const markStep =
-    yearSpan > 30 ? 10 : yearSpan > 15 ? 5 : yearSpan > 7 ? 2 : 1;
+  const markStep = yearSpan > 30 ? 10 : yearSpan > 15 ? 5 : yearSpan > 7 ? 2 : 1;
   const sliderMarks = [];
   const firstMark = Math.ceil(fullMinYear / markStep) * markStep;
   for (let y = firstMark; y <= fullMaxYear; y += markStep) {
@@ -98,141 +117,73 @@ function ChartPanel({
       ]);
     }
   };
-  const mainData = mainSeries.map((p) => p.value);
-  const isSmoothed =
-    rawSeries &&
-    rawSeries.length > 0 &&
-    movingWindow &&
-    movingWindow !== "none";
-  const rawData = isSmoothed ? rawSeries.map((p) => p.value) : null;
-  const datasetName = selectedMeta?.sub_category || "Selected Series";
-  const WINDOW_LABELS = {
-    7: "7-day avg",
-    30: "30-day avg",
-    91: "91-day avg",
-    365: "1-year avg",
-    3650: "10-year avg",
-  };
-  const smoothLabel = WINDOW_LABELS[movingWindow] || `${movingWindow}-day avg`;
 
-  // Forecast
-  const forecastSteps = Math.max(
-    5,
-    Math.min(20, Math.round(mainSeries.length * 0.1)),
-  );
-  const forecastPoints =
-    mainSeries.length >= 2 ? forecastLinear(mainSeries, forecastSteps) : [];
-  const hasForecast = forecastPoints.length > 0;
-  const forecastXData = forecastPoints.map((p) =>
-    new Date(p.timeMs).toISOString().slice(0, 10),
-  );
-  const forecastValues = forecastPoints.map((p) => p.value);
-  const lastActualValue = mainData.length
-    ? mainData[mainData.length - 1]
-    : null;
-  const fullXData = hasForecast ? [...xData, ...forecastXData] : xData;
+  // Build per-dataset scale factors independently so each normalises cleanly
+  const seriesList = datasets.map(({ meta, mainSeries }, i) => {
+    const color = PALETTE[i % PALETTE.length];
+    const values = mainSeries.map((p) => p.value).filter((v) => v !== null && Number.isFinite(v));
+    const maxAbs = values.reduce((m, v) => Math.max(m, Math.abs(v)), 0);
 
-  // Scale factor to reduce trailing zeros on Y axis
-  const allValues = mainData.filter((v) => v !== null && Number.isFinite(v));
-  const maxAbsValue = allValues.reduce(
-    (max, v) => Math.max(max, Math.abs(v)),
-    0,
-  );
-  let scaleFactor = 1;
-  let scalePrefix = "";
-  if (maxAbsValue >= 1e9) {
-    scaleFactor = 1e9;
-    scalePrefix = "Billions";
-  } else if (maxAbsValue >= 1e6) {
-    scaleFactor = 1e6;
-    scalePrefix = "Millions";
-  } else if (maxAbsValue >= 1e4) {
-    scaleFactor = 1e3;
-    scalePrefix = "Thousands";
-  }
-  const rawUnit = selectedMeta?.unit || "";
-  const unitScale =
-    rawUnit && scalePrefix
-      ? `${rawUnit} (${scalePrefix})`
-      : rawUnit || scalePrefix || "";
-  const yAxisLabel = unitScale
-    ? `${datasetName} [${unitScale}]`
-    : datasetName || undefined;
-  const xAxisLabel = selectedMeta?.frequency_name || undefined;
-  const xTickFormatter = (v) =>
-    formatDateByFrequency(v, selectedMeta?.frequency_name);
-  const scale = (v) => (v !== null && Number.isFinite(v) ? v / scaleFactor : v);
+    let sf = 1;
+    let prefix = "";
+    if (maxAbs >= 1e9) { sf = 1e9; prefix = "B"; }
+    else if (maxAbs >= 1e6) { sf = 1e6; prefix = "M"; }
+    else if (maxAbs >= 1e4) { sf = 1e3; prefix = "K"; }
 
-  const scaledMainData = mainData.map(scale);
-  const scaledRawData = rawData ? rawData.map(scale) : null;
-  const scaledForecastValues = forecastValues.map(scale);
-  const scaledLastActualValue = scale(lastActualValue);
+    const scale = (v) => (v !== null && Number.isFinite(v) ? v / sf : v);
+    const rawUnit = meta?.unit || "";
+    const label = meta?.sub_category || `Series ${i + 1}`;
+    const unitTag = prefix ? `${rawUnit ? rawUnit + " " : ""}(${prefix})` : rawUnit;
+    const seriesLabel = unitTag ? `${label} [${unitTag}]` : label;
 
-  const scaledPad = hasForecast ? Array(forecastSteps).fill(null) : [];
-  const scaledHistPad = hasForecast
-    ? [...Array(xData.length - 1).fill(null), scaledLastActualValue]
-    : [];
+    // Map date → scaled value for quick lookup
+    const dateMap = new Map(
+      mainSeries
+        .filter((p) => Number.isFinite(p.timeMs))
+        .map((p) => [new Date(p.timeMs).toISOString().slice(0, 10), scale(p.value)]),
+    );
+    const data = allDates.map((d) => dateMap.get(d) ?? null);
 
-  const scaledMaxAbs = allValues.reduce(
-    (max, v) => Math.max(max, Math.abs(v / scaleFactor)),
-    0,
-  );
-  const dynamicLeft = Math.max(
-    64,
-    new Intl.NumberFormat().format(scaledMaxAbs).length * 8 + 20,
-  );
-
-  const finiteMain = mainData.filter((v) => v !== null && Number.isFinite(v));
-  const maxVal = finiteMain.length ? Math.max(...finiteMain) : null;
-  const minVal = finiteMain.length ? Math.min(...finiteMain) : null;
-  const scaledMaxVal = scale(maxVal);
-  const scaledMinVal = scale(minVal);
-  const maxDate = maxVal !== null ? xData[mainData.indexOf(maxVal)] : null;
-  const minDate = minVal !== null ? xData[mainData.indexOf(minVal)] : null;
-
-  const series = [
-    ...(isSmoothed && scaledRawData
-      ? [
-          {
-            id: "raw",
-            data: [...scaledRawData, ...scaledPad],
-            label: datasetName,
-            showMark: false,
-            curve: "linear",
-            color: "#0f766e",
-            valueFormatter: () => "",
-          },
-        ]
-      : []),
-    {
-      id: "main",
-      data: [...scaledMainData, ...scaledPad],
-      label: isSmoothed ? smoothLabel : datasetName,
-      showMark: true,
+    return {
+      id: `ds-${i}`,
+      data,
+      label: seriesLabel,
+      color,
+      showMark: datasets.length === 1,
       curve: "linear",
-      color: isSmoothed ? "#e07b39" : "#0f766e",
       valueFormatter: (v) =>
         v !== null ? `${formatNumber(v)}${rawUnit ? " " + rawUnit : ""}` : "",
-    },
-    ...(hasForecast
-      ? [
-          {
-            id: "forecast",
-            data: [...scaledHistPad, ...scaledForecastValues],
-            label: "Forecast",
-            showMark: false,
-            curve: "linear",
-            color: "#94a3b8",
-            valueFormatter: (v) =>
-              v !== null
-                ? `${formatNumber(v)}${rawUnit ? " " + rawUnit : ""} ★`
-                : "",
-          },
-        ]
-      : []),
-  ];
+    };
+  });
 
-  const n = fullXData.length;
+  const hasData = allDates.length > 0;
+
+  // Y-axis label: single dataset shows full label, multiple shows "Multiple datasets"
+  const yAxisLabel =
+    datasets.length === 1
+      ? (() => {
+          const meta = datasets[0].meta;
+          const values = datasets[0].mainSeries
+            .map((p) => p.value)
+            .filter((v) => v !== null && Number.isFinite(v));
+          const maxAbs = values.reduce((m, v) => Math.max(m, Math.abs(v)), 0);
+          let prefix = "";
+          if (maxAbs >= 1e9) prefix = "Billions";
+          else if (maxAbs >= 1e6) prefix = "Millions";
+          else if (maxAbs >= 1e4) prefix = "Thousands";
+          const rawUnit = meta?.unit || "";
+          const unitScale = rawUnit && prefix ? `${rawUnit} (${prefix})` : rawUnit || prefix || "";
+          const name = meta?.sub_category || "";
+          return unitScale ? `${name} [${unitScale}]` : name || undefined;
+        })()
+      : "Value";
+
+  // Dynamically size left margin based on largest tick label
+  const allScaledVals = seriesList.flatMap((s) => s.data.filter((v) => v !== null && Number.isFinite(v)));
+  const maxScaled = allScaledVals.reduce((m, v) => Math.max(m, Math.abs(v)), 0);
+  const dynamicLeft = Math.max(64, new Intl.NumberFormat().format(maxScaled).length * 8 + 20);
+
+  const n = allDates.length;
   const shownTickIndices = (() => {
     if (n <= 7) return new Set(Array.from({ length: n }, (_, i) => i));
     const inner = 5;
@@ -242,29 +193,15 @@ function ChartPanel({
     return indices;
   })();
   const tickInterval = (_v, index) => shownTickIndices.has(index);
-  const lineColor = isSmoothed ? "#e07b39" : "#0f766e";
 
-  const smoothSx = {
-    ...(isSmoothed
-      ? {
-          "& .MuiLineElement-series-raw": {
-            strokeDasharray: "4 3",
-            strokeOpacity: 0.4,
-          },
-        }
-      : {}),
-    ...(hasForecast
-      ? {
-          "& .MuiLineElement-series-forecast": {
-            strokeDasharray: "6 4",
-          },
-        }
-      : {}),
-  };
+  const xTickFormatter = (v) =>
+    formatDateByFrequency(v, primaryMeta?.frequency_name);
+  const xAxisLabel = primaryMeta?.frequency_name || undefined;
 
+  const forecastSx = {};
   const sharedProps = {
     height: 360,
-    series,
+    series: seriesList,
     margin: { left: dynamicLeft, right: 48, top: 12, bottom: 72 },
     yAxis: [
       {
@@ -274,27 +211,28 @@ function ChartPanel({
       },
     ],
     sx: {
-      ...smoothSx,
+      ...forecastSx,
       "& text": { fontFamily: '"Lato", system-ui, sans-serif' },
       "& tspan": { fontFamily: '"Lato", system-ui, sans-serif' },
     },
     hideLegend: true,
   };
 
+  const subtitleText =
+    datasets.length === 0
+      ? "Pick a dataset from the left panel."
+      : datasets.map((d) => d.meta?.sub_category).join(" · ");
+
   return (
     <section className="panel chart-panel" ref={panelRef}>
       <div className="panel-head-row">
-        <p className="panel-subtitle">
-          {selectedMeta
-            ? selectedMeta.sub_category
-            : "Pick a dataset from the left panel."}
-        </p>
+        <p className="panel-subtitle">{subtitleText}</p>
         <div className="panel-head-actions">
           <ChartControls
             movingWindow={movingWindow}
             onMovingWindowChange={onMovingWindowChange}
             onDownload={downloadChart}
-            hasData={mainSeries.length > 0}
+            hasData={hasData}
             dataSpanYears={dataSpanYears}
           />
           {onClose && (
@@ -310,7 +248,7 @@ function ChartPanel({
         </div>
       </div>
       <div className="chart-wrap">
-        {mainSeries.length === 0 ? (
+        {!hasData ? (
           <div className="empty-state">
             No chart points available for this dataset.
           </div>
@@ -319,36 +257,17 @@ function ChartPanel({
             {...sharedProps}
             xAxis={[
               {
-                data: fullXData,
+                data: allDates,
                 scaleType: "point",
                 tickInterval,
                 label: xAxisLabel,
                 valueFormatter: xTickFormatter,
               },
             ]}
-          >
-            {scaledMaxVal !== null && (
-              <ChartsReferenceLine
-                y={scaledMaxVal}
-                label={`Max: ${formatNumber(scaledMaxVal)}${rawUnit ? " " + rawUnit : ""} (${maxDate})`}
-                lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
-                labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
-                labelAlign="end"
-              />
-            )}
-            {scaledMinVal !== null && (
-              <ChartsReferenceLine
-                y={scaledMinVal}
-                label={`Min: ${formatNumber(scaledMinVal)}${rawUnit ? " " + rawUnit : ""} (${minDate})`}
-                lineStyle={{ stroke: lineColor, strokeDasharray: "4 3" }}
-                labelStyle={{ fill: lineColor, fontSize: 11, fontWeight: 600 }}
-                labelAlign="end"
-              />
-            )}
-          </LineChart>
+          />
         )}
       </div>
-      {mainSeries.length > 0 && fullMinYear < fullMaxYear && (
+      {hasData && fullMinYear < fullMaxYear && (
         <div
           className="chart-range-slider"
           style={{ paddingLeft: dynamicLeft, paddingRight: 48 }}
@@ -378,69 +297,18 @@ function ChartPanel({
           />
         </div>
       )}
-      <div className="chart-legend">
-        {isSmoothed ? (
-          <>
-            <span className="chart-legend-item" style={{ opacity: 0.5 }}>
+      {hasData && (
+        <div className="chart-legend">
+          {seriesList.map((s, i) => (
+            <span key={s.id} className="chart-legend-item">
               <svg width="36" height="10">
-                <line
-                  x1="0"
-                  y1="5"
-                  x2="36"
-                  y2="5"
-                  stroke="#0f766e"
-                  strokeWidth="2"
-                  style={{ strokeDasharray: "6 4" }}
-                />
+                <line x1="0" y1="5" x2="36" y2="5" stroke={s.color} strokeWidth="2" />
               </svg>
-              {datasetName}
+              {s.label}
             </span>
-            <span className="chart-legend-item">
-              <svg width="36" height="10">
-                <line
-                  x1="0"
-                  y1="5"
-                  x2="36"
-                  y2="5"
-                  stroke="#e07b39"
-                  strokeWidth="2"
-                />
-              </svg>
-              {smoothLabel}
-            </span>
-          </>
-        ) : (
-          <span className="chart-legend-item">
-            <svg width="36" height="10">
-              <line
-                x1="0"
-                y1="5"
-                x2="36"
-                y2="5"
-                stroke="#0f766e"
-                strokeWidth="2"
-              />
-            </svg>
-            {datasetName}
-          </span>
-        )}
-        {hasForecast && (
-          <span className="chart-legend-item" style={{ opacity: 0.7 }}>
-            <svg width="36" height="10">
-              <line
-                x1="0"
-                y1="5"
-                x2="36"
-                y2="5"
-                stroke="#94a3b8"
-                strokeWidth="2"
-                style={{ strokeDasharray: "6 4" }}
-              />
-            </svg>
-            Forecast
-          </span>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
