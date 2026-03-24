@@ -71,7 +71,8 @@ export default function HomePageLayout({
   }
 
   // Find meta + series for the drawer
-  const drawerDataset = datasets.find((d) => d.meta.key === drawerKey) ?? datasets[0] ?? null;
+  const drawerDataset =
+    datasets.find((d) => d.meta.key === drawerKey) ?? datasets[0] ?? null;
   const drawerMeta = drawerDataset?.meta ?? selectedMeta;
   const drawerSeries = drawerDataset?.mainSeries ?? mainSeries;
 
@@ -135,7 +136,9 @@ export default function HomePageLayout({
 
       <div className="page-body">
         {/* ── Collapsible Sidebar ── */}
-        <aside className={`sidebar${sidebarCollapsed ? " sidebar-collapsed" : ""}`}>
+        <aside
+          className={`sidebar${sidebarCollapsed ? " sidebar-collapsed" : ""}`}
+        >
           <div className="sidebar-inner">
             {!sidebarCollapsed && (
               <>
@@ -184,9 +187,15 @@ export default function HomePageLayout({
           <button
             className="sidebar-collapse-btn"
             onClick={() => setSidebarCollapsed((v) => !v)}
-            aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={
+              sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
+            }
           >
-            {sidebarCollapsed ? <ChevronRightIcon fontSize="small" /> : <ChevronLeftIcon fontSize="small" />}
+            {sidebarCollapsed ? (
+              <ChevronRightIcon fontSize="small" />
+            ) : (
+              <ChevronLeftIcon fontSize="small" />
+            )}
           </button>
         </aside>
 
