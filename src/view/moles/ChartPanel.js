@@ -232,7 +232,6 @@ function ChartPanel({
     yAxis: [
       {
         width: dynamicLeft,
-        label: yAxisLabel,
         valueFormatter: (v) => formatNumber(v),
       },
     ],
@@ -274,6 +273,11 @@ function ChartPanel({
         </div>
       </div>
       <div className="chart-wrap">
+        {yAxisLabel && (
+          <div className="chart-y-label" aria-hidden="true">
+            {yAxisLabel}
+          </div>
+        )}
         {!hasData ? (
           <div className="empty-state">
             No chart points available for this dataset.

@@ -331,6 +331,31 @@
 
 .chart-wrap {
   margin-top: 0.45rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.chart-y-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 0.72rem;
+  color: var(--muted-ink);
+  line-height: 1.3;
+  text-align: center;
+  max-height: 340px;
+  width: 0.9rem;
+  flex-shrink: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  padding: 0 0.15rem;
+}
+
+.chart-wrap > .MuiLineChart-root,
+.chart-wrap > .MuiChartsAxis-root,
+.chart-wrap > svg {
+  flex: 1;
+  min-width: 0;
 }
 
 /* Pull Lato into MUI chart SVG text */
