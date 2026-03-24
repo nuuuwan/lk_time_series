@@ -719,6 +719,9 @@ details[open] > .filter-summary::before {
   font-size: 0.87rem;
   font-weight: 600;
   text-decoration: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
   background: var(--accent);
   color: #fff;
   transition: opacity 0.15s;
