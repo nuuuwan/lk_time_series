@@ -1,14 +1,23 @@
 import React, { useId, useRef, useState, useEffect } from "react";
 import { LineChart } from "@mui/x-charts";
-import { Slider, IconButton } from "@mui/material";
+import { Slider, IconButton, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import DataObjectIcon from "@mui/icons-material/DataObject";
+import GridOnIcon from "@mui/icons-material/GridOn";
+import TableRowsIcon from "@mui/icons-material/TableRows";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { toPng } from "html-to-image";
-import ChartControls from "../atoms/ChartControls";
+import { buildDatasetRawUrl } from "../../nonview/core/datasetApi";
 import {
   formatNumber,
   formatDateByFrequency,
   splitDatasetName,
 } from "../../nonview/core/timeSeriesUtils";
+
+const MOVING_WINDOW_OPTIONS = [
+  { value: "365", label: "Year avg", minYears: 2 },
+  { value: "3650", label: "Decade avg", minYears: 12 },
+];
 
 // Contrasting palette (colorblind-friendly)
 const PALETTE = [
@@ -60,6 +69,25 @@ function ChartPanel({
     });
   }
 
+  function downloadDelimited(series, meta, sep, ext) {
+    const header = `date${sep}value`;
+    const rows = series
+      .filter((p) => Number.isFinite(p.timeMs))
+      .map((p) => {
+        const date = new Date(p.timeMs).toISOString().slice(0, 10);
+        return `${date}${sep}${p.value ?? ""}`;
+      });
+    const content = [header, ...rows].join("\n");
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const name = (meta.sub_category || "data").replace(/[^a-z0-9]/gi, "_");
+    a.download = `${name}.${ext}`;
+    a.href = url;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   // Build a unified sorted x-axis (union of all date strings)
   const allDates = (() => {
     const set = new Set();
@@ -81,6 +109,10 @@ function ChartPanel({
       ? (Math.max(...timeMsValues) - Math.min(...timeMsValues)) /
         (365.25 * 24 * 3600 * 1000)
       : 0;
+
+  const availableMovingWindows = MOVING_WINDOW_OPTIONS.filter(
+    (opt) => dataSpanYears >= opt.minYears,
+  );
 
   // Slider: use primary dataset metadata
   const now = new Date().getFullYear();
@@ -322,25 +354,103 @@ function ChartPanel({
             <p className="chart-breadcrumb">{chartHeader.breadcrumb}</p>
           )}
         </div>
-        <div className="panel-head-actions">
-          <ChartControls
-            movingWindow={movingWindow}
-            onMovingWindowChange={onMovingWindowChange}
-            onDownload={downloadChart}
-            hasData={hasData}
-            dataSpanYears={dataSpanYears}
-          />
-          {onClose && (
-            <IconButton
-              onClick={onClose}
-              size="small"
-              aria-label="Close chart"
-              className="chart-close-btn"
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          )}
-        </div>
+      </div>
+      <div className="chart-toolbar">
+        {/* Moving average selector */}
+        <select
+          className="avg-select"
+          value={movingWindow}
+          onChange={(e) => onMovingWindowChange(e.target.value)}
+          title="Smoothing"
+        >
+          <option value="none">No avg</option>
+          {availableMovingWindows.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+
+        {/* Data downloads */}
+        {hasData && primaryMeta && (
+          <>
+            <div className="toolbar-sep" />
+            <Tooltip title="Raw data (JSON)" placement="bottom" arrow>
+              <IconButton
+                size="small"
+                className="toolbar-icon-btn"
+                onClick={() => {
+                  const a = document.createElement("a");
+                  a.href = buildDatasetRawUrl(primaryMeta);
+                  a.target = "_blank";
+                  a.rel = "noreferrer";
+                  a.click();
+                }}
+                aria-label="Download raw data as JSON"
+              >
+                <DataObjectIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Download as CSV" placement="bottom" arrow>
+              <IconButton
+                size="small"
+                className="toolbar-icon-btn"
+                onClick={() =>
+                  downloadDelimited(primarySeries, primaryMeta, ",", "csv")
+                }
+                aria-label="Download as CSV"
+              >
+                <GridOnIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Download as TSV" placement="bottom" arrow>
+              <IconButton
+                size="small"
+                className="toolbar-icon-btn"
+                onClick={() =>
+                  downloadDelimited(primarySeries, primaryMeta, "\t", "tsv")
+                }
+                aria-label="Download as TSV"
+              >
+                <TableRowsIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </>
+        )}
+
+        {/* Chart PNG */}
+        {hasData && (
+          <>
+            <div className="toolbar-sep" />
+            <Tooltip title="Download chart as PNG" placement="bottom" arrow>
+              <IconButton
+                size="small"
+                className="toolbar-icon-btn"
+                onClick={downloadChart}
+                aria-label="Download chart as PNG"
+              >
+                <FileDownloadIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </>
+        )}
+
+        {/* Close */}
+        {onClose && (
+          <>
+            <div className="toolbar-sep" />
+            <Tooltip title="Close" placement="bottom" arrow>
+              <IconButton
+                size="small"
+                className="toolbar-icon-btn"
+                onClick={onClose}
+                aria-label="Close chart"
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </>
+        )}
       </div>
       <div className="chart-wrap">
         {yAxisLabel && (
